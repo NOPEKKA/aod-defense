@@ -4,9 +4,15 @@
 2026-10-26 โดย Claude (หัวหน้าทีม)
 
 ## เฟสปัจจุบัน
-เฟส 0 เสร็จแล้ว (อ่านและถาม) **รอผู้ใช้พิมพ์ "ไปต่อ"** เพื่อเริ่มเฟส 1 (SPEC)
+เฟส 1 เสร็จแล้ว (SPEC) **รอผู้ใช้อ่านและแก้ `docs/SPEC.md`** โดยเฉพาะคำถามค้าง 7 ข้อในหัวข้อ 10 แล้วพิมพ์ "ไปต่อ" เพื่อเริ่มเฟส 2
 
-## ทำแล้ว
+## ทำแล้ว (เฟส 1)
+- `docs/SPEC.md` ครบหัวข้อ 1–7 ตามบรีฟ และเพิ่มหัวข้อ 8 (ประสิทธิภาพ), 9 (data/), 10 (คำถามค้าง)
+- ตัวเลขทุกตัวเป็น [เดา] ข้อเท็จจริงจากต้นฉบับติด [ยืนยัน] ของใหม่ติด [ใหม่]
+- เอกสารที่ skill make-game บังคับ: `docs/gameplan.md` (ชี้ไป SPEC), `docs/tech.md`, `docs/architectural-decisions/0001-engine-and-stack.md`
+- ติดตั้ง skill ชุด game-creator ใหม่ในโฟลเดอร์นี้ (แอปไม่คัดลอก `.claude/` มาให้ตอนย้ายโฟลเดอร์)
+
+## ทำแล้ว (เฟส 0)
 - ติดตั้ง skill ชุด game-creator แล้ว ตัวที่บรีฟสั่งมีครบทุกตัว: make-game, phaser, game-architecture, game-qa, design-game, improve-game
 - `reference/` ไม่มีไฟล์จากผู้ใช้ ผู้ใช้เลือกให้ค้นจากเว็บแทน สรุปไว้ที่ `reference/NOTES.md` ติดป้าย [ยืนยัน]/[เดา] ทุกบรรทัด
 - สร้างโปรเจกต์ที่ `D:\CLAUDEONLY\aod-defense` พร้อม git repo แยก (ไม่ใช้ repo ของโฮม `C:\Users\User`)
@@ -37,8 +43,9 @@
 - QA ต้องวัดเฟรมไทม์ทั้งที่ 60 และ 120 แล้วรายงาน
 
 ## เหลือ
-- เฟส 1: `docs/SPEC.md` ตามหัวข้อ 1–7 ในบรีฟ และเอกสารที่ skill make-game บังคับ (`docs/tech.md`, `docs/architectural-decisions/0001-engine-and-stack.md`) ผู้ใช้อ่านและแก้ SPEC ก่อนไปต่อ
-- เฟส 2–7 ตามบรีฟ
+- ผู้ใช้ตอบคำถามค้างใน SPEC §10 (ข้อไหนไม่ตอบ ใช้ค่าที่เสนอไว้)
+- เฟส 2: scaffold ด้วย scaffolder ทางการ, `src/contracts.ts`, `docs/ARCHITECTURE.md`, `AGENTS.md`/`CLAUDE.md`, ภาพ placeholder
+- เฟส 3–7 ตามบรีฟ
 
 ## ปัญหา / ข้อสังเกต
 - บรีฟใช้ `docs/SPEC.md` ส่วน skill make-game ใช้ `docs/gameplan.md` จะให้ SPEC.md เป็นต้นฉบับ แล้วทำ gameplan.md เป็นไฟล์สั้นที่ชี้ไป SPEC จะได้ไม่มีสองเวอร์ชันขัดกัน
@@ -46,5 +53,8 @@
 - ข้อมูลต้นฉบับเรื่องค่าสถานะ ศัตรูแต่ละตัว และผลของสกิลแต่ละอันมีน้อยมาก ตัวเลขส่วนใหญ่ใน SPEC จะติดป้าย [เดา]
 - skill ที่ติดตั้งไว้ (`.claude/skills/`) ถูกคัดลอกมาจากโฟลเดอร์ session เดิมตอนย้ายโฟลเดอร์ ถ้าหายให้ติดตั้งใหม่ด้วย `npx skills add OpusGameLabs/game-creator -a claude-code`
 
+- Phaser 4.2.1 เป็น `latest` บน npm แล้ว แต่บรีฟระบุ Phaser 3 (ล่าสุด 3.90.0) ผมยึด 3 ไว้ (ADR-0001) และถามผู้ใช้ไว้ใน SPEC §10 ข้อ 7
+- `npm create @phaserjs/game@latest` อาจได้ Phaser 4 เป็นค่าเริ่มต้น ต้องเช็กตอนเฟส 2 แล้วปักเวอร์ชัน 3.x
+
 ## ขั้นถัดไป
-รอผู้ใช้พิมพ์ "ไปต่อ" จากนั้นเริ่มเฟส 1 โดยโหลด skill make-game และ game-architecture แล้วเขียน `docs/SPEC.md`
+รอผู้ใช้แก้ SPEC แล้วพิมพ์ "ไปต่อ" จากนั้นเริ่มเฟส 2: โหลด skill phaser กับ game-architecture อ่านวิธี scaffold ล่าสุด แล้ว scaffold, เขียน contracts.ts และ ARCHITECTURE.md
