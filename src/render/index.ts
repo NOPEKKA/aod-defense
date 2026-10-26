@@ -1,19 +1,31 @@
 /**
- * render/ — sprites, animation, spell FX, particles, camera polish, HUD, menu scenes.
+ * render/ — sprites, animation, spell FX, particles, HUD, menu scenes.
  * Owner: render agent.
  *
- * PHASE 2 STUB: placeholder textures + one placeholder battle renderer, no menus
- * (Preloader then jumps straight into wave 1).
+ * Textures: one generated Canvas atlas (+ bitmap fonts) built in the Preloader.
+ * Battle: world (sprites/background/telegraphs) + fx (particles/numbers/shake) + hud.
+ * Menus: Title, Map, Shop, PreWave, Result, Settings.
  */
 import type { RenderModule } from '../contracts';
 import { getApp } from '../core/app';
-import { PlaceholderBattleRenderer } from './PlaceholderBattleRenderer';
-import { buildPlaceholderTextures } from './placeholders';
+import { buildAllTextures } from './art/build';
+import { FxRenderer } from './battle/FxRenderer';
+import { HudRenderer } from './battle/HudRenderer';
+import { WorldRenderer } from './battle/WorldRenderer';
+import { MapScene } from './scenes/MapScene';
+import { PreWaveScene } from './scenes/PreWaveScene';
+import { ResultScene } from './scenes/ResultScene';
+import { SettingsScene } from './scenes/SettingsScene';
+import { ShopScene } from './scenes/ShopScene';
+import { TitleScene } from './scenes/TitleScene';
 
 export const render: RenderModule = {
   buildTextures(scene, renderScale) {
-    buildPlaceholderTextures(scene, getApp().data, renderScale);
+    buildAllTextures(scene, getApp().data, renderScale);
   },
-  createBattleRenderers: () => [new PlaceholderBattleRenderer()],
-  menuScenes: [],
+  createBattleRenderers() {
+    const fx = new FxRenderer();
+    return [new WorldRenderer(fx), fx, new HudRenderer()];
+  },
+  menuScenes: [TitleScene, MapScene, ShopScene, PreWaveScene, ResultScene, SettingsScene],
 };
