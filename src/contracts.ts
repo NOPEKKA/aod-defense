@@ -669,12 +669,14 @@ export interface GameEvents {
   'settings:changed': Settings;
   'ui:pause': { paused: boolean };
   'ui:speed': { speed: 1 | 2 };
+  /** payload is the live AimState object owned by controls — copy it to keep it */
   'ui:aim': AimState;
   'ui:layout': HudLayout;
   /** controls -> render: press feedback for HUD buttons */
   'ui:button': { button: 'unit' | 'spell' | 'dodge' | 'pause' | 'speed' | 'cancel'; index: number; down: boolean };
   // spectacle hooks (game-creator convention) — render attaches juice here
   'spectacle:entrance': { what: string; x: number; y: number };
+  /** x/y in world coordinates (Ash, or the cast target for point spells) */
   'spectacle:action': { action: 'move' | 'summon' | 'cast' | 'dodge'; x: number; y: number };
   'spectacle:hit': { x: number; y: number; big: boolean };
   'spectacle:combo': { combo: number };
@@ -881,7 +883,7 @@ export interface InputSource {
   attach(scene: Phaser.Scene, layout: HudLayout, world: Readonly<WorldState>, bus: EventBus, coords: CoordHelpers): void;
   /** called by core when the layout changes (resize/orientation) */
   relayout(layout: HudLayout): void;
-  /** called once per sim tick; drains queued commands */
+  /** called once per sim tick; drains queued commands. Returns a reused frame object — copy it to keep it. */
   poll(): InputFrame;
   readonly aim: Readonly<AimState>;
   detach(): void;
