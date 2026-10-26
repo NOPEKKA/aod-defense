@@ -1,0 +1,622 @@
+[
+  {
+    "unlockWave": 0,
+    "id": "ash.hp",
+    "category": "ash",
+    "nameKey": "upg.ash.hp",
+    "maxLevel": 10,
+    "baseCost": 60,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "ash.hp",
+        "op": "mul",
+        "value": 0.12
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "ash.melee",
+    "category": "ash",
+    "nameKey": "upg.ash.melee",
+    "maxLevel": 10,
+    "baseCost": 60,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "ash.melee.damage",
+        "op": "mul",
+        "value": 0.12
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "ash.gun_damage",
+    "category": "ash",
+    "nameKey": "upg.ash.gun_damage",
+    "maxLevel": 10,
+    "baseCost": 70,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "ash.gun.damage",
+        "op": "mul",
+        "value": 0.1
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "ash.gun_rate",
+    "category": "ash",
+    "nameKey": "upg.ash.gun_rate",
+    "maxLevel": 8,
+    "baseCost": 90,
+    "costGrowth": 1.65,
+    "perLevel": [
+      {
+        "stat": "ash.gun.interval",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "ash.speed",
+    "category": "ash",
+    "nameKey": "upg.ash.speed",
+    "maxLevel": 6,
+    "baseCost": 80,
+    "costGrowth": 1.7,
+    "perLevel": [
+      {
+        "stat": "ash.speed",
+        "op": "mul",
+        "value": 0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "ash.magnet",
+    "category": "ash",
+    "nameKey": "upg.ash.magnet",
+    "maxLevel": 6,
+    "baseCost": 50,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "ash.magnet",
+        "op": "add",
+        "value": 10
+      }
+    ]
+  },
+  {
+    "unlockWave": 1,
+    "id": "army.peasant",
+    "category": "army",
+    "nameKey": "unit.peasant",
+    "target": "peasant",
+    "maxLevel": 5,
+    "baseCost": 40,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.peasant.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.peasant.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 1,
+    "id": "army.swordsman",
+    "category": "army",
+    "nameKey": "unit.swordsman",
+    "target": "swordsman",
+    "maxLevel": 5,
+    "baseCost": 60,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.swordsman.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.swordsman.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 3,
+    "id": "army.archer",
+    "category": "army",
+    "nameKey": "unit.archer",
+    "target": "archer",
+    "maxLevel": 5,
+    "baseCost": 90,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.archer.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.archer.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 5,
+    "id": "army.spearman",
+    "category": "army",
+    "nameKey": "unit.spearman",
+    "target": "spearman",
+    "maxLevel": 5,
+    "baseCost": 90,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.spearman.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.spearman.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 8,
+    "id": "army.torch_boy",
+    "category": "army",
+    "nameKey": "unit.torch_boy",
+    "target": "torch_boy",
+    "maxLevel": 5,
+    "baseCost": 105,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.torch_boy.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.torch_boy.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 11,
+    "id": "army.armored_guard",
+    "category": "army",
+    "nameKey": "unit.armored_guard",
+    "target": "armored_guard",
+    "maxLevel": 5,
+    "baseCost": 150,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.armored_guard.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.armored_guard.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 17,
+    "id": "army.crossbowman",
+    "category": "army",
+    "nameKey": "unit.crossbowman",
+    "target": "crossbowman",
+    "maxLevel": 5,
+    "baseCost": 135,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.crossbowman.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.crossbowman.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 20,
+    "id": "army.horseman",
+    "category": "army",
+    "nameKey": "unit.horseman",
+    "target": "horseman",
+    "maxLevel": 5,
+    "baseCost": 210,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.horseman.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.horseman.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 14,
+    "id": "army.arthur",
+    "category": "army",
+    "nameKey": "unit.arthur",
+    "target": "arthur",
+    "maxLevel": 5,
+    "baseCost": 450,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.arthur.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.arthur.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 24,
+    "id": "army.wiseman",
+    "category": "army",
+    "nameKey": "unit.wiseman",
+    "target": "wiseman",
+    "maxLevel": 5,
+    "baseCost": 360,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.wiseman.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.wiseman.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 28,
+    "id": "army.henry",
+    "category": "army",
+    "nameKey": "unit.henry",
+    "target": "henry",
+    "maxLevel": 5,
+    "baseCost": 450,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "unit.henry.hp",
+        "op": "mul",
+        "value": 0.15
+      },
+      {
+        "stat": "unit.henry.damage",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  },
+  {
+    "unlockWave": 1,
+    "id": "spell.super_boomstick",
+    "category": "spell",
+    "nameKey": "spell.super_boomstick",
+    "target": "super_boomstick",
+    "maxLevel": 5,
+    "baseCost": 140,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.super_boomstick.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.super_boomstick.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 1,
+    "id": "spell.arrow_volley",
+    "category": "spell",
+    "nameKey": "spell.arrow_volley",
+    "target": "arrow_volley",
+    "maxLevel": 5,
+    "baseCost": 150,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.arrow_volley.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.arrow_volley.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 4,
+    "id": "spell.magic_words",
+    "category": "spell",
+    "nameKey": "spell.magic_words",
+    "target": "magic_words",
+    "maxLevel": 5,
+    "baseCost": 160,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.magic_words.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.magic_words.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 7,
+    "id": "spell.catapult_volley",
+    "category": "spell",
+    "nameKey": "spell.catapult_volley",
+    "target": "catapult_volley",
+    "maxLevel": 5,
+    "baseCost": 180,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.catapult_volley.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.catapult_volley.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 12,
+    "id": "spell.wrong_book",
+    "category": "spell",
+    "nameKey": "spell.wrong_book",
+    "target": "wrong_book",
+    "maxLevel": 5,
+    "baseCost": 170,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.wrong_book.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.wrong_book.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 18,
+    "id": "spell.chainsaw",
+    "category": "spell",
+    "nameKey": "spell.chainsaw",
+    "target": "chainsaw",
+    "maxLevel": 5,
+    "baseCost": 140,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.chainsaw.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.chainsaw.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 26,
+    "id": "spell.deathcoaster",
+    "category": "spell",
+    "nameKey": "spell.deathcoaster",
+    "target": "deathcoaster",
+    "maxLevel": 5,
+    "baseCost": 220,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "spell.deathcoaster.power",
+        "op": "mul",
+        "value": 0.2
+      },
+      {
+        "stat": "spell.deathcoaster.cooldown",
+        "op": "mul",
+        "value": -0.05
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "castle.book_hp",
+    "category": "castle",
+    "nameKey": "upg.castle.book_hp",
+    "maxLevel": 5,
+    "baseCost": 80,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "castle.book.hp",
+        "op": "mul",
+        "value": 0.2
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "castle.archers",
+    "category": "castle",
+    "nameKey": "upg.castle.archers",
+    "maxLevel": 5,
+    "baseCost": 100,
+    "costGrowth": 1.7,
+    "perLevel": [
+      {
+        "stat": "castle.archers.count",
+        "op": "add",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "unlockWave": 6,
+    "id": "castle.catapult",
+    "category": "castle",
+    "nameKey": "upg.castle.catapult",
+    "maxLevel": 5,
+    "baseCost": 160,
+    "costGrowth": 1.7,
+    "perLevel": [
+      {
+        "stat": "castle.catapult.level",
+        "op": "add",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "unlockWave": 9,
+    "id": "castle.pit",
+    "category": "castle",
+    "nameKey": "upg.castle.pit",
+    "maxLevel": 5,
+    "baseCost": 140,
+    "costGrowth": 1.7,
+    "perLevel": [
+      {
+        "stat": "castle.pit.level",
+        "op": "add",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "castle.smithy",
+    "category": "castle",
+    "nameKey": "upg.castle.smithy",
+    "maxLevel": 4,
+    "baseCost": 120,
+    "costGrowth": 1.8,
+    "perLevel": [
+      {
+        "stat": "economy.iron.rate",
+        "op": "add",
+        "value": 1.5
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "castle.iron_cap",
+    "category": "castle",
+    "nameKey": "upg.castle.iron_cap",
+    "maxLevel": 5,
+    "baseCost": 70,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "economy.iron.max",
+        "op": "add",
+        "value": 50
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "mana.max",
+    "category": "mana",
+    "nameKey": "upg.mana.max",
+    "maxLevel": 5,
+    "baseCost": 70,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "economy.mana.max",
+        "op": "add",
+        "value": 20
+      }
+    ]
+  },
+  {
+    "unlockWave": 0,
+    "id": "mana.regen",
+    "category": "mana",
+    "nameKey": "upg.mana.regen",
+    "maxLevel": 5,
+    "baseCost": 90,
+    "costGrowth": 1.6,
+    "perLevel": [
+      {
+        "stat": "economy.mana.regen",
+        "op": "mul",
+        "value": 0.15
+      }
+    ]
+  }
+]

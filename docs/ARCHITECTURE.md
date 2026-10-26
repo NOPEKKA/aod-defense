@@ -1,0 +1,155 @@
+# ARCHITECTURE
+
+สัญญากลางอยู่ที่ [`src/contracts.ts`](../src/contracts.ts) ส่วนไฟล์นี้อธิบายว่าแต่ละส่วนต่อกันอย่างไร ใครเป็นเจ้าของอะไร และกติกาที่ทุกโฟลเดอร์ต้องทำตาม
+SPEC อยู่ที่ [`docs/SPEC.md`](SPEC.md)
+
+## 1. ภาพรวมการไหลของข้อมูล
+
+```
+ keyboard / mouse / touch
+          │
+   controls/ (InputSource) ──poll() ทุก tick──► InputFrame { move, commands[] }
+          │                                        │
+          │ AimState (ตอนกำลังเล็ง)                   ▼
+          │                         core/SimRunner  (fixed 60 Hz, ×2 = 2 tick ต่อ dt)
+          │                           │  copy prevX/prevY ของทุก entity
+          │                           │  เรียก SimSystem.tick() ตามลำดับ order
+          │                           ▼
+          │       systems/ + gameplay/ แก้ WorldState  ──emit──► EventBus (typed)
+          │                           │                              │
+          ▼                           ▼                              ▼
+   render/ (BattleRenderer.frame(view, alpha))  อ่าน WorldState + interpolate     render/ ฟัง event ไปทำ FX
+```
+
+- **Simulation** (systems + gameplay) เป็น TypeScript ล้วน **ห้ามแตะ Phaser** ทุก tick ใช้ dt = 1/60 วินาทีเสมอ
+- **Render** อ่านอย่างเดียว ห้ามแก้ WorldState
+- **Controls** ส่งได้แค่ InputFrame กับ event ประเภท `ui:*` เท่านั้น
+- **core/** (หัวหน้าเป็นเจ้าของ) ทำหน้าที่ผูกทุกส่วนเข้าด้วยกัน ได้แก่ scene Boot/Preloader/Battle, SimRunner, การโหลด data, กล้อง, layout และ QA hooks
+
+## 2. เจ้าของโฟลเดอร์
+
+| โฟลเดอร์ | เจ้าของ | ต้อง export | หน้าที่ |
+|---|---|---|---|
+| `src/contracts.ts` | หัวหน้า | — | type, schema, event, interface ทั้งหมด **ถ้าจะแก้ต้องขอผ่านหัวหน้า** |
+| `src/core/`, `src/scenes/`, `src/main.ts` | หัวหน้า | — | runner, loader, layout, กล้อง, QA hooks, scene Boot/Preloader/Battle |
+| `src/systems/` | systems | `systems: SystemsModule` | เศรษฐกิจ (ทอง/เหล็ก/มานา), wave director, ตรวจแพ้ชนะ, เลเวล/ปลดล็อก, อัปเกรด, modifier, เซฟ |
+| `src/controls/` | controls | `controls: ControlsModule` | คีย์บอร์ด/เมาส์/สัมผัส, ปุ่มยูนิต, ปุ่มเวท, การเล็ง (AimState), หลบ, หยุด, ×2 |
+| `src/render/` | render | `render: RenderModule` | texture, sprite, animation, FX เวท, พาร์ติเคิล, ตัวเลขดาเมจ, HUD, **scene เมนูทั้งหมด** (Title/Map/Shop/PreWave/Result/Settings) |
+| `src/gameplay/` | gameplay | `gameplay: GameplayModule` | Ash, ทหาร, ฮีโร่, ศัตรู, บอส, เวท, ป้อมปราสาท, AI และ registry ของ behavior/effect/attack |
+| `qa/` | qa | — | Playwright tests และบอท |
+| `data/` | gameplay (units/enemies/bosses/spells/relics) · systems (upgrades/levels/wave_formula/balance) · render (i18n) | — | เนื้อหาเกม |
+
+**กติกาการ import**
+- import ได้จาก `src/contracts.ts` และ helper แบบ pure ใน `src/core/` เท่านั้น ได้แก่ `layout.ts` (inRect, computeHudLayout), `rng.ts`, `world.ts` (findEntity), `camera.ts`, `app.ts` (getApp สำหรับ scene เมนูของ render)
+- **ห้าม import ข้ามโฟลเดอร์กัน** (systems ↔ gameplay ↔ controls ↔ render) ถ้าต้องคุยกัน ใช้ services ใน `SimContext` หรือ EventBus
+- ไฟล์อื่นในโฟลเดอร์เป็นเรื่องภายในของเจ้าของ ภายใต้ `index.ts` จะจัดโครงสร้างอย่างไรก็ได้
+
+## 3. Fixed timestep และ 120 Hz
+
+- `SIM_HZ = 60`, `SIM_DT = 1/60`, ไล่ tick ได้สูงสุด 5 tick ต่อเฟรม (×2 = 10) ถ้า backlog เกินกว่านั้นจะทิ้งไป
+- `Battle.update(time, delta)` ส่ง delta เข้า `SimRunner.frame()` ซึ่งคืนค่า `alpha` ให้ render วาดที่ตำแหน่ง `lerp(prev, current, alpha)`
+- **ห้ามมีค่าไหนผูกกับจำนวนเฟรม** ทั้งความเร็ว คูลดาวน์ เวลา animation ที่มีผลกับเกม การเกิดศัตรู และการผลิตทรัพยากร ทั้งหมดต้องอยู่ใน `SimSystem.tick` และใช้ `SIM_DT`
+- เวลาที่ใช้แค่กับภาพ เช่นพาร์ติเคิลหรือ tween ใช้ `frameDtMs` ใน `BattleRenderer.frame` ได้
+- **อัตรารีเฟรช**:
+  - `main.ts` วัด rAF ก่อนสร้างเกม (`measureRefreshHz`) แล้วตั้ง `fps.target` ตามค่าที่วัดได้
+  - Phaser วาดทุก rAF จึงลื่นที่ 120 Hz บนจอ 120 Hz
+- **จำกัด 60fps** (Settings):
+  - `core/display.applyFpsCap()` สลับฟิลด์ TimeStep แล้วรีสตาร์ท raf loop
+  - เผื่อ slack 2 ms เพื่อให้จอ 120 Hz วาดทุกเฟรมที่ 2 พอดี
+  - ตรรกะยังเดินที่ 60 tick ต่อวินาทีเหมือนเดิม
+- **หยุดเกม**: `ui:pause` ทำให้ runner หยุด tick ส่วน render ยังวาดต่อด้วย alpha เดิม
+- **QA**: `advanceTime(ms)` เดิน tick แบบ synchronous ได้แม้ตอนหยุดเกม ผลลัพธ์กำหนดได้ (seed + input เดิม = ผลเดิม)
+- **ห้ามใช้ `Math.random()` ใน sim** ให้ใช้ `ctx.rng` ส่วน render จะสุ่มเอฟเฟกต์เองได้
+
+## 4. พิกัดและการวาด
+
+- **พิกัดตรรกะ**: จอสูง 720 กว้าง 1280–1600 ตามสัดส่วนจอ (`computeViewWidth`) ทำให้มือถือจอยาวเห็นสนามมากขึ้นโดยไม่มีแถบดำ
+- **ความละเอียด**: canvas ใหญ่กว่าพิกัดตรรกะ `renderScale` เท่า (min(DPR, 2)) และทุก scene เรียก `setupCamera(scene, R)` ซึ่ง zoom R เท่าโดยยึดมุมซ้ายบน ทำให้โค้ดทั้งหมดคิดเป็นพิกัดตรรกะได้
+- **Texture**: วาดที่ขนาด ×R แล้วแสดงด้วย `setScale(1/R)` ภาพจะได้คมบนจอความละเอียดสูง ส่วน Text ใช้ `setResolution(R)`
+- **โลก**: กว้าง `balance.world.width` (2560) และ Battle เลื่อนกล้องตาม Ash (`RenderView.cameraX`)
+- **HUD**: อยู่ใน Battle scene เดียวกันและใช้ `setScrollFactor(0)`
+- **ตำแหน่งปุ่มทั้งหมด** มาจาก `core/layout.computeHudLayout()`:
+  - render วาดตามสี่เหลี่ยมพวกนี้ ส่วน controls ใช้ตรวจว่าแตะโดนปุ่มไหน
+  - ห้ามฮาร์ดโค้ดตำแหน่งปุ่ม
+  - ตอน resize, Battle จะส่ง `relayout()` ไปหาทุกส่วน
+- **แปลงพิกัด pointer**: `CoordHelpers.toView(pointer)` แปลงเป็นพิกัดตรรกะบนจอ แล้ว `toWorldX(viewX)` แปลงเป็นพิกัดโลก
+
+## 5. ลำดับ SimSystem (`order`)
+
+| order | ใคร | งาน |
+|---|---|---|
+| 100 | gameplay | อ่าน input: Ash เดิน หลบ เรียกทหาร (`economy.spend`) ร่ายเวท (ใช้มานา) |
+| 200 | systems | wave director เรียก `spawn.spawnEnemy/spawnBoss` ตามตาราง |
+| 300 | gameplay | AI เลือกเป้า เคลื่อนที่ จัดแถว |
+| 400 | gameplay | การโจมตี กระสุน ดาเมจ สถานะ (ไฟลุก/ช้า/สตัน) |
+| 500 | gameplay | ผลของเวท บอส (telegraph → hit) ป้อมปราสาท หลุม |
+| 600 | systems | ฟื้นเหล็ก/มานา เก็บของที่ดรอป (เหรียญ/มานา/อาหาร) |
+| 800 | systems | ตรวจแพ้ชนะ → ตั้ง `world.outcome` + emit `wave:ended` |
+| 900 | gameplay | เก็บกวาด entity ที่ตายแล้ว (`alive=false` เพื่อนำกลับมาใช้ใหม่) |
+
+entity ทั้งหมดเป็นแบบ pool ห้ามเก็บ reference ไว้ข้าม tick ให้เก็บ `id` แทน แล้วหาด้วย `findEntity`
+
+## 6. Data
+
+- **โหลดและตรวจ**: `core/data.ts` อ่าน `data/*.json` ผ่าน `import.meta.glob` ตรวจด้วย zod schema ใน contracts แล้วตรวจว่าทุก id ที่อ้างถึงมีอยู่จริง
+- **ถ้าผิด**: เกมจะไม่บูต และแสดงรายการปัญหาบนจอ
+- **id ที่ต้องลงทะเบียน**: behavior / spell effect / boss attack ทุกตัวที่ data อ้างถึง ต้องอยู่ใน `gameplay.registeredIds()` และ `gameplay.validateData()` ใช้ตรวจ params ของแต่ละตัว
+- **เพิ่มของใหม่โดยไม่แก้โค้ด**:
+  - เพิ่ม entry ใน JSON + คีย์ข้อความใน `data/i18n/*.json` + sprite key (ถ้ายังไม่มีภาพ จะได้ placeholder อัตโนมัติ)
+  - ต้องเขียนโค้ดเฉพาะตอนที่ต้องการ behavior / effect / attack **ชนิดใหม่จริงๆ**
+- **Stat key และ modifier** (ดูคอมเมนต์ `StatKeySchema`):
+  - ค่าจริง = `(base + add) * (1 + mul)`
+  - upgrades.json และ relics สร้าง modifier
+  - `ctx.services.mods.apply(base, 'unit.archer.damage')`
+  - `unit.*.hp` มีผลกับทุกยูนิต
+- **ปลดล็อก**: ยูนิตหรือเวทใช้ได้เมื่อ `highestWave + 1 >= unlockWave` ส่วน `unlockRule` ใช้กับของใหม่ในเฟส 5
+
+## 7. Scene และ flow
+
+| scene | เจ้าของ | หมายเหตุ |
+|---|---|---|
+| Boot | core | โหลด data, สร้าง AppContext, ติดตั้ง QA hooks ถ้า data ผิดจะแสดง error |
+| Preloader | core | เรียก `render.buildTextures` → ไป Title (ถ้ามี) ไม่งั้นเข้า Battle คลื่น 1 |
+| Battle | core | runner + controls + renderers จบคลื่นแล้วจะ `applyOutcome` + เซฟ → Result |
+| Title, Map, Shop, PreWave, Result, Settings | render | ใช้ `getApp()` เพื่อเรียก services (upgrades, progression, save) และเริ่ม Battle ด้วย `makeWaveParams` |
+
+## 8. QA hooks
+
+ติดตั้งบน `window` (`core/qa.ts`):
+
+| hook | ใช้ทำอะไร |
+|---|---|
+| `render_game_to_text()` | JSON สรุปสถานะ: scene, tick, Ash, หนังสือ, ทรัพยากร, ศัตรู 12 ตัวแรก, boss, ช่องยูนิต/เวท, outcome |
+| `advanceTime(ms)` | เดินเวลาแบบกำหนดผลได้ |
+| `__aodd.startWave(n)` | เริ่มคลื่น n ทันที |
+| `__aodd.setProfile(p)` | ใส่เซฟที่ต้องการ |
+| `__aodd.input({move, commands}, ticks)` | ฉีด input ข้ามอุปกรณ์จริง |
+| `__aodd.frameTimes()` | ระยะห่างระหว่างเฟรมที่วาด (ms) ใช้วัด 60/120 |
+
+ตัวรันเทส: `npm test` (Playwright ใช้ Chrome ที่ติดตั้งในเครื่อง + SwiftShader)
+
+## 9. งบประสิทธิภาพ (SPEC §8)
+
+| รายการ | งบ |
+|---|---|
+| ศัตรูพร้อมกัน | ≤ 60 |
+| ยูนิตฝั่งเรา | ≤ 40 |
+| พาร์ติเคิล | ≤ 300 (สูง) / 120 (ต่ำ) |
+| ตัวเลขดาเมจ | ≤ 40 |
+| texture atlas | ≤ 3 |
+| draw call | < 40 |
+
+ใน `tick`/`frame` ห้ามสร้าง object/array ใหม่ทุกเฟรม ให้ใช้ pool กับ buffer ที่ใช้ซ้ำ
+
+## 10. สถานะ stub หลังเฟส 2 (ต้องแทนที่ในเฟส 3)
+
+- `systems/index.ts`:
+  - เซฟยังไม่มี backup/migrate
+  - wave director รองรับเฉพาะด่านที่ตั้งค่ามือ ยังไม่มีสูตร
+  - ยังไม่มีการตรวจแพ้ชนะ, ทองตอนจบคลื่น, ดาว, tree ของเวท
+- `gameplay/index.ts`:
+  - Ash เดินได้อย่างเดียว ยังไม่โจมตี
+  - ศัตรูเดินไปหยุดหน้าปราสาท
+  - id ทุกตัวใน REGISTERED ยังไม่ได้ implement
+- `controls/index.ts`: ทำได้แค่เดิน
+- `render/`: placeholder แค่กล่องสีกับ HUD ตัวหนังสือ ยังไม่มีเมนู

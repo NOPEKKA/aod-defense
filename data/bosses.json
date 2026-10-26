@@ -1,0 +1,32 @@
+[
+  {
+    "id": "sheila_demon", "nameKey": "boss.sheila_demon", "sprite": "boss_sheila_demon", "origin": "original",
+    "hp": 2200, "armor": 2, "size": "huge", "flying": true,
+    "phases": [
+      {
+        "untilHpFrac": 0,
+        "loop": [
+          { "attack": "swoop", "params": { "damage": 30, "width": 260 }, "telegraph": 0.8, "recover": 1.0 },
+          { "attack": "summon", "params": { "enemy": "winged_deadite", "count": 3 }, "telegraph": 0, "recover": 1.5 },
+          { "attack": "scream", "params": { "radius": 300, "stun": 1.5 }, "telegraph": 0.8, "recover": 2.0 }
+        ]
+      }
+    ],
+    "drop": { "gold": 250 }
+  },
+  {
+    "id": "evil_ash", "nameKey": "boss.evil_ash", "sprite": "boss_evil_ash", "origin": "original",
+    "hp": 4000, "armor": 4, "size": "huge",
+    "phases": [
+      {
+        "untilHpFrac": 0,
+        "loop": [
+          { "attack": "melee_combo", "params": { "hits": 3, "damage": 22, "reach": 90 }, "telegraph": 0.6, "recover": 1.0 },
+          { "attack": "melee_combo", "params": { "hits": 3, "damage": 22, "reach": 90 }, "telegraph": 0.6, "recover": 1.0 },
+          { "attack": "summon", "params": { "enemy": "skeleton_helm", "count": 6 }, "telegraph": 0, "recover": 2.0 }
+        ]
+      }
+    ],
+    "drop": { "gold": 500 }
+  }
+]

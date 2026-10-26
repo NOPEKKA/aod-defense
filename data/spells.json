@@ -1,0 +1,37 @@
+[
+  {
+    "id": "super_boomstick", "nameKey": "spell.super_boomstick", "descKey": "spell.super_boomstick.desc", "icon": "icon_super_boomstick", "origin": "original",
+    "mana": 30, "cooldown": 12, "targeting": "line", "unlockWave": 1,
+    "effects": [{ "effect": "line_blast", "params": { "length": 500, "damage": 80, "knockback": 120 } }]
+  },
+  {
+    "id": "arrow_volley", "nameKey": "spell.arrow_volley", "descKey": "spell.arrow_volley.desc", "icon": "icon_arrow_volley", "origin": "original",
+    "mana": 35, "cooldown": 15, "targeting": "point", "aimRadius": 150, "unlockWave": 1,
+    "effects": [{ "effect": "area_rain", "params": { "width": 300, "hits": 10, "duration": 2, "damage": 6, "hitsFlying": true, "flamingAtLevel": 3, "burnDps": 4, "burnDuration": 3 } }]
+  },
+  {
+    "id": "magic_words", "nameKey": "spell.magic_words", "descKey": "spell.magic_words.desc", "icon": "icon_magic_words", "origin": "original",
+    "mana": 40, "cooldown": 20, "targeting": "none", "unlockWave": 4,
+    "effects": [{ "effect": "random_boon", "params": { "healFrac": 0.3, "summonCount": 3, "stun": 2 } }]
+  },
+  {
+    "id": "catapult_volley", "nameKey": "spell.catapult_volley", "descKey": "spell.catapult_volley.desc", "icon": "icon_catapult_volley", "origin": "original",
+    "mana": 50, "cooldown": 22, "targeting": "point", "aimRadius": 190, "unlockWave": 7,
+    "effects": [{ "effect": "area_strike", "params": { "count": 3, "radius": 120, "damage": 60, "knockback": 60, "spread": 140, "delay": 0.8 } }]
+  },
+  {
+    "id": "wrong_book", "nameKey": "spell.wrong_book", "descKey": "spell.wrong_book.desc", "icon": "icon_wrong_book", "origin": "original",
+    "mana": 45, "cooldown": 25, "targeting": "point", "aimRadius": 180, "unlockWave": 12,
+    "effects": [{ "effect": "portal_execute", "params": { "radius": 180, "hpFrac": 0.35, "slow": 0.4, "slowDuration": 3 } }]
+  },
+  {
+    "id": "chainsaw", "nameKey": "spell.chainsaw", "descKey": "spell.chainsaw.desc", "icon": "icon_chainsaw", "origin": "original",
+    "mana": 30, "cooldown": 18, "targeting": "none", "unlockWave": 18,
+    "effects": [{ "effect": "self_buff", "params": { "duration": 6, "meleeMul": 2.5, "attackSpeedMul": 2, "lifesteal": 0.1 } }]
+  },
+  {
+    "id": "deathcoaster", "nameKey": "spell.deathcoaster", "descKey": "spell.deathcoaster.desc", "icon": "icon_deathcoaster", "origin": "original",
+    "mana": 70, "cooldown": 40, "targeting": "none", "unlockWave": 26,
+    "effects": [{ "effect": "dash_vehicle", "params": { "damage": 120, "knockback": 100, "speed": 900 } }]
+  }
+]

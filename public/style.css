@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #14101c;
+    color: #f4eee0;
+    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
+}
+
+#app,
+#game-container {
+    width: 100%;
+    height: 100%;
+}
+
+#rotate {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: #14101c;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    font-size: 20px;
+}
+
+#rotate div {
+    font-size: 64px;
+}
+
+/* touch devices held upright: the game is landscape-only */
+@media (orientation: portrait) and (pointer: coarse) {
+    #rotate {
+        display: flex;
+    }
+}

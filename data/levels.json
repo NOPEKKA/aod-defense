@@ -1,0 +1,354 @@
+[
+  {
+    "wave": 1,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 1001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 5,
+        "interval": 4,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.5,
+        "startAt": 40
+      }
+    ],
+    "tipKey": "tip.wave1"
+  },
+  {
+    "wave": 2,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 2001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 3,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton",
+        "count": 8,
+        "interval": 2,
+        "startAt": 38
+      }
+    ]
+  },
+  {
+    "wave": 3,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 3001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.5,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2,
+        "startAt": 32
+      },
+      {
+        "enemy": "skeleton",
+        "count": 8,
+        "interval": 1.5,
+        "startAt": 62
+      }
+    ],
+    "tipKey": "tip.archer"
+  },
+  {
+    "wave": 4,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 4001
+  },
+  {
+    "wave": 5,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 5001
+  },
+  {
+    "wave": 6,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 6001
+  },
+  {
+    "wave": 7,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 7001
+  },
+  {
+    "wave": 8,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 8001
+  },
+  {
+    "wave": 9,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 9001
+  },
+  {
+    "wave": 10,
+    "chapter": 1,
+    "kind": "normal",
+    "seed": 10001
+  },
+  {
+    "wave": 11,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 11001
+  },
+  {
+    "wave": 12,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 12001
+  },
+  {
+    "wave": 13,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 13001
+  },
+  {
+    "wave": 14,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 14001
+  },
+  {
+    "wave": 15,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 15001
+  },
+  {
+    "wave": 16,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 16001
+  },
+  {
+    "wave": 17,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 17001
+  },
+  {
+    "wave": 18,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 18001
+  },
+  {
+    "wave": 19,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 19001
+  },
+  {
+    "wave": 20,
+    "chapter": 2,
+    "kind": "normal",
+    "seed": 20001
+  },
+  {
+    "wave": 21,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 21001
+  },
+  {
+    "wave": 22,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 22001
+  },
+  {
+    "wave": 23,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 23001
+  },
+  {
+    "wave": 24,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 24001
+  },
+  {
+    "wave": 25,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 25001
+  },
+  {
+    "wave": 26,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 26001
+  },
+  {
+    "wave": 27,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 27001
+  },
+  {
+    "wave": 28,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 28001
+  },
+  {
+    "wave": 29,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 29001
+  },
+  {
+    "wave": 30,
+    "chapter": 3,
+    "kind": "normal",
+    "seed": 30001
+  },
+  {
+    "wave": 31,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 31001
+  },
+  {
+    "wave": 32,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 32001
+  },
+  {
+    "wave": 33,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 33001
+  },
+  {
+    "wave": 34,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 34001
+  },
+  {
+    "wave": 35,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 35001
+  },
+  {
+    "wave": 36,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 36001
+  },
+  {
+    "wave": 37,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 37001
+  },
+  {
+    "wave": 38,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 38001
+  },
+  {
+    "wave": 39,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 39001
+  },
+  {
+    "wave": 40,
+    "chapter": 4,
+    "kind": "normal",
+    "seed": 40001
+  },
+  {
+    "wave": 41,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 41001
+  },
+  {
+    "wave": 42,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 42001
+  },
+  {
+    "wave": 43,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 43001
+  },
+  {
+    "wave": 44,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 44001
+  },
+  {
+    "wave": 45,
+    "chapter": 5,
+    "kind": "boss",
+    "seed": 45001,
+    "bossId": "sheila_demon"
+  },
+  {
+    "wave": 46,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 46001
+  },
+  {
+    "wave": 47,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 47001
+  },
+  {
+    "wave": 48,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 48001
+  },
+  {
+    "wave": 49,
+    "chapter": 5,
+    "kind": "normal",
+    "seed": 49001
+  },
+  {
+    "wave": 50,
+    "chapter": 5,
+    "kind": "boss",
+    "seed": 50001,
+    "bossId": "evil_ash"
+  }
+]

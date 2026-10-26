@@ -1,0 +1,62 @@
+{
+  "world": {
+    "width": 2560,
+    "groundY": 610,
+    "bookX": 100,
+    "castleRight": 340,
+    "stairsX": 360,
+    "pit": { "left": 400, "right": 460 },
+    "fieldRight": 2440,
+    "enemySpawnX": 2500,
+    "ashMinX": 200,
+    "ashMaxX": 2440,
+    "allyHoldX": 2300,
+    "laneJitterY": 12,
+    "flyingY": { "min": 140, "max": 220 }
+  },
+  "ash": {
+    "stats": {
+      "hp": 200,
+      "armor": 0,
+      "speed": 220,
+      "attack": { "kind": "ranged", "damage": 14, "interval": 1.1, "range": 420, "pierce": 2, "projectile": "shot", "hitsFlying": true }
+    },
+    "melee": { "kind": "melee", "damage": 18, "interval": 0.6, "range": 70 },
+    "pickupRadius": 40,
+    "dodge": { "distance": 160, "invuln": 0.35, "cooldown": 1.5, "unlockWave": 10 }
+  },
+  "book": { "hp": 500 },
+  "economy": {
+    "ironStart": 30,
+    "ironRate": 4,
+    "ironMax": 200,
+    "manaMax": 100,
+    "manaRegen": 2,
+    "goldPerThreat": 0.5,
+    "goldLifetime": 15,
+    "waveBonus": { "base": 20, "perWave": 5 },
+    "firstClearMultiplier": 2,
+    "uncollectedGoldKeep": 0.5,
+    "loseGoldKeep": 0.5,
+    "bossReplayGoldMultiplier": 1.5
+  },
+  "drops": {
+    "manaOrb": { "chance": 0.04, "amount": 10 },
+    "food": { "chance": 0.015, "healFrac": 0.15 }
+  },
+  "castle": {
+    "archers": { "interval": 1.6, "damage": 6, "maxX": 900 },
+    "catapult": { "interval": 8, "damage": 40, "radius": 90, "maxX": 1400 },
+    "pit": { "minEnemies": 3, "cooldown": 30 }
+  },
+  "loadout": { "unitSlots": 8, "spellSlots": 2, "relicSlots": 2 },
+  "limits": {
+    "maxEnemies": 60,
+    "maxAllies": 40,
+    "maxParticlesHigh": 300,
+    "maxParticlesLow": 120,
+    "maxDamageNumbers": 40
+  },
+  "stars": { "twoStarBookFrac": 0.75, "threeStarBookFrac": 1.0 },
+  "campaignWaves": 50
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "skeleton", "nameKey": "enemy.skeleton", "sprite": "enemy_skeleton", "origin": "original",
+    "threat": 4, "firstWave": 1,
+    "stats": { "hp": 40, "speed": 45, "attack": { "kind": "melee", "damage": 6, "interval": 1.0, "range": 40 } },
+    "behaviors": [{ "id": "melee" }]
+  },
+  {
+    "id": "skeleton_helm", "nameKey": "enemy.skeleton_helm", "sprite": "enemy_skeleton_helm", "origin": "original",
+    "threat": 6, "firstWave": 4,
+    "stats": { "hp": 55, "armor": 3, "speed": 45, "attack": { "kind": "melee", "damage": 7, "interval": 1.0, "range": 40 } },
+    "behaviors": [{ "id": "melee" }]
+  },
+  {
+    "id": "skeleton_wizard", "nameKey": "enemy.skeleton_wizard", "sprite": "enemy_skeleton_wizard", "origin": "original",
+    "threat": 12, "firstWave": 6,
+    "stats": { "hp": 50, "speed": 40, "attack": { "kind": "ranged", "damage": 14, "interval": 2.5, "range": 320, "projectile": "fireball", "splashRadius": 50, "damageKind": "fire" } },
+    "behaviors": [{ "id": "ranged" }, { "id": "prefer_ash" }]
+  },
+  {
+    "id": "skeleton_shield", "nameKey": "enemy.skeleton_shield", "sprite": "enemy_skeleton_shield", "origin": "original",
+    "threat": 8, "firstWave": 7,
+    "stats": { "hp": 70, "armor": 2, "speed": 40, "attack": { "kind": "melee", "damage": 7, "interval": 1.1, "range": 40 } },
+    "behaviors": [{ "id": "melee" }, { "id": "shield_front", "params": { "block": 0.5 } }]
+  },
+  {
+    "id": "skeleton_spear", "nameKey": "enemy.skeleton_spear", "sprite": "enemy_skeleton_spear", "origin": "original",
+    "threat": 8, "firstWave": 9,
+    "stats": { "hp": 60, "armor": 2, "speed": 45, "attack": { "kind": "melee", "damage": 10, "interval": 1.2, "range": 75 } },
+    "behaviors": [{ "id": "melee" }, { "id": "second_row" }]
+  },
+  {
+    "id": "deadite_archer", "nameKey": "enemy.deadite_archer", "sprite": "enemy_deadite_archer", "origin": "original",
+    "threat": 8, "firstWave": 10,
+    "stats": { "hp": 40, "speed": 45, "attack": { "kind": "ranged", "damage": 8, "interval": 1.6, "range": 340, "projectile": "arrow" } },
+    "behaviors": [{ "id": "ranged" }]
+  },
+  {
+    "id": "winged_deadite", "nameKey": "enemy.winged_deadite", "sprite": "enemy_winged_deadite", "origin": "original",
+    "threat": 12, "firstWave": 12, "flying": true,
+    "stats": { "hp": 45, "speed": 90, "attack": { "kind": "melee", "damage": 9, "interval": 1.0, "range": 40 } },
+    "behaviors": [{ "id": "flyer", "params": { "target": "ash_or_book" } }]
+  },
+  {
+    "id": "pit_hag", "nameKey": "enemy.pit_hag", "sprite": "enemy_pit_hag", "origin": "original",
+    "threat": 10, "firstWave": 15, "size": "small",
+    "stats": { "hp": 50, "speed": 110, "attack": { "kind": "melee", "damage": 12, "interval": 0.8, "range": 40 } },
+    "behaviors": [{ "id": "melee" }, { "id": "leap_once", "params": { "distance": 120 } }]
+  },
+  {
+    "id": "skeleton_knight", "nameKey": "enemy.skeleton_knight", "sprite": "enemy_skeleton_knight", "origin": "original",
+    "threat": 20, "firstWave": 19, "size": "large",
+    "stats": { "hp": 180, "armor": 6, "speed": 40, "attack": { "kind": "melee", "damage": 16, "interval": 1.2, "range": 45 } },
+    "behaviors": [{ "id": "melee" }]
+  },
+  {
+    "id": "battering_ram", "nameKey": "enemy.battering_ram", "sprite": "enemy_battering_ram", "origin": "original",
+    "threat": 40, "firstWave": 22, "size": "large",
+    "stats": { "hp": 400, "armor": 8, "speed": 30, "attack": { "kind": "melee", "damage": 60, "interval": 2.0, "range": 50 } },
+    "behaviors": [{ "id": "siege", "params": { "blockedSlow": 0.7 } }]
+  },
+  {
+    "id": "skeleton_catapult", "nameKey": "enemy.skeleton_catapult", "sprite": "enemy_skeleton_catapult", "origin": "original",
+    "threat": 35, "firstWave": 30, "size": "large",
+    "stats": { "hp": 220, "armor": 4, "speed": 25, "attack": { "kind": "ranged", "damage": 30, "interval": 5.0, "range": 900, "projectile": "rock", "splashRadius": 80 } },
+    "behaviors": [{ "id": "artillery", "params": { "minRange": 300 } }]
+  }
+]

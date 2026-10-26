@@ -10,11 +10,17 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| phaser | 3.x (pin at scaffold) | Rendering, scenes, input, tweens, cameras |
-| vite | pin at scaffold (latest seen: 8.3.5) | Dev server (`--host` for phones on home wifi), build |
-| typescript | pin at scaffold | Types; `src/contracts.ts` is the shared contract |
-| @playwright/test | pin at scaffold | QA: gameplay tests, frame-time measurement at 60 and 120 Hz |
-| JSON schema validator (TBD in phase 2) | — | Validate every `data/*.json` at boot |
+| phaser | 3.90.0 (exact pin) | Rendering, scenes, input, tweens, cameras. No arcade physics; the sim is our own fixed step. |
+| vite | ^6.3.1 (from the template) | Dev server (`--host` for phones on home wifi), build |
+| typescript | ~5.7.2 (from the template) | Types. `src/contracts.ts` is the shared contract. |
+| zod | ^4.6.7 | Schemas in `contracts.ts`, used to validate every `data/*.json` at boot and to infer the data types |
+| @playwright/test | ^1.64.1 | QA. Runs in the locally installed Chrome (`channel: 'chrome'`), so no browser download. |
+| terser | ^5.39.0 (from the template) | Production minify |
+
+Scaffolded from the official `phaserjs/template-vite-ts` 1.4.0 (via `degit`, 2026-10-26), with these changes:
+- The template now ships Phaser 4.0.0, so it was pinned back to 3.90.0.
+- `log.js` was removed. It pinged `gryzor.co` on every dev or build run.
+- The template's sample scenes were replaced.
 
 ## Tooling
 

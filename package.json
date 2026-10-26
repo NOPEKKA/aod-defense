@@ -1,0 +1,25 @@
+{
+  "name": "aod-defense",
+  "private": true,
+  "description": "Personal remake of a 2011 castle-defense game. Phaser 3 + TypeScript + Vite. Scaffolded from phaserjs/template-vite-ts 1.4.0.",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "vite --config vite/config.dev.mjs",
+    "dev:lan": "vite --config vite/config.dev.mjs --host",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build --config vite/config.prod.mjs",
+    "preview": "vite preview --config vite/config.prod.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1"
+  },
+  "dependencies": {
+    "phaser": "3.90.0",
+    "terser": "^5.39.0",
+    "zod": "^4.6.7"
+  }
+}

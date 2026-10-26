@@ -1,0 +1,8 @@
+{
+  "budget": { "a": 30, "b": 14, "c": 0.35 },
+  "subwaves": { "min": 3, "max": 6 },
+  "subwaveGap": { "min": 15, "max": 25 },
+  "spawnInterval": { "min": 0.8, "max": 2.5 },
+  "newEnemyWeight": 3,
+  "endless": { "growthPerWave": 0.06, "bossEvery": 10 }
+}
