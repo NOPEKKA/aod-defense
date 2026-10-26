@@ -49,6 +49,7 @@
     "catapult": { "interval": 8, "damage": 40, "radius": 90, "maxX": 1400 },
     "pit": { "minEnemies": 3, "cooldown": 30 }
   },
+  "combat": { "corpseTime": 0.6, "knockbackDecay": 900, "allySpacing": 26 },
   "loadout": { "unitSlots": 8, "spellSlots": 2, "relicSlots": 2 },
   "limits": {
     "maxEnemies": 60,

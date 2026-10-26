@@ -144,6 +144,12 @@ function createMeta(data: GameData, bus: EventBus): MetaServices {
       buyTier: () => false,
       respecBranch: () => false,
     },
+    waves: {
+      plan(wave, endless) {
+        const level = endless ? undefined : data.levels[wave - 1];
+        return { groups: level?.groups ?? [], bossId: level?.bossId ?? null, bossAt: 3 };
+      },
+    },
   };
 }
 

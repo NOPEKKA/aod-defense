@@ -37,7 +37,18 @@ SPEC อยู่ที่ [`docs/SPEC.md`](SPEC.md)
 | `src/render/` | render | `render: RenderModule` | texture, sprite, animation, FX เวท, พาร์ติเคิล, ตัวเลขดาเมจ, HUD, **scene เมนูทั้งหมด** (Title/Map/Shop/PreWave/Result/Settings) |
 | `src/gameplay/` | gameplay | `gameplay: GameplayModule` | Ash, ทหาร, ฮีโร่, ศัตรู, บอส, เวท, ป้อมปราสาท, AI และ registry ของ behavior/effect/attack |
 | `qa/` | qa | — | Playwright tests และบอท |
-| `data/` | gameplay (units/enemies/bosses/spells/relics) · systems (upgrades/levels/wave_formula/balance) · render (i18n) | — | เนื้อหาเกม |
+| `data/` | ดูตาราง "เจ้าของไฟล์ใน data/" ด้านล่าง | — | เนื้อหาเกม |
+
+**เจ้าของไฟล์ใน data/**
+
+| ไฟล์ | เจ้าของ |
+|---|---|
+| `units`, `enemies`, `bosses`, `spells`, `relics` | gameplay |
+| `upgrades`, `levels`, `wave_formula` | systems |
+| `i18n/*` | render (โฟลเดอร์อื่นใช้คีย์ที่มีอยู่แล้ว ถ้าต้องการคีย์ใหม่ ให้ระบุในรายงาน) |
+| `balance.json` | แบ่งตามส่วน: `ash`, `castle`, `drops`, `combat` เป็นของ **gameplay**; `world`, `book`, `economy`, `loadout`, `limits`, `stars`, `campaignWaves` เป็นของ **systems** |
+
+แก้ไฟล์ที่ใช้ร่วมกันด้วย Edit เท่านั้น ห้าม Write ทับทั้งไฟล์
 
 **กติกาการ import**
 - import ได้จาก `src/contracts.ts` และ helper แบบ pure ใน `src/core/` เท่านั้น ได้แก่ `layout.ts` (inRect, computeHudLayout), `rng.ts`, `world.ts` (findEntity), `camera.ts`, `app.ts` (getApp สำหรับ scene เมนูของ render)
@@ -83,11 +94,14 @@ SPEC อยู่ที่ [`docs/SPEC.md`](SPEC.md)
 | 300 | gameplay | AI เลือกเป้า เคลื่อนที่ จัดแถว |
 | 400 | gameplay | การโจมตี กระสุน ดาเมจ สถานะ (ไฟลุก/ช้า/สตัน) |
 | 500 | gameplay | ผลของเวท บอส (telegraph → hit) ป้อมปราสาท หลุม |
-| 600 | systems | ฟื้นเหล็ก/มานา เก็บของที่ดรอป (เหรียญ/มานา/อาหาร) |
-| 800 | systems | ตรวจแพ้ชนะ → ตั้ง `world.outcome` + emit `wave:ended` |
-| 900 | gameplay | เก็บกวาด entity ที่ตายแล้ว (`alive=false` เพื่อนำกลับมาใช้ใหม่) |
+| 550 | gameplay | ดรอปเมื่อศัตรูตาย (เหรียญ/มานา/อาหาร เป็น entity `kind:'pickup'`), Ash เก็บของในระยะ → `economy.collectGold` / `economy.gain('mana')` / ฮีล |
+| 600 | systems | ฟื้นเหล็ก/มานา |
+| 800 | systems | ตรวจแพ้ชนะ → ตั้ง `world.outcome` + emit `wave:ended` (นับทองที่ยังไม่ได้เก็บจาก pickup ที่ยังอยู่บนสนาม) |
+| 900 | gameplay | เก็บกวาด: ศพที่ค้างครบ `combat.corpseTime` → `alive=false` |
 
-entity ทั้งหมดเป็นแบบ pool ห้ามเก็บ reference ไว้ข้าม tick ให้เก็บ `id` แทน แล้วหาด้วย `findEntity`
+- entity ทั้งหมดเป็นแบบ pool ห้ามเก็บ reference ไว้ข้าม tick ให้เก็บ `id` แทน แล้วหาด้วย `findEntity`
+- เมื่อ HP หมด ตัวนั้นจะยังเป็น `alive=true` + `anim='die'` ไปอีก `corpseTime` วินาที เพื่อให้ render เล่นท่าตายได้ การตรวจว่า "เป็นเป้าที่ยังมีชีวิต" จึงต้องเช็ก `alive && hp > 0` เสมอ
+- ศัตรูที่เดินถึงหนังสือ (`x <= bookX + ระยะตี`) จะตี `world.book.hp` ตรงๆ แล้ว emit `book:damaged` (gameplay เป็นคนทำ)
 
 ## 6. Data
 

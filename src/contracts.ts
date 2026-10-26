@@ -335,6 +335,14 @@ export const BalanceSchema = z.object({
     catapult: z.object({ interval: z.number(), damage: z.number(), radius: z.number(), maxX: z.number() }),
     pit: z.object({ minEnemies: z.number().int(), cooldown: z.number() }),
   }),
+  combat: z.object({
+    /** seconds a dead entity stays (hp 0, anim 'die') before alive=false */
+    corpseTime: z.number().min(0),
+    /** px/s^2 deceleration of knockback pushes */
+    knockbackDecay: z.number().positive(),
+    /** min spacing between allies standing in a line (px) */
+    allySpacing: z.number().positive(),
+  }),
   loadout: z.object({ unitSlots: z.number().int().positive(), spellSlots: z.number().int().positive(), relicSlots: z.number().int().min(0) }),
   limits: z.object({
     maxEnemies: z.number().int().positive(),
@@ -431,6 +439,13 @@ export interface StatusState {
  * a reference across ticks; keep the numeric id and look it up.
  * prevX/prevY are copied by core at the start of every tick; render draws
  * lerp(prev, current, alpha).
+ *
+ * Dying: when hp reaches 0 gameplay sets anim='die' and keeps alive=true for
+ * balance.combat.corpseTime so render can play the death, then sets alive=false.
+ * Every "is this a live target / hostile" check must use `alive && hp > 0`.
+ *
+ * Gameplay may keep extra per-entity state (attack timers, AI state) in its own
+ * maps keyed by id; it must reset that state when an entity is (re)allocated.
  */
 export interface EntityState {
   id: number;
@@ -640,6 +655,8 @@ export interface GameEvents {
   'ui:speed': { speed: 1 | 2 };
   'ui:aim': AimState;
   'ui:layout': HudLayout;
+  /** controls -> render: press feedback for HUD buttons */
+  'ui:button': { button: 'unit' | 'spell' | 'dodge' | 'pause' | 'speed' | 'cancel'; index: number; down: boolean };
   // spectacle hooks (game-creator convention) — render attaches juice here
   'spectacle:entrance': { what: string; x: number; y: number };
   'spectacle:action': { action: 'move' | 'summon' | 'cast' | 'dodge'; x: number; y: number };
@@ -787,10 +804,25 @@ export interface UpgradeService {
   respecBranch(profile: ProfileState, spellId: string, branch: 'A' | 'B'): boolean;
 }
 
+/**
+ * Deterministic wave plan (same wave + endless flag = same plan). Used by the
+ * wave director in battle and by the PreWave screen to preview enemies.
+ */
+export interface WavePlanner {
+  plan(wave: number, endless: boolean): {
+    groups: SpawnGroup[];
+    /** boss spawned this wave, or null */
+    bossId: string | null;
+    /** seconds after wave start when the boss appears */
+    bossAt: number;
+  };
+}
+
 export interface MetaServices {
   save: SaveService;
   progression: ProgressionService;
   upgrades: UpgradeService;
+  waves: WavePlanner;
 }
 
 /** What src/systems/index.ts must export. */
@@ -876,6 +908,7 @@ export interface AppContext {
   readonly save: SaveService;
   readonly progression: ProgressionService;
   readonly upgrades: UpgradeService;
+  readonly waves: WavePlanner;
   /** logical->canvas scale (min(devicePixelRatio, 2)) */
   readonly renderScale: number;
   /** measured display refresh rate in Hz */

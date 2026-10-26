@@ -44,7 +44,7 @@ export function getApp(): AppContext {
 
 export function createApp(game: Phaser.Game, modules: Modules, data: GameData, renderScale: number, refreshHz: number): AppContext {
   const bus = createEventBus();
-  const { save, progression, upgrades } = modules.systems.createMeta(data, bus);
+  const { save, progression, upgrades, waves } = modules.systems.createMeta(data, bus);
   let profile: ProfileState = save.load();
   let lastSettings = JSON.stringify(profile.settings);
   const t = createTranslator(data, () => app.profile.settings.lang);
@@ -61,6 +61,7 @@ export function createApp(game: Phaser.Game, modules: Modules, data: GameData, r
     save,
     progression,
     upgrades,
+    waves,
     renderScale,
     refreshHz,
     t,
