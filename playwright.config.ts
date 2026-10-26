@@ -3,7 +3,10 @@ import { defineConfig } from '@playwright/test';
 /**
  * QA runs against the Vite dev server in the locally installed Chrome
  * (no Playwright browser download). SwiftShader flags keep WebGL working headless.
+ * AODD_PORT picks the dev-server port (parallel agents each use their own).
  */
+const port = Number(process.env.AODD_PORT ?? 8080);
+
 export default defineConfig({
   testDir: './qa',
   timeout: 60_000,
@@ -11,7 +14,7 @@ export default defineConfig({
   workers: 1,
   reporter: [['list']],
   use: {
-    baseURL: 'http://localhost:8080',
+    baseURL: `http://localhost:${port}`,
     channel: 'chrome',
     viewport: { width: 1280, height: 720 },
     launchOptions: {
@@ -19,8 +22,8 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:8080',
+    command: `npx vite --config vite/config.dev.mjs --port ${port} --strictPort`,
+    url: `http://localhost:${port}`,
     reuseExistingServer: true,
     timeout: 60_000,
   },
