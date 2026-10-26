@@ -271,6 +271,18 @@ export const WaveFormulaSchema = z.object({
   spawnInterval: z.object({ min: z.number().positive(), max: z.number().positive() }),
   /** weight multiplier for an enemy on its firstWave..firstWave+2 */
   newEnemyWeight: z.number().positive(),
+  /** seconds after wave start before the first formula subwave */
+  firstSpawnAt: z.number().min(0),
+  /** formula waves squeeze gaps/intervals so spawning ends within this many seconds */
+  maxSpawnTime: z.number().positive(),
+  /** enemy pick weight is divided by threat^this (0 = uniform) */
+  threatWeightExponent: z.number().min(0),
+  boss: z.object({
+    /** escort budget on a boss wave = B(n) * this */
+    escortBudgetFactor: z.number().positive(),
+    /** seconds after wave start when the boss appears */
+    bossAt: z.number().min(0),
+  }),
   endless: z.object({
     growthPerWave: z.number().positive(),
     bossEvery: z.number().int().positive(),
@@ -325,6 +337,8 @@ export const BalanceSchema = z.object({
     uncollectedGoldKeep: z.number().min(0).max(1),
     loseGoldKeep: z.number().min(0).max(1),
     bossReplayGoldMultiplier: z.number().positive(),
+    /** switching a spell's tier-3 branch costs this fraction of the new branch's tier-3 price */
+    respecCostFrac: z.number().min(0).max(1),
   }),
   drops: z.object({
     manaOrb: z.object({ chance: z.number().min(0).max(1), amount: z.number() }),
@@ -522,9 +536,11 @@ export interface WaveOutcome {
   goldTotal: number;
   stars: 0 | 1 | 2 | 3;
   firstClear: boolean;
-  /** ids of units/spells/relics/features unlocked by this result */
+  /** ids of units/spells/upgrades/relics unlocked by this result (resolve names via data maps) */
   unlocks: string[];
   relicDropped?: string;
+  /** boss fought this wave, if any */
+  bossId?: string;
 }
 
 export interface WorldState {
@@ -780,6 +796,11 @@ export interface SaveService {
   /** returns the parsed profile or an error message */
   importJson(json: string): { ok: true; profile: ProfileState } | { ok: false; error: string };
   defaults(): ProfileState;
+  /**
+   * Set when the last load() had to recover. load() runs before any scene can
+   * subscribe to save:recovered, so the Title screen reads this instead.
+   */
+  readonly lastRecovery: { from: 'backup' | 'defaults'; error: string } | null;
 }
 
 export interface ProgressionService {
@@ -802,6 +823,8 @@ export interface UpgradeService {
   tierCost(profile: ProfileState, spellId: string, branch?: 'A' | 'B'): number | null;
   buyTier(profile: ProfileState, spellId: string, branch?: 'A' | 'B'): boolean;
   respecBranch(profile: ProfileState, spellId: string, branch: 'A' | 'B'): boolean;
+  /** price of switching to `branch` (null if not possible) */
+  respecCost(profile: ProfileState, spellId: string, branch: 'A' | 'B'): number | null;
 }
 
 /**
