@@ -492,11 +492,12 @@ export interface EntityState {
 
 export interface Telegraph {
   id: number;
-  /** 'band' = horizontal ground strip, 'circle' = ground circle, 'line' = aim line, 'shadow' = falling object */
+  /** 'band' = horizontal ground strip, 'circle' = ground circle, 'line' = horizontal aim line at y, 'shadow' = falling object */
   shape: 'band' | 'circle' | 'line' | 'shadow';
+  /** band/line: CENTRE x; circle/shadow: centre / landing point */
   x: number;
   y: number;
-  /** band/line length, or circle radius */
+  /** band/line: FULL length; circle/shadow: radius */
   size: number;
   /** seconds until it fires */
   remaining: number;
@@ -895,6 +896,8 @@ export interface ControlsModule {
 /** Read-only view handed to render every frame. */
 export interface RenderView {
   readonly world: Readonly<WorldState>;
+  /** parameters this wave was started with (restart = start Battle with the same params) */
+  readonly params: Readonly<WaveStartParams>;
   readonly aim: Readonly<AimState>;
   readonly layout: HudLayout;
   readonly data: GameData;

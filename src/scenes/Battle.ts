@@ -62,6 +62,7 @@ export class Battle extends Phaser.Scene {
     const world = this.runner.world;
     this.view = {
       world,
+      params: this.params,
       aim: this.inputSource.aim,
       layout: this.layout,
       data: app.data,
