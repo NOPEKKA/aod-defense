@@ -4,5 +4,9 @@
   "subwaveGap": { "min": 15, "max": 25 },
   "spawnInterval": { "min": 0.8, "max": 2.5 },
   "newEnemyWeight": 3,
+  "firstSpawnAt": 4,
+  "maxSpawnTime": 170,
+  "threatWeightExponent": 1,
+  "boss": { "escortBudgetFactor": 0.35, "bossAt": 6 },
   "endless": { "growthPerWave": 0.06, "bossEvery": 10 }
 }

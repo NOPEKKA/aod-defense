@@ -7,15 +7,21 @@
     "groups": [
       {
         "enemy": "skeleton",
-        "count": 5,
-        "interval": 4,
+        "count": 3,
+        "interval": 6,
         "startAt": 4
       },
       {
         "enemy": "skeleton",
-        "count": 6,
+        "count": 4,
+        "interval": 4,
+        "startAt": 28
+      },
+      {
+        "enemy": "skeleton",
+        "count": 4,
         "interval": 2.5,
-        "startAt": 40
+        "startAt": 54
       }
     ],
     "tipKey": "tip.wave1"
@@ -28,15 +34,21 @@
     "groups": [
       {
         "enemy": "skeleton",
-        "count": 6,
-        "interval": 3,
+        "count": 4,
+        "interval": 4.5,
         "startAt": 4
       },
       {
         "enemy": "skeleton",
-        "count": 8,
+        "count": 5,
+        "interval": 3,
+        "startAt": 28
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
         "interval": 2,
-        "startAt": 38
+        "startAt": 52
       }
     ]
   },
@@ -48,21 +60,21 @@
     "groups": [
       {
         "enemy": "skeleton",
-        "count": 6,
-        "interval": 2.5,
+        "count": 5,
+        "interval": 3.5,
         "startAt": 4
       },
       {
         "enemy": "skeleton",
         "count": 6,
-        "interval": 2,
-        "startAt": 32
+        "interval": 2.5,
+        "startAt": 28
       },
       {
         "enemy": "skeleton",
         "count": 8,
         "interval": 1.5,
-        "startAt": 62
+        "startAt": 54
       }
     ],
     "tipKey": "tip.archer"

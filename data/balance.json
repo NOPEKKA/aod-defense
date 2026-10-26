@@ -38,7 +38,8 @@
     "firstClearMultiplier": 2,
     "uncollectedGoldKeep": 0.5,
     "loseGoldKeep": 0.5,
-    "bossReplayGoldMultiplier": 1.5
+    "bossReplayGoldMultiplier": 1.5,
+    "respecCostFrac": 0.25
   },
   "drops": {
     "manaOrb": { "chance": 0.04, "amount": 10 },
