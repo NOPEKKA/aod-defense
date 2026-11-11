@@ -74,6 +74,13 @@ export const AttackSchema = z.object({
   /** damage multiplier vs size 'large' */
   bonusVsLarge: z.number().positive().default(1),
   burn: z.object({ dps: z.number().positive(), duration: z.number().positive() }).optional(),
+  /**
+   * seconds between the start of the swing / draw (anim 'attack', animTime 0) and the hit landing
+   * or the projectile leaving. 0 = instant. The rest of `interval` is recovery.
+   */
+  windup: z.number().min(0).default(0),
+  /** projectile speed in px/s (default: by projectile kind, see balance.tuning) */
+  projectileSpeed: z.number().positive().optional(),
 });
 export type AttackDef = z.infer<typeof AttackSchema>;
 
@@ -157,6 +164,8 @@ export const BossDefSchema = z.object({
   armor: z.number().min(0).default(0),
   size: SizeSchema.default('huge'),
   flying: z.boolean().default(false),
+  /** walk / fly speed in px/s */
+  speed: z.number().min(0).default(45),
   /** seconds of invulnerability while changing phase */
   phaseTransition: z.number().min(0).default(1.5),
   phases: z.array(z.object({
@@ -314,8 +323,15 @@ export const BalanceSchema = z.object({
     ashMinX: z.number(),
     ashMaxX: z.number(),
     allyHoldX: z.number(),
-    laneJitterY: z.number().min(0),
-    flyingY: z.object({ min: z.number(), max: z.number() }),
+    /**
+     * Depth rows of the lane: y offsets from groundY (screen px, negative = further back).
+     * Ground units get a row when they spawn; rows are purely visual (no gameplay effect).
+     */
+    laneRows: z.array(z.number()).min(1),
+    /** altitude range of flying units above their ground row (px) */
+    flyingAlt: z.object({ min: z.number(), max: z.number() }),
+    /** where allies wait when the rally banner says 'hold': this many px ahead of the stairs */
+    holdAheadOfStairs: z.number().min(0).default(260),
   }),
   ash: z.object({
     stats: StatsSchema,
@@ -339,6 +355,29 @@ export const BalanceSchema = z.object({
     bossReplayGoldMultiplier: z.number().positive(),
     /** switching a spell's tier-3 branch costs this fraction of the new branch's tier-3 price */
     respecCostFrac: z.number().min(0).max(1),
+    /**
+     * The blacksmith, upgradable DURING a wave with iron (as in the original game).
+     * levels[i] describes smith level i+1: iron per second, storage cap, and the iron
+     * price of upgrading to the next level (0 on the last level). When present this
+     * replaces ironRate / ironMax; the wave starts at level 1 (plus castle.smithy upgrade modifiers).
+     */
+    smith: z
+      .object({
+        levels: z.array(z.object({ rate: z.number().positive(), cap: z.number().positive(), upgradeCost: z.number().min(0) })).min(1),
+      })
+      .optional(),
+    /** kill streak: kills within `window` seconds of each other build a combo that pays bonus gold */
+    combo: z
+      .object({
+        window: z.number().positive(),
+        /** combo count needed for each bonus step */
+        step: z.number().int().positive(),
+        /** bonus gold paid per step when the combo ends */
+        goldPerStep: z.number().min(0),
+        /** mana granted every `step` kills while the combo runs */
+        manaPerStep: z.number().min(0),
+      })
+      .optional(),
   }),
   drops: z.object({
     manaOrb: z.object({ chance: z.number().min(0).max(1), amount: z.number() }),
@@ -367,6 +406,13 @@ export const BalanceSchema = z.object({
   }),
   stars: z.object({ twoStarBookFrac: z.number(), threeStarBookFrac: z.number() }),
   campaignWaves: z.number().int().positive(),
+  /**
+   * Flat map of extra numeric tunables, so owners can move magic numbers into data
+   * without a contract change. Keys are namespaced by topic, e.g.
+   * "combat.bodyRadius.normal", "projectile.speed.arrow", "castle.pit.openTime".
+   * Code reads `balance.tuning[key] ?? fallback`.
+   */
+  tuning: z.record(z.string(), z.number()).default({}),
 });
 export type Balance = z.infer<typeof BalanceSchema>;
 
@@ -398,6 +444,8 @@ export interface Settings {
   /** 0 = follow the display refresh rate, 60 = cap rendering at ~60 fps */
   fpsCap: 0 | 60;
   fxQuality: 'low' | 'high';
+  /** sprite/background texture resolution: 'auto' picks by device, 'hd' = 1.5x, 'sd' = 1x */
+  texQuality: 'auto' | 'hd' | 'sd';
   showFps: boolean;
   sfxVolume: number; // 0..1
   musicVolume: number; // 0..1
@@ -440,7 +488,7 @@ export interface ProfileState {
 
 export type EntityKind = 'ash' | 'ally' | 'hero' | 'enemy' | 'boss' | 'projectile' | 'pickup' | 'effect';
 export type Team = 'player' | 'enemy' | 'neutral';
-export type AnimState = 'idle' | 'walk' | 'attack' | 'cast' | 'hurt' | 'die' | 'dodge' | 'spawn' | 'stunned' | 'telegraph';
+export type AnimState = 'idle' | 'walk' | 'attack' | 'cast' | 'hurt' | 'die' | 'dodge' | 'spawn' | 'stunned' | 'telegraph' | 'leap' | 'cheer';
 
 export interface StatusState {
   id: 'burn' | 'slow' | 'stun' | 'root' | 'mark' | 'buff' | 'invuln' | 'shred' | 'taunt' | string;
@@ -470,10 +518,18 @@ export interface EntityState {
   defId: string;
   /** sprite key render should use (from def, may change e.g. boss phases) */
   sprite: string;
+  /** position along the lane (world px) */
   x: number;
+  /**
+   * GROUND point on screen (px): groundY + the depth-row offset of this entity. Draw order sorts by y.
+   * Never includes height: a flyer or a projectile in the air has the y of the ground below it.
+   */
   y: number;
+  /** height above the ground point (px, >= 0): flyers, projectiles in flight, leaps, thrown rocks */
+  alt: number;
   prevX: number;
   prevY: number;
+  prevAlt: number;
   facing: 1 | -1;
   hp: number;
   maxHp: number;
@@ -483,6 +539,12 @@ export interface EntityState {
   anim: AnimState;
   /** seconds since anim state changed */
   animTime: number;
+  /**
+   * Sub-action for animation choice, '' if none. Render plays `${anim}:${action}` when the sprite
+   * has it, else `${anim}`. Examples: Ash "shoot" or "melee" (anim 'attack'); a boss attack id such as
+   * "swoop" (anims 'telegraph' and 'attack'); a spell id (anim 'cast').
+   */
+  action: string;
   statuses: StatusState[];
   /** for pickups: gold/mana amount; for projectiles: damage; else 0 */
   value: number;
@@ -556,6 +618,10 @@ export interface WorldState {
     enemiesTotal: number;
     enemiesSpawned: number;
     enemiesKilled: number;
+    /** 1-based chapter (10 waves each; endless keeps cycling) */
+    chapter: number;
+    /** 0..1 positions on the wave bar where each sub-wave starts (skull markers) */
+    markers: number[];
   };
   /** entity id of Ash (always present while a wave runs) */
   ashId: number;
@@ -572,6 +638,21 @@ export interface WorldState {
   summonSlots: SummonSlotState[];
   spellSlots: SpellSlotState[];
   dodge: { unlocked: boolean; cooldownLeft: number; cooldownTotal: number };
+  /** the blacksmith (systems): tap the smith panel or press B to upgrade with iron during the wave */
+  smith: {
+    level: number;
+    maxLevel: number;
+    /** iron price of the next level, 0 when maxed */
+    upgradeCost: number;
+    /** 0..1 progress towards the next whole iron (the blue bar) */
+    progress: number;
+  };
+  /** army stance (gameplay): 'advance' = march to the enemy, 'hold' = stay near the castle */
+  rally: 'advance' | 'hold';
+  /** kill streak (systems) */
+  combo: { count: number; timeLeft: number; window: number; best: number };
+  /** castle defences state for drawing (gameplay) */
+  castle: { pitOpen: boolean; pitCooldownLeft: number; pitCooldownTotal: number; archers: number; catapultLevel: number };
   boss: null | { entityId: number; bossId: string; phase: number; phaseCount: number; hpFrac: number; nameKey: string };
   outcome: WaveOutcome | null;
 }
@@ -583,7 +664,11 @@ export interface WorldState {
 export type SimCommand =
   | { type: 'summon'; slot: number }
   | { type: 'cast'; slot: number; target: { x: number } | 'auto' }
-  | { type: 'dodge' };
+  | { type: 'dodge' }
+  /** upgrade the blacksmith with iron (handled by systems) */
+  | { type: 'smith' }
+  /** toggle the army stance advance <-> hold (handled by gameplay) */
+  | { type: 'rally' };
 
 /** Consumed once per sim tick. `commands` are edge-triggered and drained on read. */
 export interface InputFrame {
@@ -612,6 +697,8 @@ export interface HudLayout {
   viewW: number;
   viewH: number;
   topBar: Rect;
+  /** Ash portrait frame (top-left, like the original) */
+  ashPortrait: Rect;
   ashBar: Rect;
   bookBar: Rect;
   waveBar: Rect;
@@ -619,7 +706,10 @@ export interface HudLayout {
   goldLabel: Rect;
   speedButton: Rect;
   pauseButton: Rect;
+  /** blacksmith panel: portrait, level, iron count, progress bar. Tapping it sends the 'smith' command. */
   ironPanel: Rect;
+  /** rally banner toggle ('rally' command) */
+  rallyButton: Rect;
   unitSlots: Rect[];
   spellButtons: Rect[];
   dodgeButton: Rect;
@@ -648,13 +738,19 @@ export interface GameEvents {
   'unit:summoned': { slot: number; unitId: string; entityIds: number[] };
   'summon:denied': { slot: number; reason: 'iron' | 'cooldown' | 'hero_alive' | 'cap' | 'empty' };
   'spell:cast': { slot: number; spellId: string; x: number };
-  'spell:denied': { slot: number; reason: 'mana' | 'cooldown' | 'empty' | 'no_target' };
+  'spell:denied': { slot: number; reason: 'mana' | 'cooldown' | 'empty' | 'no_target' | 'ash_dead' };
   'spell:impact': { spellId: string; effect: string; x: number; y: number; radius: number };
   'ash:dodged': { fromX: number; toX: number };
   // economy
   'pickup:dropped': { id: number; pickup: 'gold' | 'mana' | 'food'; x: number; y: number; value: number };
   'pickup:collected': { id: number; pickup: 'gold' | 'mana' | 'food'; x: number; y: number; value: number };
   'resource:changed': { iron: number; mana: number; goldCollected: number };
+  'smith:upgraded': { level: number };
+  'smith:denied': { reason: 'iron' | 'max' };
+  'rally:changed': { mode: 'advance' | 'hold' };
+  'combo:changed': { count: number };
+  /** the streak ran out: `gold` bonus was added to the gold collected this wave */
+  'combo:ended': { count: number; gold: number };
   // castle
   'castle:pit': { killed: number };
   'castle:shot': { source: 'archer' | 'catapult'; x: number; y: number };
@@ -674,7 +770,7 @@ export interface GameEvents {
   'ui:aim': AimState;
   'ui:layout': HudLayout;
   /** controls -> render: press feedback for HUD buttons */
-  'ui:button': { button: 'unit' | 'spell' | 'dodge' | 'pause' | 'speed' | 'cancel'; index: number; down: boolean };
+  'ui:button': { button: 'unit' | 'spell' | 'dodge' | 'pause' | 'speed' | 'cancel' | 'smith' | 'rally'; index: number; down: boolean };
   // spectacle hooks (game-creator convention) — render attaches juice here
   'spectacle:entrance': { what: string; x: number; y: number };
   /** x/y in world coordinates (Ash, or the cast target for point spells) */
@@ -921,11 +1017,24 @@ export interface BattleRenderer {
 
 /** What src/render/index.ts must export. */
 export interface RenderModule {
+  /** Preloader.preload(): queue boot assets on scene.load (manifest, UI atlas, fonts) */
+  preloadBoot?(scene: Phaser.Scene): void;
+  /**
+   * Battle.preload(): queue everything this wave needs on scene.load (sprite atlases of the
+   * loadout, the enemies of the wave plan, the boss, the chapter background) and may show a loading bar.
+   */
+  preloadBattle?(scene: Phaser.Scene, params: WaveStartParams): void;
   /** generate placeholder/vector textures into the texture manager (Preloader) */
   buildTextures(scene: Phaser.Scene, renderScale: number): void;
   createBattleRenderers(): BattleRenderer[];
   /** menu scenes (Title, Map, Shop, PreWave, Result, Settings) */
   menuScenes: Array<new () => Phaser.Scene>;
+}
+
+/** What src/audio/index.ts must export: procedural music + SFX driven by bus events and settings. */
+export interface AudioModule {
+  /** called once after the app context exists; subscribe to app.bus here */
+  init(app: AppContext, game: Phaser.Game): void;
 }
 
 /** App-wide context, created in Boot, read via core/app.ts getApp(). */

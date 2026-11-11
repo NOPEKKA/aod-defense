@@ -7,6 +7,10 @@ export class Preloader extends Phaser.Scene {
     super(SceneKey.Preloader);
   }
 
+  preload(): void {
+    getRuntime().modules.render.preloadBoot?.(this);
+  }
+
   create(): void {
     const rt = getRuntime();
     rt.modules.render.buildTextures(this, rt.app.renderScale);

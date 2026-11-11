@@ -36,6 +36,9 @@ export function alloc(st: GState, kind: EntityKind, team: Team, defId: string, s
   e.y = y;
   e.prevX = x;
   e.prevY = y;
+  e.alt = 0;
+  e.prevAlt = 0;
+  e.action = '';
   e.facing = team === 'enemy' ? -1 : 1;
   e.hp = 1;
   e.maxHp = 1;
@@ -77,8 +80,8 @@ function emitSpawned(st: GState, e: EntityState): void {
 
 function laneY(st: GState, flying: boolean): number {
   const w = st.data.balance.world;
-  if (flying) return w.groundY - st.jitter.range(w.flyingY.min, w.flyingY.max);
-  return w.groundY + st.jitter.range(-w.laneJitterY, w.laneJitterY);
+  if (flying) return w.groundY - st.jitter.range(w.flyingAlt.min, w.flyingAlt.max);
+  return w.groundY + st.jitter.pick(w.laneRows);
 }
 
 function num(params: BehaviorRef['params'], key: string, fallback: number): number {
@@ -176,7 +179,7 @@ export function spawnEnemyAt(st: GState, def: EnemyDef, x: number, scheduled: bo
 
 export function spawnBossAt(st: GState, def: BossDef, x: number, scheduled: boolean): number {
   const w = st.data.balance.world;
-  const y = def.flying ? w.groundY - w.flyingY.max : w.groundY;
+  const y = def.flying ? w.groundY - w.flyingAlt.max : w.groundY;
   const slot = alloc(st, 'boss', 'enemy', def.id, def.sprite, x, y);
   const e = st.world.entities[slot];
   const rt = st.rts[slot];

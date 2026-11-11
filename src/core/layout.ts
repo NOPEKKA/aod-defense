@@ -21,24 +21,41 @@ export function readSafeInsets(viewW: number): SafeInsets {
   return insets;
 }
 
+/**
+ * HUD v2, arranged like the original game:
+ *   top-left    Ash portrait, HP bar, book bar; pause button under the portrait
+ *   top-centre  wave progress bar (skull markers), thin minimap under it
+ *   top-right   gold, speed button
+ *   bottom-left blacksmith panel (tap = upgrade), then the unit buttons; rally banner above the panel
+ *   bottom-right spell buttons; dodge button above them
+ */
 const L = {
   margin: 16,
   topH: 64,
-  barW: 280,
-  barH: 18,
-  waveW: 360,
-  minimapW: 520,
-  topButton: 60,
-  bottomH: 112,
-  ironW: 120,
-  slotW: 84,
-  slotH: 96,
-  slotGap: 8,
+  portrait: 76,
+  barW: 260,
+  barH: 24,
+  bookW: 220,
+  bookH: 16,
+  pauseW: 76,
+  pauseH: 52,
+  waveW: 420,
+  waveH: 26,
+  minimapH: 8,
+  goldW: 150,
+  speedW: 64,
+  topButtonH: 52,
+  bottomH: 116,
+  ironW: 132,
+  slotW: 88,
+  slotH: 100,
+  slotGap: 6,
   slotCount: 8,
-  spellD: 96,
-  spellGap: 12,
+  spellD: 100,
+  spellGap: 10,
   spellCount: 3,
-  dodgeD: 88,
+  dodgeD: 84,
+  rallyD: 72,
   cancelD: 64,
 } as const;
 
@@ -52,15 +69,18 @@ export function computeHudLayout(viewW: number, insets: SafeInsets): HudLayout {
   const top = 8 + insets.top;
   const bottomY = H - L.bottomH - insets.bottom; // top edge of the bottom bar
 
-  const pauseButton = rect(right - L.topButton, top, L.topButton, L.topButton - 8);
-  const speedButton = rect(pauseButton.x - 8 - L.topButton, top, L.topButton, L.topButton - 8);
-  const goldLabel = rect(speedButton.x - 12 - 140, top, 140, L.topButton - 8);
+  const ashPortrait = rect(left, top, L.portrait, L.portrait);
+  const barX = left + L.portrait + 10;
+  const pauseButton = rect(left, top + L.portrait + 8, L.pauseW, L.pauseH);
+  const goldLabel = rect(right - L.goldW, top, L.goldW, L.topButtonH);
+  const speedButton = rect(goldLabel.x - 10 - L.speedW, top, L.speedW, L.topButtonH);
 
   const ironPanel = rect(left, bottomY + 8, L.ironW, L.slotH);
   const unitSlots: Rect[] = [];
   for (let i = 0; i < L.slotCount; i++) {
-    unitSlots.push(rect(ironPanel.x + L.ironW + 12 + i * (L.slotW + L.slotGap), bottomY + 8, L.slotW, L.slotH));
+    unitSlots.push(rect(ironPanel.x + L.ironW + 10 + i * (L.slotW + L.slotGap), bottomY + 8, L.slotW, L.slotH));
   }
+  const rallyButton = rect(left, bottomY - L.rallyD - 10, L.rallyD, L.rallyD);
 
   const spellButtons: Rect[] = [];
   for (let i = 0; i < L.spellCount; i++) {
@@ -68,25 +88,29 @@ export function computeHudLayout(viewW: number, insets: SafeInsets): HudLayout {
     spellButtons.push(rect(x, bottomY + 8, L.spellD, L.spellD));
   }
 
-  const dodgeButton = rect(right - L.dodgeD, bottomY - L.dodgeD - 12, L.dodgeD, L.dodgeD);
-  const cancelAimButton = rect(spellButtons[1].x + (L.spellD - L.cancelD) / 2, bottomY - L.cancelD - 12, L.cancelD, L.cancelD);
+  const dodgeButton = rect(right - L.dodgeD, bottomY - L.dodgeD - 10, L.dodgeD, L.dodgeD);
+  const cancelAimButton = rect(spellButtons[1].x + (L.spellD - L.cancelD) / 2, bottomY - L.cancelD - 10, L.cancelD, L.cancelD);
 
-  const zoneTop = L.topH + insets.top + 8;
-  const zoneBottom = dodgeButton.y - 8;
+  // move zones cover the playfield; controls test the buttons first, so overlaps with
+  // the rally / dodge / cancel buttons are fine
+  const zoneTop = pauseButton.y + pauseButton.h + 6;
+  const zoneBottom = bottomY - 4;
   const half = viewW / 2;
 
   return {
     viewW,
     viewH: H,
     topBar: rect(0, 0, viewW, L.topH + insets.top),
-    ashBar: rect(left, top + 4, L.barW, L.barH),
-    bookBar: rect(left, top + 4 + L.barH + 8, L.barW, L.barH),
-    waveBar: rect((viewW - L.waveW) / 2, top + 4, L.waveW, 20),
-    minimap: rect((viewW - L.minimapW) / 2, top + 32, L.minimapW, 10),
+    ashPortrait,
+    ashBar: rect(barX, top + 6, L.barW, L.barH),
+    bookBar: rect(barX, top + 6 + L.barH + 8, L.bookW, L.bookH),
+    waveBar: rect((viewW - L.waveW) / 2, top + 6, L.waveW, L.waveH),
+    minimap: rect((viewW - L.waveW) / 2, top + 6 + L.waveH + 8, L.waveW, L.minimapH),
     goldLabel,
     speedButton,
     pauseButton,
     ironPanel,
+    rallyButton,
     unitSlots,
     spellButtons,
     dodgeButton,

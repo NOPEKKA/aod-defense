@@ -1,5 +1,6 @@
 import type {
   AppContext,
+  AudioModule,
   ControlsModule,
   GameData,
   GameplayModule,
@@ -19,6 +20,7 @@ export interface Modules {
   gameplay: GameplayModule;
   controls: ControlsModule;
   render: RenderModule;
+  audio?: AudioModule;
 }
 
 interface Runtime {
@@ -93,6 +95,7 @@ export function createApp(game: Phaser.Game, modules: Modules, data: GameData, r
 
   runtime = { app, modules, game, battle: null, frameTimes };
   applyFpsCap(game, profile.settings.fpsCap);
+  modules.audio?.init(app, game);
   return app;
 }
 

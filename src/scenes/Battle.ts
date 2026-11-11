@@ -52,6 +52,11 @@ export class Battle extends Phaser.Scene {
     this.lastFrameAt = -1;
   }
 
+  preload(): void {
+    // render queues the sprite atlases / background this wave needs
+    getRuntime().modules.render.preloadBattle?.(this, this.params);
+  }
+
   create(): void {
     const rt = getRuntime();
     const app = rt.app;

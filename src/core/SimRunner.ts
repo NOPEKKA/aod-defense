@@ -118,6 +118,7 @@ export class SimRunner {
     for (const e of w.entities) {
       e.prevX = e.x;
       e.prevY = e.y;
+      e.prevAlt = e.alt;
     }
     const input = this.nextInput();
     for (const s of this.systems) s.tick(this.ctx, input);
