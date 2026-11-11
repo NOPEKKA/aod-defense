@@ -132,12 +132,12 @@ export class HudRenderer implements BattleRenderer {
     this.ironNum = num(true, 28).setOrigin(0, 0.5);
     this.ironMax = num(false, 14).setOrigin(0, 0.5);
     for (let i = 0; i < view.layout.unitSlots.length; i++) {
-      this.units.push(this.makeSlot(keep, String(i + 1)));
+      this.units.push(this.makeSlot(keep, String(i + 1), 'ui_iron'));
       this.pressUnit.push(false);
       this.denyUnit.push(0);
     }
     for (let i = 0; i < view.layout.spellButtons.length; i++) {
-      this.spells.push(this.makeSlot(keep, SPELL_KEYS[i] ?? ''));
+      this.spells.push(this.makeSlot(keep, SPELL_KEYS[i] ?? '', 'ui_mana'));
       this.pressSpell.push(false);
       this.denySpell.push(0);
     }
@@ -210,10 +210,10 @@ export class HudRenderer implements BattleRenderer {
     return this.scene.add.image(0, 0, f.tex, f.frame).setOrigin(0.5, 0.5).setDepth(D_ICON);
   }
 
-  private makeSlot(keep: <T extends Phaser.GameObjects.GameObject>(o: T) => T, hint: string): SlotUi {
+  private makeSlot(keep: <T extends Phaser.GameObjects.GameObject>(o: T) => T, hint: string, costKey: 'ui_iron' | 'ui_mana'): SlotUi {
     const s = this.scene;
     const icon = keep(this.img('px'));
-    const costIcon = keep(this.img('ui_iron'));
+    const costIcon = keep(this.img(costKey));
     const cost = keep(s.add.bitmapText(0, 0, FONT_S, '', 15).setOrigin(0, 0.5).setDepth(D_NUM));
     const cd = keep(s.add.bitmapText(0, 0, FONT_L, '', 22).setOrigin(0.5, 0.5).setDepth(D_NUM));
     const key = keep(s.add.bitmapText(0, 0, FONT_S, hint, 12).setOrigin(0, 0).setDepth(D_NUM).setTint(0xe8deef));

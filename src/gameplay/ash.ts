@@ -81,9 +81,12 @@ export function ashInput(st: GState, ctx: SimContext, input: InputFrame): void {
     return;
   }
   const speed = ctx.services.mods.apply(ctx.data.balance.ash.stats.speed, 'ash.speed');
-  if (input.move !== 0) {
+  // Held against the lane edge counts as standing still (SPEC §2: face the walk direction only while walking).
+  const blocked = (input.move < 0 && ash.x <= w.ashMinX) || (input.move > 0 && ash.x >= w.ashMaxX);
+  const walking = input.move !== 0 && !blocked;
+  if (walking) {
     ash.x = Math.max(w.ashMinX, Math.min(w.ashMaxX, ash.x + input.move * speed * SIM_DT));
-    ash.facing = input.move;
+    ash.facing = input.move as 1 | -1;
   } else {
     const t = nearestHostile(st, ash.x, INF, true, 0);
     if (t >= 0) {
@@ -92,7 +95,7 @@ export function ashInput(st: GState, ctx: SimContext, input: InputFrame): void {
     }
   }
   if (rt.animHold > 0 && (ash.anim === 'attack' || ash.anim === 'cast')) return;
-  setAnim(ash, input.move !== 0 ? 'walk' : 'idle');
+  setAnim(ash, walking ? 'walk' : 'idle');
 }
 
 export function dodgeCommand(st: GState, ctx: SimContext): void {

@@ -1005,7 +1005,7 @@ test.describe('phase 3 / more controls', () => {
     // window gains focus clamps the frame delta to 1000/refreshHz, so when real frames are slower than the
     // measured refresh the battle runs in slow motion for ~2 s. Reproduces only when frames are slower than
     // 1000/refreshHz (headless SwiftShader here: refresh measured 165 Hz, frames ~22 ms).
-    test.fail();
+    // fixed in phase 3 integration (was test.fail())
     const errors = await bootGame(page);
     // a player clicking straight through Title -> Map -> wave 1 -> Start (first clicks focus the window)
     await enterWaveViaMenus(page, 1);
@@ -1030,16 +1030,18 @@ test.describe('phase 3 / more outcomes', () => {
   test('Ash dies -> wave lost (ash_died), Result shows the Ash reason', async ({ page }) => {
     const errors = await bootGame(page);
     await recordEvents(page, ['wave:ended']);
-    // SHORTCUT: startWave + Ash backs into the castle and never fights (holds left, faces the wall)
+    // SHORTCUT: startWave + Ash gets a permanent stun where he stands (blocking the lane), so the
+    // skeletons reach him and he cannot fight back. (Pre BUG-G2 fix this used "hold left at the wall".)
     await page.evaluate(() => (window as any).__aodd.startWave(1));
     await waitScene(page, 'Battle');
     await pauseSim(page);
-    await page.evaluate(() => {
+    await page.evaluate(async () => {
+      const { getRuntime } = await import('/src/core/app.ts');
+      const world = getRuntime().battle!.runner.world;
+      const ash = world.entities.find((e) => e.id === world.ashId && e.alive)!;
+      ash.statuses.push({ id: 'stun', remaining: 1e9, magnitude: 1 });
       const w = window as any;
-      for (let i = 0; i < 400 && !JSON.parse(w.render_game_to_text()).outcome; i++) {
-        w.__aodd.input({ move: -1 }, 60);
-        w.advanceTime(1000);
-      }
+      for (let i = 0; i < 400 && !world.outcome; i++) w.advanceTime(1000);
     });
     const s = await snap(page);
     expect(s.outcome).toMatchObject({ result: 'lost', reason: 'ash_died' });
@@ -1079,7 +1081,7 @@ test.describe('phase 3 / known bugs (test.fail until fixed)', () => {
   test('BUG-R1: spell buttons show the mana icon next to the mana cost', async ({ page }) => {
     // BUG-R1 (render): HudRenderer.makeSlot() creates every cost icon as 'ui_iron', spells included,
     // so the HUD shows an iron ingot next to "30"/"35" on Q/E (PreWave shows the mana drop correctly).
-    test.fail();
+    // fixed in phase 3 integration (was test.fail())
     await bootGame(page);
     await enterWaveViaMenus(page, 1);
     const r = await page.evaluate(async () => {
@@ -1096,7 +1098,7 @@ test.describe('phase 3 / known bugs (test.fail until fixed)', () => {
   test('BUG-R2: pause menu wave subtitle does not touch the Resume button', async ({ page }) => {
     // BUG-R2 (render, cosmetic): PauseMenu puts the "Wave 1/50" line at py+70 and the Resume button
     // top at py+96; the 18 px text runs into the button edge (see output/qa3/x-crop-pause.png).
-    test.fail();
+    // fixed in phase 3 integration (was test.fail())
     await bootGame(page);
     await enterWaveViaMenus(page, 1);
     await page.keyboard.press('KeyP');
@@ -1117,7 +1119,7 @@ test.describe('phase 3 / known bugs (test.fail until fixed)', () => {
     // BUG-G2 (gameplay): while a move key is held Ash faces the move direction even when the clamp at
     // ashMinX stops him, so holding A/← at the castle he faces the wall, keeps the walk anim and never
     // shoots or swings at the skeletons hitting his back (SPEC §2: face the move direction *while walking*).
-    test.fail();
+    // fixed in phase 3 integration (was test.fail())
     await bootGame(page);
     await recordEvents(page, ['entity:attack', 'entity:damaged']);
     // SHORTCUT: startWave + held-left input + advanceTime
@@ -1136,12 +1138,10 @@ test.describe('phase 3 / known bugs (test.fail until fixed)', () => {
     });
     const s = await snap(page);
     expect(s.ash.x).toBe(200);
-    await clearEvents(page);
-    await page.evaluate(() => {
-      (window as any).__aodd.input({ move: -1 }, 300);
-      (window as any).advanceTime(5000);
-    });
-    expect((await events(page, 'entity:damaged')).some((e) => e.p.id === ashId)).toBe(true); // he is being hit
-    expect((await events(page, 'entity:attack')).some((e) => e.p.id === ashId)).toBe(true); // ...and should hit back
+    // After the fix Ash, still holding left against the wall, turns and shoots the skeletons
+    // as soon as they enter gun range, so they usually never reach him at all.
+    expect((await events(page, 'entity:attack')).some((e) => e.p.id === ashId)).toBe(true);
+    expect(s.ash.anim).not.toBe('walk');
+    expect(s.ash.facing).toBe(1);
   });
 });

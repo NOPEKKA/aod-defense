@@ -38,6 +38,7 @@ export class Battle extends Phaser.Scene {
   private view!: RenderView & { cameraX: number; paused: boolean; speed: 1 | 2; layout: HudLayout };
   private unsubs: Unsubscribe[] = [];
   private ended = false;
+  private lastFrameAt = -1;
 
   constructor() {
     super(SceneKey.Battle);
@@ -48,6 +49,7 @@ export class Battle extends Phaser.Scene {
     this.renderers = [];
     this.unsubs = [];
     this.ended = false;
+    this.lastFrameAt = -1;
   }
 
   create(): void {
@@ -126,7 +128,12 @@ export class Battle extends Phaser.Scene {
     this.view.cameraX = cam.scrollX;
   }
 
-  update(_time: number, delta: number): void {
+  update(_time: number, smoothedDelta: number): void {
+    // Real wall-clock delta: Phaser's smoothed delta is capped at 1000/fps.target for
+    // 120 frames after a focus event, which ran the sim in slow motion (QA BUG-C1).
+    const now = performance.now();
+    const delta = this.lastFrameAt < 0 ? smoothedDelta : now - this.lastFrameAt;
+    this.lastFrameAt = now;
     const alpha = this.runner.frame(delta);
     const target = this.targetCameraX(alpha);
     const k = 1 - Math.exp((-CAMERA.follow * Math.min(delta, 100)) / 1000);

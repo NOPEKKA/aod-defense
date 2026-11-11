@@ -390,33 +390,32 @@ export async function runBot(page: Page, opts: { maxSec?: number; homeX?: number
 }
 
 /**
- * "Nobody defends the castle" (SHORTCUT: __aodd.input + advanceTime while paused):
- * Ash backs up to the castle (holding left, so he faces the wall and never shoots),
- * waits until `crowd` skeletons are on him, then runs right through them to the far
- * end of the field and stays there. The skeletons left behind walk on to the book.
+ * "Nobody defends the castle" (SHORTCUT: world manipulation + advanceTime while paused):
+ * Ash is parked behind the enemy spawn point and given a permanent stun, so he never
+ * fights; the skeletons walk past nothing and on to the book.
+ * (Before the BUG-G2 fix this relied on Ash refusing to fight while held against the
+ * wall; since he now fights there, the scenario takes him off the field instead.)
  * Stops when `until` is met: 'book_hit' (first book:damaged) or 'outcome'.
  */
-export async function abandonCastle(page: Page, until: 'book_hit' | 'outcome', crowd = 3): Promise<Snapshot> {
+export async function abandonCastle(page: Page, until: 'book_hit' | 'outcome', _crowd = 3): Promise<Snapshot> {
   await page.evaluate(
-    async ({ until, crowd }) => {
+    async ({ until }) => {
       const { getRuntime } = await import('/src/core/app.ts');
       const w = (window as any) as { __aodd: any; advanceTime(ms: number): void };
-      const world = getRuntime().battle!.runner.world;
-      const ash = () => world.entities.find((e) => e.id === world.ashId && e.alive)!;
-      const near = () => world.entities.filter((e) => e.alive && e.hp > 0 && e.kind === 'enemy' && e.x < ash().x + 120).length;
+      const rt = getRuntime();
+      const world = rt.battle!.runner.world;
+      const ash = world.entities.find((e) => e.id === world.ashId && e.alive)!;
+      // behind the book, out of every skeleton's reach (they stop at the book first)
+      ash.x = ash.prevX = 10;
+      ash.statuses.push({ id: 'stun', remaining: 1e9, magnitude: 1 });
       let bookHit = false;
       const off = w.__aodd.app().bus.on('book:damaged', () => (bookHit = true));
-      for (let i = 0; i < 600 && !world.outcome && near() < crowd; i++) {
-        w.__aodd.input({ move: -1 }, 30);
-        w.advanceTime(500);
-      }
       for (let i = 0; i < 1200 && !world.outcome && !(until === 'book_hit' && bookHit); i++) {
-        w.__aodd.input({ move: 1 }, 15);
-        w.advanceTime(250);
+        w.advanceTime(500);
       }
       off();
     },
-    { until, crowd },
+    { until },
   );
   return snap(page);
 }

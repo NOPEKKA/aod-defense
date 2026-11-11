@@ -64,7 +64,7 @@ export class PauseMenu {
     keep(addText(s, vw / 2, py + 70, t(waveKey, { n: w.wave.number, total: this.view.data.balance.campaignWaves }), 18, { originX: 0.5, color: C.textDim, bold: false }));
 
     const bw = pw - 80;
-    let y = py + 128;
+    let y = py + 140;
     const resume = new Button(s, vw / 2, y, t('ui.resume'), () => app.bus.emit('ui:pause', { paused: false }), { w: bw, h: 64, variant: 'primary', size: 26, icon: 'ui_play' });
     keep(resume);
     y += 78;
