@@ -38,7 +38,7 @@ export async function instantiate(url: string): Promise<Instance> {
   const g = await loadGltf(url);
   const root = SkeletonUtils.clone(g.scene) as THREE.Object3D;
   prepare(root);
-  return { root, clips: g.animations, mixer: new THREE.AnimationMixer(root) };
+  return { root, clips: [...g.animations], mixer: new THREE.AnimationMixer(root) };
 }
 
 /** A copy of a static model (props, walls, buildings). */

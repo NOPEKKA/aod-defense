@@ -1,0 +1,65 @@
+{
+ "id": "ash",
+ "frameW": 343,
+ "frameH": 231,
+ "anchorX": 177,
+ "anchorY": 191,
+ "height": 168,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 2,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 12,
+   "duration": 0.8,
+   "loop": true,
+   "stride": 78
+  },
+  "attack:shoot": {
+   "frames": 8,
+   "duration": 0.45,
+   "loop": false,
+   "hitAt": 0.2
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.4
+  },
+  "cast": {
+   "frames": 8,
+   "duration": 0.6,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  },
+  "dodge": {
+   "frames": 6,
+   "duration": 0.35,
+   "loop": false
+  },
+  "die": {
+   "frames": 10,
+   "duration": 0.9,
+   "loop": false
+  },
+  "cheer": {
+   "frames": 10,
+   "duration": 1.667,
+   "loop": true
+  }
+ }
+}

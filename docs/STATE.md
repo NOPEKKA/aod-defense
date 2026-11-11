@@ -7,7 +7,7 @@
 
 **ทำแล้วในรอบนี้**
 - เฟส 3 ปิดแล้ว: แก้บั๊ก QA ครบ 4 ตัว เทส 28/28 ผ่าน (commit 7b4477b)
-- โหลดชุดโมเดล CC0 ของ KayKit 5 ชุดจาก GitHub (Adventurers, Skeletons, Dungeon Remastered, Halloween Bits, Medieval Hexagon) ต้นทางอยู่ที่ `D:\CLAUDEONLYod-vendor` ไฟล์ที่ใช้คัดลอกมาไว้ใน `art-src/kaykit/` พร้อม LICENSE
+- โหลดชุดโมเดล CC0 ของ KayKit 5 ชุดจาก GitHub (Adventurers, Skeletons, Dungeon Remastered, Halloween Bits, Medieval Hexagon) ต้นทางอยู่ที่ `D:\CLAUDEONLY\aod-vendor` ไฟล์ที่ใช้คัดลอกมาไว้ใน `art-src/kaykit/` พร้อม LICENSE
 - Chrome แบบ headless ใช้การ์ดจอ RTX 4080 ของเครื่องได้ (`--use-angle=d3d11 --enable-gpu`)
 - เครื่องมืออบภาพ `tools/bake/` (three.js 0.187, เรียกด้วย `node tools/bake/run.mjs`):
   - `src/engine.ts` เรนเดอร์แบบสะสมหลายรอบ (เงานุ่ม, ambient occlusion, ลบรอยหยัก), tone map, เส้นขอบ, ตัดขอบ

@@ -25,7 +25,9 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({ viewport: { width: 800, height: 600 } });
 page.on('console', (m) => {
-  if (m.type() === 'error' || m.type() === 'warning') console.log(`[page ${m.type()}] ${m.text()}`);
+  const text = m.text();
+  if (/willReadFrequently|favicon|status of 404/.test(text)) return;
+  if (m.type() === 'error' || m.type() === 'warning') console.log(`[page ${m.type()}] ${text}`);
 });
 page.on('pageerror', (e) => console.log('[page error]', String(e)));
 await page.goto(`http://localhost:${port}/`);

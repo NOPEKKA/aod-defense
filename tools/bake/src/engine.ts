@@ -343,7 +343,7 @@ export function toCanvas(d: ImageData): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = d.width;
   c.height = d.height;
-  c.getContext('2d')!.putImageData(d, 0, 0);
+  c.getContext('2d', { willReadFrequently: true })!.putImageData(d, 0, 0);
   return c;
 }
 
@@ -364,7 +364,7 @@ export function addOutline(src: HTMLCanvasElement, r: number, color = '#160f1c',
   const out = document.createElement('canvas');
   out.width = src.width;
   out.height = src.height;
-  const o = out.getContext('2d')!;
+  const o = out.getContext('2d', { willReadFrequently: true })!;
   o.globalAlpha = alpha;
   o.drawImage(sil, 0, 0);
   o.globalAlpha = 1;
@@ -384,7 +384,7 @@ export interface Trimmed {
 export function trim(src: HTMLCanvasElement, pad = 1, threshold = 3): Trimmed {
   const w = src.width;
   const h = src.height;
-  const d = src.getContext('2d')!.getImageData(0, 0, w, h).data;
+  const d = src.getContext('2d', { willReadFrequently: true })!.getImageData(0, 0, w, h).data;
   let x0 = w;
   let y0 = h;
   let x1 = -1;

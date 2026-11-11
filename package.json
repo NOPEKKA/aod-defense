@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build --config vite/config.prod.mjs",
     "preview": "vite preview --config vite/config.prod.mjs",
-    "test": "playwright test"
+    "test": "playwright test",
+    "bake": "node tools/bake/run.mjs --script tools/bake/scripts/bake.mjs",
+    "bake:manifest": "node tools/bake/manifest.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",

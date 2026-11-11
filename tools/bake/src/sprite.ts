@@ -36,6 +36,8 @@ export interface AnimDef {
   apply?: (b: Built, u: number, frame: number) => void;
   /** logical px travelled per loop (walk cycles); measured from the feet when omitted */
   stride?: number;
+  /** hide everything below the ground plane (rising from / sinking into the ground) */
+  clipGround?: boolean;
 }
 
 export interface SpriteDef {
@@ -128,7 +130,7 @@ function applyPlan(b: Built, p: Plan): void {
 const _v = new THREE.Vector3();
 
 /** bounds of visible meshes in the camera plane (world units relative to the origin) */
-function projectedBounds(root: THREE.Object3D, right: THREE.Vector3, up: THREE.Vector3): { l: number; r: number; u: number; d: number } {
+function projectedBounds(root: THREE.Object3D, right: THREE.Vector3, up: THREE.Vector3, minY = -Infinity): { l: number; r: number; u: number; d: number } {
   const b = { l: 0, r: 0, u: 0, d: 0 };
   root.updateMatrixWorld(true);
   root.traverse((o) => {
@@ -143,6 +145,7 @@ function projectedBounds(root: THREE.Object3D, right: THREE.Vector3, up: THREE.V
       _v.fromBufferAttribute(pos, i);
       if (sk) sk.applyBoneTransform(i, _v);
       _v.applyMatrix4(m.matrixWorld);
+      if (_v.y < minY) continue;
       const x = _v.dot(right);
       const y = _v.dot(up);
       if (x < b.l) b.l = x;
@@ -217,7 +220,7 @@ export async function bakeSprite(engine: Engine, def: SpriteDef, opts: { passes?
   const B = { l: 0, r: 0, u: 0, d: 0 };
   for (const p of plans) {
     applyPlan(built, p);
-    const b = projectedBounds(holder, right, up);
+    const b = projectedBounds(holder, right, up, p.def.clipGround ? 0 : -Infinity);
     B.l = Math.min(B.l, b.l);
     B.r = Math.max(B.r, b.r);
     B.u = Math.max(B.u, b.u);
@@ -241,7 +244,16 @@ export async function bakeSprite(engine: Engine, def: SpriteDef, opts: { passes?
 
   const scene = new THREE.Scene();
   const radius = Math.max(L, R, U, D) / PPU + 1;
-  const rig = new LightRig({ ...DEFAULT_RIG, ...def.rig, shadowRadius: radius, shadowCenter: [0, U / PPU / 2, 0] });
+  // "hero lighting": the key light always comes from the side the character faces, so faces are lit
+  // and a sprite flipped at runtime stays consistent. The rim light comes from behind.
+  const rig = new LightRig({
+    ...DEFAULT_RIG,
+    keyDir: [facing * 0.5, 0.8, 0.7],
+    rimDir: [-facing * 0.8, 0.5, -0.75],
+    ...def.rig,
+    shadowRadius: radius,
+    shadowCenter: [0, U / PPU / 2, 0],
+  });
   scene.add(rig.group, holder);
 
   const outline = def.outline ?? 1.2;
@@ -260,11 +272,14 @@ export async function bakeSprite(engine: Engine, def: SpriteDef, opts: { passes?
     }
   };
 
+  const groundClip = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
   for (const p of plans) {
     applyPlan(built, p);
+    engine.renderer.clippingPlanes = p.def.clipGround ? groundClip : [];
     const img = engine.accumulate(scene, cam, frameW * MASTER, frameH * MASTER, passes, (k, K) => rig.pass(k, K));
     emit(`${p.anim}/${p.i}`, img, true, p.anim);
   }
+  engine.renderer.clippingPlanes = [];
 
   // ground shadow from the resting pose
   const wantShadow = def.shadow ?? true;
@@ -340,44 +355,53 @@ export async function bakeSprite(engine: Engine, def: SpriteDef, opts: { passes?
   void lift;
   files.push({ path: `public/assets/sprites/meta/${def.id}.json`, dataUrl: `data:application/json;base64,${btoa(JSON.stringify(meta, null, 1))}` });
 
-  // preview sheet: one row per animation
+  // preview sheet: one row per animation, trimmed cells, feet on a common baseline
   const s0 = SCALES[scales[0]].scale;
-  const fw = Math.round(frameW * s0);
-  const fh = Math.round(frameH * s0);
   const names = Object.keys(def.anims);
-  const maxFrames = Math.max(...names.map((n) => def.anims[n].frames));
-  const zoom = Math.min(1, 1900 / (maxFrames * fw + 150), 1900 / (names.length * fh));
+  const MAXF = 10;
+  const rows = names.map((n) => {
+    const all = previewFrames.filter((f) => f.anim === n);
+    const pick = all.length <= MAXF ? all : Array.from({ length: MAXF }, (_, i) => all[Math.round((i * (all.length - 1)) / (MAXF - 1))]);
+    return { n, cells: pick.map((f) => trim(f.canvas, 2)) };
+  });
+  const cellsAll = rows.flatMap((r) => r.cells);
+  const upPx = Math.max(...cellsAll.map((c) => U * s0 - c.y));
+  const downPx = Math.max(...cellsAll.map((c) => c.y + c.canvas.height - U * s0));
+  const rowH = Math.ceil(upPx + downPx + 26);
+  const cellW = (c: (typeof cellsAll)[number]): number => c.canvas.width + 14;
+  const rowW = Math.max(...rows.map((r) => r.cells.reduce((w, c) => w + cellW(c), 0)));
+  const LABEL = 170;
+  const zoom = Math.min(1, 1900 / (rowW + LABEL), 1900 / (rows.length * rowH));
   const preview = document.createElement('canvas');
-  preview.width = Math.round((maxFrames * fw + 150) * zoom);
-  preview.height = Math.round(names.length * fh * zoom);
+  preview.width = Math.round((rowW + LABEL) * zoom);
+  preview.height = Math.round(rows.length * rowH * zoom);
   const g = preview.getContext('2d')!;
-  g.fillStyle = '#4a4f5c';
-  g.fillRect(0, 0, preview.width, preview.height);
   g.scale(zoom, zoom);
   g.font = `${Math.round(13 / zoom)}px monospace`;
-  names.forEach((n, row) => {
-    const y = row * fh;
-    g.fillStyle = row % 2 ? '#454a57' : '#50566a';
-    g.fillRect(0, y, maxFrames * fw + 150, fh);
-    // ground line at the anchor
-    g.fillStyle = 'rgba(0,0,0,0.25)';
-    g.fillRect(150, y + U * s0, maxFrames * fw, 1 / zoom);
-    const a = anims[n];
+  rows.forEach((r, row) => {
+    const y = row * rowH;
+    g.fillStyle = row % 2 ? '#5a6172' : '#666e82';
+    g.fillRect(0, y, rowW + LABEL, rowH);
+    const base = y + upPx + 13;
+    g.fillStyle = 'rgba(0,0,0,0.22)';
+    g.fillRect(LABEL, base, rowW, 1 / zoom);
+    const a = anims[r.n];
     g.fillStyle = '#fff';
-    g.fillText(n, 6, y + 20 / zoom);
-    g.fillText(`${a.frames}f ${a.duration}s${a.loop ? ' loop' : ''}`, 6, y + 40 / zoom);
-    if (a.hitAt !== undefined) g.fillText(`hit ${a.hitAt}`, 6, y + 60 / zoom);
-    if (a.stride) g.fillText(`stride ${a.stride}`, 6, y + 60 / zoom);
-    previewFrames
-      .filter((f) => f.anim === n)
-      .forEach((f, i) => {
-        if (shadowPreview) {
-          g.globalAlpha = 0.5;
-          g.drawImage(shadowPreview, 150 + i * fw, y);
-          g.globalAlpha = 1;
-        }
-        g.drawImage(f.canvas, 150 + i * fw, y);
-      });
+    const lh = 17 / zoom;
+    g.fillText(r.n, 6, y + lh);
+    g.fillText(`${a.frames}f ${a.duration}s${a.loop ? ' loop' : ''}`, 6, y + lh * 2);
+    if (a.hitAt !== undefined) g.fillText(`hit ${a.hitAt}`, 6, y + lh * 3);
+    if (a.stride) g.fillText(`stride ${a.stride}`, 6, y + lh * 3);
+    let x = LABEL;
+    for (const c of r.cells) {
+      if (shadowPreview) {
+        g.globalAlpha = 0.45;
+        g.drawImage(shadowPreview, c.x, 0, c.canvas.width, shadowPreview.height, x + 7, base - U * s0, c.canvas.width, shadowPreview.height);
+        g.globalAlpha = 1;
+      }
+      g.drawImage(c.canvas, x + 7, base - U * s0 + c.y);
+      x += cellW(c);
+    }
   });
 
   scene.remove(holder);
