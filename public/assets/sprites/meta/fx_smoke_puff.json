@@ -1,0 +1,23 @@
+{
+ "id": "fx_smoke_puff",
+ "frameW": 110,
+ "frameH": 110,
+ "anchorX": 55,
+ "anchorY": 62,
+ "height": 62,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 0.8,
+   "loop": false
+  }
+ },
+ "blend": "normal",
+ "ground": false
+}

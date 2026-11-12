@@ -1,0 +1,23 @@
+{
+ "id": "fx_bone_burst",
+ "frameW": 140,
+ "frameH": 140,
+ "anchorX": 70,
+ "anchorY": 76,
+ "height": 76,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 6,
+   "duration": 0.6,
+   "loop": false
+  }
+ },
+ "blend": "normal",
+ "ground": false
+}

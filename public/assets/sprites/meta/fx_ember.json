@@ -1,0 +1,23 @@
+{
+ "id": "fx_ember",
+ "frameW": 40,
+ "frameH": 56,
+ "anchorX": 20,
+ "anchorY": 24,
+ "height": 24,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 0.8,
+   "loop": true
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

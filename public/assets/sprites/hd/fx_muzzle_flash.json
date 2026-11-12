@@ -1,0 +1,103 @@
+{
+ "textures": [
+  {
+   "image": "fx_muzzle_flash-0.webp",
+   "format": "RGBA8888",
+   "size": {
+    "w": 227,
+    "h": 262
+   },
+   "scale": 1,
+   "frames": [
+    {
+     "filename": "play/0",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 198,
+      "h": 120
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 9,
+      "w": 190,
+      "h": 102
+     },
+     "frame": {
+      "x": 2,
+      "y": 2,
+      "w": 190,
+      "h": 102
+     }
+    },
+    {
+     "filename": "play/1",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 198,
+      "h": 120
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 14,
+      "w": 166,
+      "h": 90
+     },
+     "frame": {
+      "x": 2,
+      "y": 106,
+      "w": 166,
+      "h": 90
+     }
+    },
+    {
+     "filename": "play/2",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 198,
+      "h": 120
+     },
+     "spriteSourceSize": {
+      "x": 8,
+      "y": 29,
+      "w": 117,
+      "h": 62
+     },
+     "frame": {
+      "x": 2,
+      "y": 198,
+      "w": 117,
+      "h": 62
+     }
+    },
+    {
+     "filename": "play/3",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 198,
+      "h": 120
+     },
+     "spriteSourceSize": {
+      "x": 21,
+      "y": 40,
+      "w": 64,
+      "h": 38
+     },
+     "frame": {
+      "x": 121,
+      "y": 198,
+      "w": 64,
+      "h": 38
+     }
+    }
+   ]
+  }
+ ],
+ "meta": {
+  "app": "aod-defense art bake",
+  "version": "1"
+ }
+}
