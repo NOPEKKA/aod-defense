@@ -1,0 +1,26 @@
+{
+ "id": "pit_lid",
+ "frameW": 118,
+ "frameH": 67,
+ "anchorX": 59,
+ "anchorY": 37,
+ "height": 29,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 1,
+   "duration": 1,
+   "loop": true
+  },
+  "open": {
+   "frames": 6,
+   "duration": 0.45,
+   "loop": false
+  }
+ }
+}
