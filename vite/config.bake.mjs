@@ -8,7 +8,8 @@ export default defineConfig({
     publicDir: path.resolve('art-src'),
     logLevel: 'warn',
     server: {
-        port: 8090,
+        // AODD_BAKE_PORT lets several agents bake at once, each in its own worktree
+        port: Number(process.env.AODD_BAKE_PORT ?? 8090),
         strictPort: true,
         fs: { allow: [path.resolve('.')] }
     }

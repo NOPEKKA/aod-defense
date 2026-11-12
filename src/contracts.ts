@@ -907,6 +907,10 @@ export interface ProgressionService {
   isSpellUnlocked(profile: ProfileState, spellId: string): boolean;
   /** highest wave the player may start */
   maxPlayableWave(profile: ProfileState): number;
+  /** spell slots the player may fill before a wave (2, then 3 after clearing wave 20) */
+  spellSlots(profile: ProfileState): number;
+  /** relic slots the player may fill (0 until the first relic is owned) */
+  relicSlots(profile: ProfileState): number;
   /** mutates the profile with gold, stars, unlocks, relics from a finished wave */
   applyOutcome(profile: ProfileState, outcome: WaveOutcome): void;
   /** builds the stat modifier table for a wave from upgrades + equipped relics */

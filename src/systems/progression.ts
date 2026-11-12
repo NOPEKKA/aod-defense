@@ -50,6 +50,10 @@ export function createProgression(data: GameData, planner: WavePlanner): Progres
 
     maxPlayableWave: (p) => Math.min(data.balance.campaignWaves, p.highestWave + 1),
 
+    // [SPEC 6.0] the third spell slot opens after clearing wave 20
+    spellSlots: (p) => data.balance.loadout.spellSlots + (p.highestWave >= 20 ? 1 : 0),
+    relicSlots: (p) => (p.relicsOwned.length > 0 ? data.balance.loadout.relicSlots : 0),
+
     applyOutcome(p, o) {
       p.gold = Math.max(0, Math.floor(p.gold + o.goldTotal));
       if (o.result !== 'won') return;
