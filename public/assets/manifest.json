@@ -5,6 +5,27 @@
   "sd": 1
  },
  "sprites": {
+  "arrow": {
+   "id": "arrow",
+   "frameW": 117,
+   "frameH": 29,
+   "anchorX": 59,
+   "anchorY": 15,
+   "height": 8,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
   "ash": {
    "id": "ash",
    "frameW": 345,
@@ -135,6 +156,74 @@
     }
    }
   },
+  "bolt": {
+   "id": "bolt",
+   "frameW": 112,
+   "frameH": 38,
+   "anchorX": 51,
+   "anchorY": 19,
+   "height": 13,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "book": {
+   "id": "book",
+   "frameW": 190,
+   "frameH": 279,
+   "anchorX": 95,
+   "anchorY": 217,
+   "height": 107,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    }
+   }
+  },
+  "coin": {
+   "id": "coin",
+   "frameW": 48,
+   "frameH": 55,
+   "anchorX": 24,
+   "anchorY": 47,
+   "height": 39,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   }
+  },
   "enemy_skeleton": {
    "id": "enemy_skeleton",
    "frameW": 399,
@@ -180,6 +269,554 @@
      "frames": 14,
      "duration": 1.3,
      "loop": false
+    }
+   }
+  },
+  "food": {
+   "id": "food",
+   "frameW": 98,
+   "frameH": 83,
+   "anchorX": 52,
+   "anchorY": 63,
+   "height": 49,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "fx_bone_burst": {
+   "id": "fx_bone_burst",
+   "frameW": 140,
+   "frameH": 140,
+   "anchorX": 70,
+   "anchorY": 76,
+   "height": 76,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 6,
+     "duration": 0.6,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_deathcoaster": {
+   "id": "fx_deathcoaster",
+   "frameW": 313,
+   "frameH": 247,
+   "anchorX": 139,
+   "anchorY": 176,
+   "height": 159,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "walk": {
+     "frames": 8,
+     "duration": 0.4,
+     "loop": true,
+     "stride": 150
+    }
+   }
+  },
+  "fx_dust_puff": {
+   "id": "fx_dust_puff",
+   "frameW": 90,
+   "frameH": 56,
+   "anchorX": 45,
+   "anchorY": 46,
+   "height": 46,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 6,
+     "duration": 0.45,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_ember": {
+   "id": "fx_ember",
+   "frameW": 40,
+   "frameH": 56,
+   "anchorX": 20,
+   "anchorY": 24,
+   "height": 24,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_explosion": {
+   "id": "fx_explosion",
+   "frameW": 220,
+   "frameH": 220,
+   "anchorX": 110,
+   "anchorY": 110,
+   "height": 110,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 0.7,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_fire": {
+   "id": "fx_fire",
+   "frameW": 60,
+   "frameH": 90,
+   "anchorX": 30,
+   "anchorY": 86,
+   "height": 86,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 0.6,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_fire_big": {
+   "id": "fx_fire_big",
+   "frameW": 240,
+   "frameH": 130,
+   "anchorX": 120,
+   "anchorY": 112,
+   "height": 112,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 0.7,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_glow": {
+   "id": "fx_glow",
+   "frameW": 120,
+   "frameH": 120,
+   "anchorX": 60,
+   "anchorY": 60,
+   "height": 60,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_heal": {
+   "id": "fx_heal",
+   "frameW": 100,
+   "frameH": 140,
+   "anchorX": 50,
+   "anchorY": 128,
+   "height": 128,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.9,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_holy_beam": {
+   "id": "fx_holy_beam",
+   "frameW": 150,
+   "frameH": 440,
+   "anchorX": 75,
+   "anchorY": 420,
+   "height": 420,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_lightning": {
+   "id": "fx_lightning",
+   "frameW": 110,
+   "frameH": 340,
+   "anchorX": 55,
+   "anchorY": 330,
+   "height": 330,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 4,
+     "duration": 0.2,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_magic_circle": {
+   "id": "fx_magic_circle",
+   "frameW": 230,
+   "frameH": 84,
+   "anchorX": 115,
+   "anchorY": 42,
+   "height": 42,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": true
+  },
+  "fx_muzzle_flash": {
+   "id": "fx_muzzle_flash",
+   "frameW": 132,
+   "frameH": 80,
+   "anchorX": 18,
+   "anchorY": 40,
+   "height": 40,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 4,
+     "duration": 0.12,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_poison_pool": {
+   "id": "fx_poison_pool",
+   "frameW": 190,
+   "frameH": 80,
+   "anchorX": 95,
+   "anchorY": 40,
+   "height": 40,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 1.2,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_portal": {
+   "id": "fx_portal",
+   "frameW": 260,
+   "frameH": 100,
+   "anchorX": 130,
+   "anchorY": 50,
+   "height": 50,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 1.2,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_shockwave": {
+   "id": "fx_shockwave",
+   "frameW": 300,
+   "frameH": 110,
+   "anchorX": 150,
+   "anchorY": 55,
+   "height": 55,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.45,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": true
+  },
+  "fx_slash": {
+   "id": "fx_slash",
+   "frameW": 150,
+   "frameH": 150,
+   "anchorX": 75,
+   "anchorY": 75,
+   "height": 75,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 5,
+     "duration": 0.2,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_smoke_puff": {
+   "id": "fx_smoke_puff",
+   "frameW": 110,
+   "frameH": 110,
+   "anchorX": 55,
+   "anchorY": 62,
+   "height": 62,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_soul": {
+   "id": "fx_soul",
+   "frameW": 60,
+   "frameH": 96,
+   "anchorX": 30,
+   "anchorY": 30,
+   "height": 30,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_spark_burst": {
+   "id": "fx_spark_burst",
+   "frameW": 110,
+   "frameH": 110,
+   "anchorX": 55,
+   "anchorY": 55,
+   "height": 55,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 6,
+     "duration": 0.3,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "mana_orb": {
+   "id": "mana_orb",
+   "frameW": 66,
+   "frameH": 60,
+   "anchorX": 33,
+   "anchorY": 52,
+   "height": 43,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": true
+    }
+   }
+  },
+  "pit_lid": {
+   "id": "pit_lid",
+   "frameW": 118,
+   "frameH": 67,
+   "anchorX": 59,
+   "anchorY": 37,
+   "height": 29,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    },
+    "open": {
+     "frames": 6,
+     "duration": 0.45,
+     "loop": false
+    }
+   }
+  },
+  "shot": {
+   "id": "shot",
+   "frameW": 185,
+   "frameH": 116,
+   "anchorX": 92,
+   "anchorY": 58,
+   "height": 13,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
     }
    }
   },
@@ -256,6 +893,130 @@
    },
    "frames": {
     "portrait_enemy_skeleton": {
+     "w": 112,
+     "h": 112
+    }
+   }
+  },
+  "icons_items": {
+   "id": "icons_items",
+   "kind": "icons",
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "frames": {
+    "ui_iron": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_gold": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_mana": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_skull": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_book": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_banner_advance": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_banner_hold": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_anvil": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_gravedigger_lantern": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_mire_cauldron_shard": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_hollow_spur": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_censer_of_matins": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_doppel_boomstick": {
+     "w": 112,
+     "h": 112
+    }
+   }
+  },
+  "icons_spells": {
+   "id": "icons_spells",
+   "kind": "icons",
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "frames": {
+    "icon_super_boomstick": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_arrow_volley": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_magic_words": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_catapult_volley": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_wrong_book": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_chainsaw": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_deathcoaster": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_salt_circle": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_matins_bell": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_hellfire_pitch": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_bear_traps": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_dawn_lance": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_rally_horn": {
      "w": 112,
      "h": 112
     }
