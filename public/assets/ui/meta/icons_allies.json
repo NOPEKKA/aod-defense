@@ -1,0 +1,18 @@
+{
+ "id": "icons_allies",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "portrait_ash": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_swordsman": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

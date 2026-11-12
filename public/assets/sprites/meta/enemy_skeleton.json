@@ -1,14 +1,14 @@
 {
  "id": "enemy_skeleton",
- "frameW": 423,
- "frameH": 234,
- "anchorX": 147,
- "anchorY": 190,
- "height": 160,
+ "frameW": 399,
+ "frameH": 222,
+ "anchorX": 139,
+ "anchorY": 180,
+ "height": 151,
  "facing": -1,
  "shadow": true,
  "pages": {
-  "hd": 2,
+  "hd": 1,
   "sd": 1
  },
  "anims": {
@@ -21,7 +21,7 @@
    "frames": 12,
    "duration": 1.6,
    "loop": true,
-   "stride": 52
+   "stride": 49
   },
   "attack": {
    "frames": 10,

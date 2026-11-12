@@ -10,14 +10,21 @@ export default async ({ run, page, args, root }) => {
   for (const a of args) {
     if (a === '--all') ids = all;
     else if (a.startsWith('re:')) ids.push(...all.filter((id) => new RegExp(a.slice(3)).test(id)));
+    else if (a.startsWith('icons:')) continue;
     else if (all.includes(a)) ids.push(a);
     else throw new Error(`unknown sprite "${a}" (have: ${all.join(', ')})`);
   }
   ids = [...new Set(ids)];
-  if (ids.length === 0) {
+  // icon groups: "icons:allies", or "icons:all"
+  const groups = await page.evaluate(() => window.__bake.lib.icon.iconGroups());
+  const wantIcons = args.filter((a) => a.startsWith('icons:')).flatMap((a) => (a === 'icons:all' ? groups : [a.slice(6)]));
+  if (args.includes('--all')) wantIcons.push(...groups);
+  if (ids.length === 0 && wantIcons.length === 0) {
     console.log('sprites:', all.join(', '));
+    console.log('icon groups:', groups.join(', '));
     return;
   }
+  for (const g of [...new Set(wantIcons)]) await run('icons', { group: g });
   const failed = [];
   for (const id of ids) {
     try {

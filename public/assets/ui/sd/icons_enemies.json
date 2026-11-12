@@ -1,0 +1,1 @@
+{"textures":[{"image":"icons_enemies-0.webp","format":"RGBA8888","size":{"w":104,"h":101},"scale":1,"frames":[{"filename":"portrait_enemy_skeleton","rotated":false,"trimmed":true,"sourceSize":{"w":112,"h":112},"spriteSourceSize":{"x":0,"y":15,"w":94,"h":97},"frame":{"x":2,"y":2,"w":94,"h":97}}]}],"meta":{"app":"aod-defense art bake","version":"1"}}

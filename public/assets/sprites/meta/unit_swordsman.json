@@ -1,10 +1,10 @@
 {
  "id": "unit_swordsman",
- "frameW": 316,
- "frameH": 218,
- "anchorX": 207,
- "anchorY": 194,
- "height": 172,
+ "frameW": 344,
+ "frameH": 237,
+ "anchorX": 184,
+ "anchorY": 205,
+ "height": 175,
  "facing": 1,
  "shadow": true,
  "pages": {
@@ -21,7 +21,7 @@
    "frames": 12,
    "duration": 1.067,
    "loop": true,
-   "stride": 50
+   "stride": 51
   },
   "attack": {
    "frames": 10,

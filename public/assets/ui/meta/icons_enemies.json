@@ -1,0 +1,14 @@
+{
+ "id": "icons_enemies",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "portrait_enemy_skeleton": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

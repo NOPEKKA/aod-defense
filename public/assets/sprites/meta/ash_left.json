@@ -1,10 +1,10 @@
 {
  "id": "ash_left",
- "frameW": 356,
- "frameH": 248,
- "anchorX": 150,
- "anchorY": 192,
- "height": 168,
+ "frameW": 354,
+ "frameH": 247,
+ "anchorX": 149,
+ "anchorY": 191,
+ "height": 167,
  "facing": -1,
  "shadow": true,
  "pages": {
@@ -23,17 +23,17 @@
    "loop": true,
    "stride": 78
   },
-  "attack:shoot": {
-   "frames": 8,
-   "duration": 0.45,
-   "loop": false,
-   "hitAt": 0.2
-  },
   "attack": {
    "frames": 10,
    "duration": 0.5,
    "loop": false,
    "hitAt": 0.4
+  },
+  "attack:shoot": {
+   "frames": 8,
+   "duration": 0.45,
+   "loop": false,
+   "hitAt": 0.2
   },
   "cast": {
    "frames": 8,

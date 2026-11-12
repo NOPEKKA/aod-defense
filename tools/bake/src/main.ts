@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import * as assetsLib from './assets';
 import * as characterLib from './character';
 import * as engineLib from './engine';
+import * as iconLib from './icon';
 import * as packLib from './pack';
 import * as propsLib from './props';
 import * as spriteLib from './sprite';
@@ -18,7 +19,7 @@ import.meta.glob('./defs/*.ts', { eager: true });
 
 const api = {
   /** modules for ad-hoc page.evaluate scripts (bare imports do not resolve there) */
-  lib: { THREE, assets: assetsLib, character: characterLib, props: propsLib, sprite: spriteLib, engineLib, pack: packLib, studio, engine: studio.engine, shoot: studio.shoot },
+  lib: { THREE, assets: assetsLib, character: characterLib, props: propsLib, sprite: spriteLib, icon: iconLib, engineLib, pack: packLib, studio, engine: studio.engine, shoot: studio.shoot },
   info: () => studio.engine.info(),
   jobs: () => studio.jobNames(),
   run: (name: string, args: Record<string, unknown> = {}) => studio.runJob(name, args),

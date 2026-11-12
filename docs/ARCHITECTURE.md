@@ -167,3 +167,66 @@ SPEC อยู่ที่ [`docs/SPEC.md`](SPEC.md)
   - id ทุกตัวใน REGISTERED ยังไม่ได้ implement
 - `controls/index.ts`: ทำได้แค่เดิน
 - `render/`: placeholder แค่กล่องสีกับ HUD ตัวหนังสือ ยังไม่มีเมนู
+
+## 11. v2 (2026-11-11): ภาพเรนเดอร์ 3D, เสียง และสัญญาที่เพิ่ม
+
+### 11.1 เจ้าของเพิ่มเติม
+
+| ที่ | เจ้าของ | หน้าที่ |
+|---|---|---|
+| `tools/bake/src/{engine,sprite,character,props,icon,pack,studio,assets,main}.ts`, `tools/bake/run.mjs`, `manifest.mjs`, `scripts/bake.mjs` | หัวหน้า | แกนเครื่องมืออบภาพ ถ้าต้องการแก้ให้เพิ่มโมดูลใหม่ข้างๆ แล้วแจ้ง |
+| `tools/bake/src/defs/allies.ts` (+ ไฟล์ `props_allies*.ts`) และผลลัพธ์ของมันใน `public/assets/` | allies (ทีมภาพ) | Ash ทหาร ฮีโร่ ของประกอบฝั่งเรา รูปหน้า |
+| `tools/bake/src/defs/enemies.ts`, `defs/bosses.ts` (+ `props_enemies*.ts`) และผลลัพธ์ | enemies (ทีมภาพ) | ศัตรู บอส เศษกระดูก |
+| `tools/bake/src/scene.ts`, `scenes/*.ts`, `jobs/scene.ts`, `public/assets/bg/**` | env (ทีมภาพ) | ฉากหลัง 5 บท |
+| `src/audio/**` | audio | เพลงและเสียงเอฟเฟกต์ (Web Audio) |
+| `art-src/**` | หัวหน้า | โมเดล CC0 ต้นทาง ห้ามแก้ |
+| `public/assets/manifest.json` | สร้างอัตโนมัติ | ถ้า merge ชนกัน ให้รัน `node tools/bake/manifest.mjs` ใหม่ |
+
+### 11.2 ภาพเข้ามาในเกมอย่างไร
+
+```
+art-src/ (โมเดล)  →  tools/bake (headless Chrome + GPU)  →  public/assets/
+                                                             ├─ manifest.json        ← Preloader โหลดก่อน (render.preloadBoot)
+                                                             ├─ sprites/{hd,sd}/<key>-N.webp + <key>.json (multiatlas)
+                                                             ├─ sprites/meta/<key>.json
+                                                             ├─ bg/{hd,sd}/<id>-<layer>-<i>.webp, bg/meta/<id>.json
+                                                             └─ ui/{hd,sd}/icons_<group>-N.webp + json, ui/meta/
+Battle.preload()  →  render.preloadBattle(scene, params)  →  โหลดเฉพาะ atlas ที่คลื่นนั้นใช้
+```
+
+- คุณภาพ `hd` (1.5 เท่า) หรือ `sd` (1 เท่า) เลือกจาก `settings.texQuality` (`auto` ดูจากเครื่อง)
+- ชื่อเฟรม `<anim>/<index>`, เฟรมเงา `shadow`
+- เกมเลือกเฟรมจาก `animTime` ของ sim (ไม่ใช้ AnimationManager ของ Phaser): วนตามเวลา, `walk` ตามระยะทางที่เดิน (`stride`), `attack` ยืดหดให้ `hitAt` ตรงกับ `attack.windup`
+- สไปรต์ที่ยังไม่ได้อบ ต้องมีภาพสำรอง ห้ามทำให้เกมล้ม
+
+### 11.3 สัญญาที่เพิ่มใน `contracts.ts`
+
+| เรื่อง | รายละเอียด |
+|---|---|
+| ตำแหน่ง | `y` = จุดบนพื้น (เส้นพื้น + แถวลึก), `alt` = ความสูงเหนือพื้น, `prevAlt` |
+| ท่าย่อย | `EntityState.action` ('' ถ้าไม่มี): Ash `shoot`/`melee`, id ท่าบอส, id เวท |
+| การโจมตี | `AttackSchema.windup`, `projectileSpeed` |
+| บอส | `BossDefSchema.speed` |
+| โลก | `balance.world.laneRows`, `flyingAlt`, `holdAheadOfStairs` (เลิก `laneJitterY`, `flyingY`) |
+| เศรษฐกิจ | `balance.economy.smith.levels[]`, `balance.economy.combo` |
+| ค่าปรับแต่ง | `balance.tuning: Record<string, number>` ที่เก็บตัวเลขย่อยโดยไม่ต้องแก้สัญญา |
+| สถานะโลก | `world.smith`, `world.rally`, `world.combo`, `world.castle`, `world.wave.chapter`, `world.wave.markers` |
+| คำสั่ง | `{type:'smith'}` (systems จัดการ), `{type:'rally'}` (gameplay จัดการ) |
+| event | `smith:upgraded`, `smith:denied`, `rally:changed`, `combo:changed`, `combo:ended`, `ui:button` เพิ่ม `smith`/`rally` |
+| HUD | `HudLayout.ashPortrait`, `rallyButton`; `ironPanel` คือปุ่มอัปเกรดช่าง |
+| render | `preloadBoot?(scene)`, `preloadBattle?(scene, params)` |
+| audio | `AudioModule.init(app, game)` |
+| ตั้งค่า | `Settings.texQuality` |
+| anim | เพิ่ม `leap`, `cheer` |
+
+### 11.4 ลำดับ SimSystem ที่เพิ่ม
+
+| order | ใคร | งาน |
+|---|---|---|
+| 100 | gameplay | คำสั่ง `rally` สลับ `world.rally` |
+| 150 | systems | คำสั่ง `smith`: จ่ายเหล็ก เลื่อนระดับ อัปเดต `world.smith` |
+| 600 | systems | เหล็กตามระดับช่าง + `world.smith.progress`, คอมโบ (นับจาก `entity:died`) |
+
+### 11.5 เทส
+- `npm test` (Playwright + Chrome ในเครื่อง) ต้องผ่านก่อน commit ทุกครั้ง
+- เครื่องนี้มี RTX 4080: ใช้ `--use-angle=d3d11 --enable-gpu` ได้ถ้าต้องการวัดเฟรมไทม์จริง (ค่าเริ่มต้นของ `playwright.config.ts` ยังเป็น SwiftShader)
