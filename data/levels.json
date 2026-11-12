@@ -7,21 +7,21 @@
     "groups": [
       {
         "enemy": "skeleton",
-        "count": 3,
-        "interval": 6,
+        "count": 4,
+        "interval": 3.5,
         "startAt": 4
       },
       {
         "enemy": "skeleton",
-        "count": 4,
-        "interval": 4,
-        "startAt": 28
+        "count": 5,
+        "interval": 3,
+        "startAt": 38
       },
       {
         "enemy": "skeleton",
-        "count": 4,
-        "interval": 2.5,
-        "startAt": 54
+        "count": 6,
+        "interval": 2.2,
+        "startAt": 78
       }
     ],
     "tipKey": "tip.wave1"
@@ -34,21 +34,21 @@
     "groups": [
       {
         "enemy": "skeleton",
-        "count": 4,
-        "interval": 4.5,
+        "count": 5,
+        "interval": 3.2,
         "startAt": 4
       },
       {
         "enemy": "skeleton",
-        "count": 5,
-        "interval": 3,
-        "startAt": 28
+        "count": 6,
+        "interval": 2.6,
+        "startAt": 36
       },
       {
         "enemy": "skeleton",
-        "count": 6,
-        "interval": 2,
-        "startAt": 52
+        "count": 8,
+        "interval": 1.8,
+        "startAt": 74
       }
     ]
   },
@@ -60,21 +60,21 @@
     "groups": [
       {
         "enemy": "skeleton",
-        "count": 5,
-        "interval": 3.5,
+        "count": 6,
+        "interval": 3,
         "startAt": 4
       },
       {
         "enemy": "skeleton",
-        "count": 6,
-        "interval": 2.5,
-        "startAt": 28
+        "count": 8,
+        "interval": 2.2,
+        "startAt": 38
       },
       {
         "enemy": "skeleton",
-        "count": 8,
-        "interval": 1.5,
-        "startAt": 54
+        "count": 10,
+        "interval": 1.6,
+        "startAt": 80
       }
     ],
     "tipKey": "tip.archer"
@@ -83,43 +83,435 @@
     "wave": 4,
     "chapter": 1,
     "kind": "normal",
-    "seed": 4001
+    "seed": 4001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 3,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton",
+        "count": 5,
+        "interval": 2.5,
+        "startAt": 36
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 4,
+        "startAt": 38
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 1.8,
+        "startAt": 76
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 5,
+        "interval": 2.2,
+        "startAt": 77
+      }
+    ]
   },
   {
     "wave": 5,
     "chapter": 1,
     "kind": "normal",
-    "seed": 5001
+    "seed": 5001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 7,
+        "interval": 2.8,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 4,
+        "startAt": 6
+      },
+      {
+        "enemy": "skeleton",
+        "count": 7,
+        "interval": 2,
+        "startAt": 40
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 3.2,
+        "startAt": 42
+      },
+      {
+        "enemy": "skeleton",
+        "count": 8,
+        "interval": 1.5,
+        "startAt": 80
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 2.5,
+        "startAt": 82
+      }
+    ]
   },
   {
     "wave": 6,
     "chapter": 1,
     "kind": "normal",
-    "seed": 6001
+    "seed": 6001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.8,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 2,
+        "interval": 4,
+        "startAt": 6
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.2,
+        "startAt": 40
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 3,
+        "startAt": 42
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 1,
+        "interval": 1,
+        "startAt": 44
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 1.6,
+        "startAt": 80
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 2.5,
+        "startAt": 82
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 2,
+        "interval": 6,
+        "startAt": 84
+      }
+    ]
   },
   {
     "wave": 7,
     "chapter": 1,
     "kind": "normal",
-    "seed": 7001
+    "seed": 7001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 7,
+        "interval": 2.6,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 2,
+        "interval": 5,
+        "startAt": 8
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2,
+        "startAt": 40
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 3,
+        "startAt": 42
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 3,
+        "interval": 4,
+        "startAt": 44
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 1,
+        "interval": 1,
+        "startAt": 50
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 1.5,
+        "startAt": 80
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 2.5,
+        "startAt": 82
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 4,
+        "interval": 3.5,
+        "startAt": 84
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 2,
+        "interval": 8,
+        "startAt": 86
+      }
+    ]
   },
   {
     "wave": 8,
     "chapter": 1,
     "kind": "normal",
-    "seed": 8001
+    "seed": 8001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.4,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 3.5,
+        "startAt": 6
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 1,
+        "interval": 1,
+        "startAt": 12
+      },
+      {
+        "enemy": "skeleton",
+        "count": 5,
+        "interval": 2,
+        "startAt": 38
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 3,
+        "startAt": 40
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 4,
+        "interval": 3.5,
+        "startAt": 42
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 2,
+        "interval": 7,
+        "startAt": 48
+      },
+      {
+        "enemy": "skeleton",
+        "count": 7,
+        "interval": 1.3,
+        "startAt": 76
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 2.5,
+        "startAt": 78
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 4,
+        "interval": 3,
+        "startAt": 80
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 2,
+        "interval": 6,
+        "startAt": 86
+      }
+    ]
   },
   {
     "wave": 9,
     "chapter": 1,
     "kind": "normal",
-    "seed": 9001
+    "seed": 9001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.6,
+        "startAt": 4
+      },
+      {
+        "enemy": "skeleton_spear",
+        "count": 2,
+        "interval": 6,
+        "startAt": 8
+      },
+      {
+        "enemy": "skeleton",
+        "count": 5,
+        "interval": 2,
+        "startAt": 40
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 4,
+        "interval": 3,
+        "startAt": 42
+      },
+      {
+        "enemy": "skeleton_spear",
+        "count": 3,
+        "interval": 4,
+        "startAt": 44
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 1,
+        "interval": 1,
+        "startAt": 52
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 1.4,
+        "startAt": 76
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 4,
+        "interval": 3,
+        "startAt": 78
+      },
+      {
+        "enemy": "skeleton_spear",
+        "count": 4,
+        "interval": 3,
+        "startAt": 80
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 3,
+        "startAt": 82
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 2,
+        "interval": 6,
+        "startAt": 88
+      }
+    ]
   },
   {
     "wave": 10,
     "chapter": 1,
     "kind": "normal",
-    "seed": 10001
+    "seed": 10001,
+    "groups": [
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 2.4,
+        "startAt": 4
+      },
+      {
+        "enemy": "deadite_archer",
+        "count": 2,
+        "interval": 6,
+        "startAt": 8
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 2,
+        "interval": 5,
+        "startAt": 10
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 1.8,
+        "startAt": 38
+      },
+      {
+        "enemy": "skeleton_helm",
+        "count": 3,
+        "interval": 3,
+        "startAt": 40
+      },
+      {
+        "enemy": "deadite_archer",
+        "count": 3,
+        "interval": 4,
+        "startAt": 42
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 3,
+        "interval": 4,
+        "startAt": 44
+      },
+      {
+        "enemy": "skeleton",
+        "count": 6,
+        "interval": 1.3,
+        "startAt": 74
+      },
+      {
+        "enemy": "skeleton_spear",
+        "count": 3,
+        "interval": 3.5,
+        "startAt": 76
+      },
+      {
+        "enemy": "deadite_archer",
+        "count": 4,
+        "interval": 3,
+        "startAt": 78
+      },
+      {
+        "enemy": "skeleton_shield",
+        "count": 3,
+        "interval": 3,
+        "startAt": 84
+      },
+      {
+        "enemy": "skeleton_wizard",
+        "count": 2,
+        "interval": 6,
+        "startAt": 86
+      }
+    ]
   },
   {
     "wave": 11,

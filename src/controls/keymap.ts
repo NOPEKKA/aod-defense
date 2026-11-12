@@ -4,7 +4,7 @@
  * the "A" key reports code 'KeyA' even though it types 'ฟ'.
  */
 
-export type KeyAction = 'left' | 'right' | 'summon' | 'spell' | 'dodge' | 'pause' | 'escape' | 'speed';
+export type KeyAction = 'left' | 'right' | 'summon' | 'spell' | 'dodge' | 'pause' | 'escape' | 'speed' | 'smith' | 'rally';
 
 export interface KeyBinding {
   readonly action: KeyAction;
@@ -27,6 +27,8 @@ function buildBindings(): ReadonlyMap<string, KeyBinding> {
     ['KeyP', bind('pause')],
     ['Escape', bind('escape')],
     ['KeyF', bind('speed')],
+    ['KeyB', bind('smith')],
+    ['KeyG', bind('rally')],
   ]);
   for (let i = 0; i < 8; i++) {
     m.set(`Digit${i + 1}`, bind('summon', i));
