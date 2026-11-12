@@ -1,0 +1,26 @@
+{
+ "id": "book",
+ "frameW": 190,
+ "frameH": 279,
+ "anchorX": 95,
+ "anchorY": 217,
+ "height": 107,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.6,
+   "loop": true
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  }
+ }
+}

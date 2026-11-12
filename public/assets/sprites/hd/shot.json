@@ -1,0 +1,1 @@
+{"textures":[{"image":"shot-0.webp","format":"RGBA8888","size":{"w":178,"h":116},"scale":1,"frames":[{"filename":"idle/0","rotated":false,"trimmed":true,"sourceSize":{"w":277,"h":174},"spriteSourceSize":{"x":67,"y":28,"w":174,"h":112},"frame":{"x":2,"y":2,"w":174,"h":112}}]}],"meta":{"app":"aod-defense art bake","version":"1"}}

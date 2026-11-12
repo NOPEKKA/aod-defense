@@ -1,0 +1,21 @@
+{
+ "id": "food",
+ "frameW": 98,
+ "frameH": 83,
+ "anchorX": 52,
+ "anchorY": 63,
+ "height": 49,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 1,
+   "duration": 1,
+   "loop": true
+  }
+ }
+}

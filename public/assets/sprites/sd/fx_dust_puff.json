@@ -1,0 +1,145 @@
+{
+ "textures": [
+  {
+   "image": "fx_dust_puff-0.webp",
+   "format": "RGBA8888",
+   "size": {
+    "w": 123,
+    "h": 164
+   },
+   "scale": 1,
+   "frames": [
+    {
+     "filename": "play/4",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 90,
+      "h": 56
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 11,
+      "w": 90,
+      "h": 44
+     },
+     "frame": {
+      "x": 2,
+      "y": 2,
+      "w": 90,
+      "h": 44
+     }
+    },
+    {
+     "filename": "play/3",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 90,
+      "h": 56
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 12,
+      "w": 89,
+      "h": 43
+     },
+     "frame": {
+      "x": 2,
+      "y": 48,
+      "w": 89,
+      "h": 43
+     }
+    },
+    {
+     "filename": "play/2",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 90,
+      "h": 56
+     },
+     "spriteSourceSize": {
+      "x": 1,
+      "y": 16,
+      "w": 81,
+      "h": 38
+     },
+     "frame": {
+      "x": 2,
+      "y": 93,
+      "w": 81,
+      "h": 38
+     }
+    },
+    {
+     "filename": "play/1",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 90,
+      "h": 56
+     },
+     "spriteSourceSize": {
+      "x": 14,
+      "y": 23,
+      "w": 56,
+      "h": 29
+     },
+     "frame": {
+      "x": 2,
+      "y": 133,
+      "w": 56,
+      "h": 29
+     }
+    },
+    {
+     "filename": "play/0",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 90,
+      "h": 56
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 2,
+      "h": 2
+     },
+     "frame": {
+      "x": 60,
+      "y": 133,
+      "w": 2,
+      "h": 2
+     }
+    },
+    {
+     "filename": "play/5",
+     "rotated": false,
+     "trimmed": true,
+     "sourceSize": {
+      "w": 90,
+      "h": 56
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 2,
+      "h": 2
+     },
+     "frame": {
+      "x": 64,
+      "y": 133,
+      "w": 2,
+      "h": 2
+     }
+    }
+   ]
+  }
+ ],
+ "meta": {
+  "app": "aod-defense art bake",
+  "version": "1"
+ }
+}
