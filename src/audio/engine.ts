@@ -65,6 +65,8 @@ export class Engine {
   private readonly compressor: DynamicsCompressorNode;
   private readonly sfxComp: DynamicsCompressorNode;
   private readonly reverbIn: GainNode;
+  /** reverb return level; set to 0 when both buses are muted so tails cannot leak */
+  readonly reverbOut: GainNode;
   private readonly noises: Record<'white' | 'pink' | 'brown', AudioBuffer>;
   private readonly scratch: Float32Array;
   /** number of live source nodes (oscillators + noise sources) */
@@ -72,8 +74,8 @@ export class Engine {
   /** peak voices seen since the last reset */
   voicePeak = 0;
   /** hard cap on live sources; patches skip optional layers above the soft cap */
-  readonly softCap = 90;
-  readonly hardCap = 140;
+  readonly softCap = 110;
+  readonly hardCap = 180;
 
   constructor(ctx: BaseAudioContext) {
     this.ctx = ctx;
@@ -135,6 +137,7 @@ export class Engine {
     conv.buffer = this.makeImpulse(2.4, sr);
     const revOut = ctx.createGain();
     revOut.gain.value = 0.55;
+    this.reverbOut = revOut;
     this.reverbIn.connect(conv);
     conv.connect(revOut);
     revOut.connect(this.master);

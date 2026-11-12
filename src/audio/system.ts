@@ -129,6 +129,10 @@ export class AudioSystem {
       if (immediate || v === 0) node.setValueAtTime(v, now);
       else node.setTargetAtTime(v, now, 0.03);
     }
+    const r = eng.reverbOut.gain;
+    r.cancelScheduledValues(now);
+    if (s === 0 && m === 0) r.setValueAtTime(0, now);
+    else r.setTargetAtTime(0.55, now, 0.05);
     if (this.music) this.music.enabled = m > 0;
   }
 

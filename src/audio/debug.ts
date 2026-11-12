@@ -110,8 +110,8 @@ async function offline(seconds: number, build: (e: Engine) => void, name: string
   const e = new Engine(ctx);
   e.sfxBus.gain.value = 1;
   e.sfxWet.gain.value = 1;
-  e.musicBus.gain.value = 0.62 * 0.36;
-  e.musicWet.gain.value = 0.62 * 0.36;
+  e.musicBus.gain.value = 0.9 * 0.36;
+  e.musicWet.gain.value = 0.9 * 0.36;
   build(e);
   const buf = await ctx.startRendering();
   return analyse(name, buf);
