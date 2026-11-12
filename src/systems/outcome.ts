@@ -6,6 +6,7 @@
  */
 import type { GameData, ProfileState, SimContext, SimSystem, WaveOutcome } from '../contracts';
 import { findEntity } from '../core/world';
+import { flushCombo } from './combo';
 import type { WaveRuntime } from './director';
 
 /** Units/spells/upgrades that become usable by clearing `wave` for the first time. */
@@ -120,6 +121,7 @@ export function createOutcomeSystem(rt: WaveRuntime): SimSystem {
       }
       if (!result) return;
       done = true;
+      flushCombo(world); // a running streak pays its bonus before gold is counted
       const outcome = buildOutcome(ctx, rt, result, reason);
       world.phase = result;
       world.outcome = outcome;
