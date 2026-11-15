@@ -1,9 +1,9 @@
 {
  "id": "ash",
- "frameW": 347,
- "frameH": 285,
+ "frameW": 344,
+ "frameH": 287,
  "anchorX": 178,
- "anchorY": 243,
+ "anchorY": 220,
  "height": 169,
  "facing": 1,
  "shadow": true,
@@ -27,7 +27,7 @@
    "frames": 10,
    "duration": 0.5,
    "loop": false,
-   "hitAt": 0.6
+   "hitAt": 0.52
   },
   "attack:shoot": {
    "frames": 8,
@@ -63,7 +63,7 @@
   },
   "cheer": {
    "frames": 10,
-   "duration": 1.667,
+   "duration": 1.15,
    "loop": true
   }
  }

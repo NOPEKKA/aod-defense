@@ -11,10 +11,10 @@
  * so nothing leaks from one animation into the next.
  */
 import * as THREE from 'three';
-import { byName } from '../assets';
+import { byName, pose } from '../assets';
 import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
-import { at, boomstick, chainsaw } from '../props';
+import { at, boomstick, chainsaw, glow } from '../props';
 import { stunStars } from '../props_allies';
 import { defineSprite, type AnimDef } from '../sprite';
 
@@ -150,7 +150,7 @@ async function buildAshBase(): Promise<Built> {
   addStars(b);
   return b;
 }
-export const buildAsh = rested(buildAshBase);
+
 
 /** curl into a ball: thighs up, shins folded, back rounded */
 function tuck(b: Built, k = 1): void {
@@ -195,6 +195,8 @@ async function buildAshFull(): Promise<Built> {
   b.parts.magic = magic;
   return b;
 }
+
+export const buildAsh = rested(buildAshFull);
 
 const ashAnims = anims({
   idle: { clip: 'Idle', frames: 8, loop: true },
