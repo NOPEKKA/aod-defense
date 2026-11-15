@@ -1,9 +1,9 @@
 {
  "id": "ash",
- "frameW": 345,
- "frameH": 232,
+ "frameW": 347,
+ "frameH": 285,
  "anchorX": 178,
- "anchorY": 192,
+ "anchorY": 243,
  "height": 169,
  "facing": 1,
  "shadow": true,
@@ -27,7 +27,7 @@
    "frames": 10,
    "duration": 0.5,
    "loop": false,
-   "hitAt": 0.4
+   "hitAt": 0.6
   },
   "attack:shoot": {
    "frames": 8,
@@ -45,6 +45,11 @@
    "frames": 4,
    "duration": 0.3,
    "loop": false
+  },
+  "stunned": {
+   "frames": 6,
+   "duration": 0.8,
+   "loop": true
   },
   "dodge": {
    "frames": 6,
