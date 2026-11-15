@@ -1,0 +1,23 @@
+{
+ "id": "fx_shockwave",
+ "frameW": 300,
+ "frameH": 110,
+ "anchorX": 150,
+ "anchorY": 55,
+ "height": 55,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 0.45,
+   "loop": false
+  }
+ },
+ "blend": "add",
+ "ground": true
+}

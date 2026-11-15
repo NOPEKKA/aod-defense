@@ -1,0 +1,23 @@
+{
+ "id": "fx_slash",
+ "frameW": 150,
+ "frameH": 150,
+ "anchorX": 75,
+ "anchorY": 75,
+ "height": 75,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 5,
+   "duration": 0.2,
+   "loop": false
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

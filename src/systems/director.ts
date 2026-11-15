@@ -28,6 +28,21 @@ export function createWaveApi(): WaveApi {
 
 const BOSS = '';
 
+/**
+ * 0..1 wave-bar positions (by spawn count) where each sub-wave after the first starts.
+ * A sub-wave starts after a pause between two spawns that is far longer than any spawn interval
+ * (the formula puts 15-25 s gaps between sub-waves, intervals are at most a few seconds).
+ * `maxInterval` is taken over groups of 3+ spawns only; a pair's single long interval is not a cadence.
+ */
+export function subwaveMarkers(times: readonly number[], maxInterval: number): number[] {
+  const out: number[] = [];
+  const minGap = Math.max(5, maxInterval * 3);
+  for (let i = 1; i < times.length; i++) {
+    if (times[i] - times[i - 1] >= minGap) out.push(Math.round((i / times.length) * 1000) / 1000);
+  }
+  return out;
+}
+
 export function createDirector(rt: WaveRuntime): SimSystem {
   // flattened schedule, sorted by time; enemy '' = the boss
   let times: number[] = [];
@@ -58,6 +73,7 @@ export function createDirector(rt: WaveRuntime): SimSystem {
       rt.allSpawned = entries.length === 0;
 
       const w = ctx.world.wave;
+      w.markers = subwaveMarkers(times, plan.groups.reduce((m, g) => (g.count >= 3 ? Math.max(m, g.interval) : m), 0));
       w.kind = bossId ? 'boss' : 'normal';
       w.enemiesTotal = entries.length;
       w.enemiesSpawned = 0;

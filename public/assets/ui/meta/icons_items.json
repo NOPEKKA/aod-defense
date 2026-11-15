@@ -1,0 +1,62 @@
+{
+ "id": "icons_items",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "ui_iron": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_gold": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_mana": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_skull": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_book": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_banner_advance": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_banner_hold": {
+   "w": 112,
+   "h": 112
+  },
+  "ui_anvil": {
+   "w": 112,
+   "h": 112
+  },
+  "relic_gravedigger_lantern": {
+   "w": 112,
+   "h": 112
+  },
+  "relic_mire_cauldron_shard": {
+   "w": 112,
+   "h": 112
+  },
+  "relic_hollow_spur": {
+   "w": 112,
+   "h": 112
+  },
+  "relic_censer_of_matins": {
+   "w": 112,
+   "h": 112
+  },
+  "relic_doppel_boomstick": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

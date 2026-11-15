@@ -1,0 +1,23 @@
+{
+ "id": "fx_spark_burst",
+ "frameW": 110,
+ "frameH": 110,
+ "anchorX": 55,
+ "anchorY": 55,
+ "height": 55,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 6,
+   "duration": 0.3,
+   "loop": false
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

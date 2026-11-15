@@ -109,6 +109,8 @@ test.describe('phase 3 / 1. controls', () => {
     await waitTicks(page, 20);
     expect(await ashX(page)).toBe(xs);
 
+    // v2: the wave starts with 10 iron (blacksmith L1 makes 1.2/s, cap 30): let the smithy fill the store first
+    await advance(page, 20_000);
     // --- 1 / 2 summon: exactly one unit per press, iron drops by the slot cost
     await clearEvents(page);
     let s = await snap(page);
@@ -198,6 +200,8 @@ test.describe('phase 3 / 1. controls', () => {
     await enterWaveViaMenus(page, 1);
     await recordEvents(page, BATTLE_EVENTS);
     await waitTicks(page, 5);
+    // v2: the wave starts with 10 iron (blacksmith L1 makes 1.2/s, cap 30): let the smithy fill the store first
+    await advance(page, 20_000);
 
     // unit slots
     const slot0 = await hudPoint(page, 'unitSlots', 0);
@@ -303,6 +307,8 @@ test.describe('phase 3 / 1. controls (touch)', () => {
     await recordEvents(page, BATTLE_EVENTS);
     const cdp = await page.context().newCDPSession(page);
     await waitTicks(page, 5);
+    // v2: the wave starts with 10 iron (blacksmith L1 makes 1.2/s, cap 30): let the smithy fill the store first
+    await advance(page, 20_000);
 
     // hold the right move zone
     const zr = await hudPoint(page, 'moveZoneRight', 0, 0.75, 0.5);
@@ -386,6 +392,8 @@ test.describe('phase 3 / 2. enemies', () => {
     expect(x1 - x2).toBeLessThan(190);
     expect((await worldEntities(page)).find((e) => e.id === id)!.facing).toBe(-1);
 
+    // v2: 10 iron at the start; the swordsman costs 20
+    await advance(page, 1000);
     // a swordsman walks out, meets the skeletons far from Ash, and takes hits
     await page.evaluate(() => (window as any).__aodd.input({ commands: [{ type: 'summon', slot: 1 }] }, 1));
     await advance(page, 100);
@@ -862,6 +870,8 @@ test.describe('phase 3 / extra checks', () => {
     await enterWaveViaMenus(page, 1);
     await recordEvents(page, ['unit:summoned', 'spell:cast', 'ui:aim']);
     await waitTicks(page, 5);
+    // v2: the wave starts with 10 iron (blacksmith L1 makes 1.2/s, cap 30): let the smithy fill the store first
+    await advance(page, 20_000);
 
     await page.setViewportSize({ width: 1600, height: 720 });
     await expect.poll(async () => (await battleGeo(page)).viewW).toBe(1600);
