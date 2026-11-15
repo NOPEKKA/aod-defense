@@ -58,7 +58,7 @@
     "hp": 500
   },
   "economy": {
-    "ironStart": 30,
+    "ironStart": 10,
     "ironRate": 4,
     "ironMax": 200,
     "manaMax": 100,

@@ -1,0 +1,22 @@
+{
+ "id": "fx_deathcoaster",
+ "frameW": 313,
+ "frameH": 247,
+ "anchorX": 139,
+ "anchorY": 176,
+ "height": 159,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "walk": {
+   "frames": 8,
+   "duration": 0.4,
+   "loop": true,
+   "stride": 150
+  }
+ }
+}

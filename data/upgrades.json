@@ -566,8 +566,8 @@
     "perLevel": [
       {
         "stat": "economy.iron.rate",
-        "op": "add",
-        "value": 1.5
+        "op": "mul",
+        "value": 0.08
       }
     ]
   },
@@ -583,7 +583,7 @@
       {
         "stat": "economy.iron.max",
         "op": "add",
-        "value": 50
+        "value": 10
       }
     ]
   },

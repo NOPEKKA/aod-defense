@@ -163,8 +163,12 @@ export function createInputSource(): InputSource {
     setAim(aim.slot, coords.toWorldX(viewX));
   };
 
-  const inField = (x: number, y: number): boolean =>
-    !!layout && (inRect(layout.moveZoneLeft, x, y) || inRect(layout.moveZoneRight, x, y));
+  const inField = (x: number, y: number): boolean => {
+    if (!layout || !(inRect(layout.moveZoneLeft, x, y) || inRect(layout.moveZoneRight, x, y))) return false;
+    // buttons win over the move zones where they overlap (rally, dodge, cancel-aim)
+    if (inRect(layout.rallyButton, x, y) || (!!world?.dodge.unlocked && inRect(layout.dodgeButton, x, y))) return false;
+    return !(aim.slot !== null && inRect(layout.cancelAimButton, x, y));
+  };
 
   const halfOf = (x: number): -1 | 1 => (layout && x < layout.moveZoneRight.x ? -1 : 1);
 
@@ -216,6 +220,20 @@ export function createInputSource(): InputSource {
     // enter aim, or switch to this spell keeping the current preview position
     if (aimViewX !== aimViewX && mouseOverField) aimViewX = mouseViewX;
     setAim(i, aimViewX === aimViewX && coords ? coords.toWorldX(aimViewX) : null);
+    return true;
+  };
+
+  /** blacksmith upgrade (B / tap the panel): gameplay-free, systems validate iron and level */
+  const pressSmith = (): boolean => {
+    if (!canAct()) return false;
+    queue({ type: 'smith' });
+    return true;
+  };
+
+  /** army stance toggle (G / tap the banner), handled by gameplay */
+  const pressRally = (): boolean => {
+    if (!canAct()) return false;
+    queue({ type: 'rally' });
     return true;
   };
 
@@ -320,6 +338,12 @@ export function createInputSource(): InputSource {
       case 'speed':
         if (toggleSpeed()) btn = 'speed';
         break;
+      case 'smith':
+        if (pressSmith()) btn = 'smith';
+        break;
+      case 'rally':
+        if (pressRally()) btn = 'rally';
+        break;
     }
     k.btn = btn;
     k.btnIndex = b.index;
@@ -358,6 +382,8 @@ export function createInputSource(): InputSource {
       }
     }
     if (w.dodge.unlocked && inRect(L.dodgeButton, x, y)) return 'dodge';
+    if (inRect(L.rallyButton, x, y)) return 'rally';
+    if (inRect(L.ironPanel, x, y)) return 'smith';
     return null;
   };
 
@@ -422,6 +448,12 @@ export function createInputSource(): InputSource {
           break;
         case 'dodge':
           ok = pressDodge();
+          break;
+        case 'smith':
+          ok = pressSmith();
+          break;
+        case 'rally':
+          ok = pressRally();
           break;
       }
       // a pointer that went down on a button never moves Ash, even if the press did nothing

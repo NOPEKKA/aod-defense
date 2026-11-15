@@ -1,0 +1,23 @@
+{
+ "id": "fx_magic_circle",
+ "frameW": 230,
+ "frameH": 84,
+ "anchorX": 115,
+ "anchorY": 42,
+ "height": 42,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 1.6,
+   "loop": true
+  }
+ },
+ "blend": "add",
+ "ground": true
+}

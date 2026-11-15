@@ -1,0 +1,21 @@
+{
+ "id": "coin",
+ "frameW": 48,
+ "frameH": 55,
+ "anchorX": 24,
+ "anchorY": 47,
+ "height": 39,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 0.8,
+   "loop": true
+  }
+ }
+}
