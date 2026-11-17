@@ -47,7 +47,7 @@ interface Glyph {
 
 const PAD = 2;
 const PAGE_PREFIX = 'aodd_atlas_';
-export const NUM_FONT_FAMILY = '"Segoe UI", "Noto Sans", Tahoma, Arial, sans-serif';
+export const NUM_FONT_FAMILY = 'Kanit, "Segoe UI", "Noto Sans", Tahoma, Arial, sans-serif';
 
 const registry = new Map<string, FrameInfo>();
 const warned = new Set<string>();
@@ -135,6 +135,9 @@ function layoutFont(spec: FontSpec, R: number): { item: ArtItem; glyphs: Glyph[]
   const meas = document.createElement('canvas').getContext('2d')!;
   meas.font = `bold ${spec.base}px ${NUM_FONT_FAMILY}`;
   const lineH = Math.ceil(spec.base * 1.32);
+  // centre the digits by their real ink box (fonts such as Kanit sit high on a 'middle' baseline)
+  const dm = meas.measureText('0123456789');
+  const inkMid = ((dm.actualBoundingBoxAscent || spec.base * 0.72) - (dm.actualBoundingBoxDescent || 0)) / 2;
   const gh = Math.ceil((lineH + 2) * R);
   const maxRow = Math.ceil(520 * R);
   const glyphs: Glyph[] = [];
@@ -162,7 +165,7 @@ function layoutFont(spec: FontSpec, R: number): { item: ArtItem; glyphs: Glyph[]
     ay: 0,
     draw(ctx) {
       ctx.font = `bold ${spec.base}px ${NUM_FONT_FAMILY}`;
-      ctx.textBaseline = 'middle';
+      ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'left';
       ctx.lineJoin = 'round';
       ctx.lineWidth = spec.outline * 2;
@@ -170,7 +173,7 @@ function layoutFont(spec: FontSpec, R: number): { item: ArtItem; glyphs: Glyph[]
       ctx.fillStyle = '#ffffff';
       for (const g of glyphs) {
         const lx = g.x / R + spec.outline + 1;
-        const ly = g.y / R + (lineH + 2) / 2 + 1;
+        const ly = g.y / R + (lineH + 2) / 2 + 1 + inkMid;
         ctx.strokeText(g.ch, lx, ly);
         ctx.fillText(g.ch, lx, ly);
       }

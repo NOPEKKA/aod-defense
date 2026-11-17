@@ -337,7 +337,7 @@ export class FxRenderer implements BattleRenderer {
       this.number(hx + (Math.random() - 0.5) * 20, top - 4, p.blocked ? '0' : numStr(Math.max(1, Math.round(p.amount))), tint, big ? 30 : 22);
     }
     if (isAsh && !p.blocked) {
-      this.vignetteA = Math.min(0.75, this.vignetteA + 0.3 + p.amount / 80);
+      this.vignetteA = Math.min(0.55, this.vignetteA + 0.25 + p.amount / 100);
       this.haptic(35);
       if (p.amount >= 15) {
         this.shake(120, 0.004);
@@ -645,7 +645,7 @@ export class FxRenderer implements BattleRenderer {
       if (info) {
         p.img.setTexture(info.tex, info.rest.names[0]).setOrigin(0.5, 0.5).clearTint();
         p.k = info.scale;
-        p.s0 = p.s1 = s;
+        p.s0 = p.s1 = s * 0.42;
       }
     }
   }

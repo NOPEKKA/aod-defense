@@ -211,13 +211,16 @@ export class Backdrop {
 
     // torches: flame sheet + flickering additive glow
     const torches = pick<Torch[]>('torches') ?? [];
+    // baked metas list a glow per torch themselves; the generated one does not
+    const metaGlows = this.meta.anchors['glows'] as Glow[] | undefined;
+    const torchGlows = !metaGlows || metaGlows.length < torches.length;
     for (const t of torches) {
       const p = new Prop(s, 'fx_fire', null, t.x, t.y, DEPTH.wallProps, 0.75 * (t.scale ?? 1));
       if (!p.info) p.img.setVisible(false);
       p.clipT = Math.random();
       this.props.push(p);
       this.flames.push({ prop: p, phase: Math.random() * 10 });
-      this.addGlow(t.x, t.y - 20 * (t.scale ?? 1), 150 * (t.scale ?? 1), parseInt(paletteOf(this.meta.chapter).torch.slice(1), 16), 0.42);
+      if (torchGlows) this.addGlow(t.x, t.y - 20 * (t.scale ?? 1), 150 * (t.scale ?? 1), parseInt(paletteOf(this.meta.chapter).torch.slice(1), 16), 0.42);
     }
     for (const g of pick<Glow[]>('glows') ?? []) this.addGlow(g.x, g.y, g.r, parseInt(g.color.replace('#', ''), 16), g.a);
     // forge fire

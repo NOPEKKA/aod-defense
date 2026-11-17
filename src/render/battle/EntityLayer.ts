@@ -27,6 +27,8 @@ const BAR_COLOR: Partial<Record<EntityKind, number>> = { ally: 0x6ad65a, hero: 0
 const CORPSE_HOLD = 1.6;
 /** baked shadow frames are full-strength alpha maps (ART_BIBLE 3: about 45%) */
 const SHADOW_A = 0.5;
+const FLASH_T = 0.12;
+const FLASH_WHITE = 0.035;
 const CORPSE_FADE = 0.6;
 const MAX_CORPSES = 28;
 const TAU = Math.PI * 2;
@@ -133,7 +135,7 @@ export class EntityLayer {
   onDamaged(id: number): void {
     const v = this.byId.get(id);
     if (!v) return;
-    v.flash = 0.07;
+    v.flash = FLASH_T;
     v.kick = 1;
   }
 
@@ -467,7 +469,9 @@ export class EntityLayer {
     img.setDepth(DEPTH.char + y + (e.kind === 'boss' ? 0.4 : 0) + x * 1e-5);
 
     // tint: hit flash > statuses > chapter grade
-    if (v.flash > 0) img.setTintFill(0xffffff);
+    // hit flash: a brief white pop, then a warm red tint while the knock-back plays
+    if (v.flash > FLASH_T - FLASH_WHITE && e.kind !== 'ash') img.setTintFill(0xfff4ec);
+    else if (v.flash > 0) img.setTint(0xff9a8a);
     else {
       let tint = this.tint;
       for (let s2 = 0; s2 < e.statuses.length; s2++) {
