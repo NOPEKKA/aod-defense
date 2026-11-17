@@ -3,9 +3,9 @@ import * as THREE from 'three';
 import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
 import { at, cyl, PAL } from '../props';
-import { arrowProp, bow, flame, kettleHelm, pitchfork, plume, shortSword, spear, strawHat, tabard } from '../props_allies';
+import { arrowProp, bow, flame, horse, horsePose, kettleHelm, lance, pitchfork, plume, shortSword, spear, strawHat, tabard } from '../props_allies';
 import { defineSprite } from '../sprite';
-import { anims, BLUE, BLUE_LIGHT, rested } from './allies';
+import { anims, BLUE, BLUE_LIGHT, bump, nudge, rested, type Apply } from './allies';
 
 const ADV = '/kaykit/adventurers';
 const DUN = '/kaykit/dungeon';
@@ -188,3 +188,87 @@ defineSprite({
   }),
 });
 definePortrait('portrait_unit_crossbowman', 'allies', buildCrossbowman);
+
+// --- horseman ------------------------------------------------------------
+let lastRider: Built | undefined;
+async function buildRiderOnly(): Promise<Built> {
+  const b = await buildHorseman();
+  return b;
+}
+const buildHorseman = rested(async () => {
+  const t = tabard();
+  const rider: Built = await character({
+    base: `${ADV}/Knight.glb`,
+    hide: ['Knight_Cape'],
+    recolor: { '0,1': BLUE },
+    attach: [
+      { to: 'handslot.r', object: lance(), as: 'lance' },
+      { to: 'head', object: plume(), pos: [0, 0.98, -0.05], as: 'plume' },
+      { to: 'chest', object: t.chest, as: 'tabard' },
+    ],
+    hands: [],
+  });
+  const h = horse();
+  const holder = new THREE.Group();
+  holder.add(rider.root);
+  rider.root.position.set(0, 0.92, -0.05);
+  const root = new THREE.Group();
+  root.add(h, holder);
+  return { root, inst: rider.inst, parts: { ...rider.parts, horse: h, rider: holder, riderRoot: rider.root } } as Built;
+});
+
+const sit: Apply = (b, _u, _f) => {
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    nudge(b, `upperleg.${s}`, -70, 0, 28 * k);
+    nudge(b, `lowerleg.${s}`, 70);
+  }
+};
+function mount(gait: 'gallop' | 'idle', riderBob = 0): Apply {
+  return (b, u) => {
+    horsePose(b.parts.horse, gait, u);
+    sit(b, u, 0);
+    const bodyY = (b.parts.horse.userData.body as THREE.Object3D).position.y - 1.2;
+    b.parts.rider.position.set(0, bodyY * (1 + riderBob), 0);
+  };
+}
+const horsemanAnims = anims({
+  idle: { clip: 'Idle', frames: 8, loop: true, apply: mount('idle') },
+  walk: { clip: 'Idle', frames: 12, loop: true, duration: 0.7, stride: 150, apply: mount('gallop', 0.2) },
+  attack: {
+    clip: '1H_Melee_Attack_Stab',
+    from: 0.1,
+    to: 1.0,
+    frames: 10,
+    duration: 0.6,
+    hitAt: 0.5,
+    apply: (b, u, f) => {
+      mount('gallop')(b, u, f);
+    },
+  },
+  hurt: {
+    clip: 'Hit_A',
+    frames: 4,
+    duration: 0.35,
+    apply: (b, u, f) => {
+      mount('idle')(b, u, f);
+      horsePose(b.parts.horse, 'rear', bump(u, 0, 1));
+      b.parts.rider.rotation.x = -0.42 * bump(u, 0, 1);
+    },
+  },
+  die: {
+    clip: 'Death_A',
+    from: 0,
+    to: 0.3,
+    frames: 10,
+    duration: 1.0,
+    apply: (b, u, f) => {
+      sit(b, u, f);
+      horsePose(b.parts.horse, 'fall', u);
+      b.parts.rider.rotation.z = b.parts.horse.rotation.z;
+      b.parts.rider.position.copy(b.parts.horse.position);
+    },
+  },
+});
+defineSprite({ id: 'unit_horseman', facing: 1, build: buildHorseman, anims: horsemanAnims });
+definePortrait('portrait_unit_horseman', 'allies', async () => buildRiderOnly());

@@ -14,7 +14,8 @@ import * as THREE from 'three';
 import { byName, pose } from '../assets';
 import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
-import { at, boomstick, chainsaw, glow } from '../props';
+import { at, boomstick, chainsaw, glow, PAL } from '../props';
+import { tabard } from '../props_allies';
 import { stunStars } from '../props_allies';
 import { defineSprite, type AnimDef } from '../sprite';
 
@@ -220,11 +221,16 @@ definePortrait('portrait_ash', 'allies', buildAsh);
 // Swordsman: Knight with sword and round blue-and-white shield, Arthur's blue.
 // ---------------------------------------------------------------------------
 async function buildSwordsman(): Promise<Built> {
+  const t = tabard(PAL.blue, 0xf0f0ea, 0xf0f0ea);
   return character({
     base: `${ADV}/Knight.glb`,
     hands: ['1H_Sword'],
     recolor: { '0,1': BLUE },
-    attach: [{ to: 'handslot.l', object: `${ADV}/props/shield_round_color.gltf`, pos: [0, 0.02, 0.16], recolor: { '2,2': BLUE }, as: 'shield' }],
+    attach: [
+      { to: 'handslot.l', object: `${ADV}/props/shield_round_color.gltf`, pos: [0, 0.02, 0.16], recolor: { '2,2': BLUE }, as: 'shield' },
+      { to: 'chest', object: t.chest, as: 'tabard' },
+      { to: 'hips', object: t.hips, as: 'skirt' },
+    ],
     mirror: true,
   });
 }
