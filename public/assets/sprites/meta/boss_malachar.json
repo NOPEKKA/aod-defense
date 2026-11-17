@@ -1,0 +1,70 @@
+{
+ "id": "boss_malachar",
+ "frameW": 959,
+ "frameH": 549,
+ "anchorX": 326,
+ "anchorY": 482,
+ "height": 459,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 9,
+  "sd": 4
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 8,
+   "duration": 1.6,
+   "loop": true,
+   "stride": 103
+  },
+  "hurt": {
+   "frames": 3,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 8,
+   "duration": 1.1,
+   "loop": false
+  },
+  "telegraph:raise_dead": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:raise_dead": {
+   "frames": 6,
+   "duration": 0.9,
+   "loop": false,
+   "hitAt": 0.45
+  },
+  "telegraph:black_bell": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:black_bell": {
+   "frames": 6,
+   "duration": 0.6,
+   "loop": false,
+   "hitAt": 0.45
+  },
+  "telegraph:float_fireballs": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:float_fireballs": {
+   "frames": 6,
+   "duration": 0.9,
+   "loop": false,
+   "hitAt": 0.4
+  }
+ }
+}

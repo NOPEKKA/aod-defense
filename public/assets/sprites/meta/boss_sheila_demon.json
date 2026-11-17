@@ -1,0 +1,70 @@
+{
+ "id": "boss_sheila_demon",
+ "frameW": 626,
+ "frameH": 606,
+ "anchorX": 340,
+ "anchorY": 545,
+ "height": 388,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 6,
+  "sd": 3
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true,
+   "stride": 40
+  },
+  "hurt": {
+   "frames": 3,
+   "duration": 0.35,
+   "loop": false
+  },
+  "die": {
+   "frames": 9,
+   "duration": 1,
+   "loop": false
+  },
+  "telegraph:swoop": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:swoop": {
+   "frames": 6,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:summon": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:summon": {
+   "frames": 6,
+   "duration": 0.9,
+   "loop": false,
+   "hitAt": 0.45
+  },
+  "telegraph:scream": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:scream": {
+   "frames": 6,
+   "duration": 0.8,
+   "loop": false,
+   "hitAt": 0.35
+  }
+ }
+}

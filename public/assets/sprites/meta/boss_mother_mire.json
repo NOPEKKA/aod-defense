@@ -1,0 +1,81 @@
+{
+ "id": "boss_mother_mire",
+ "frameW": 529,
+ "frameH": 475,
+ "anchorX": 312,
+ "anchorY": 392,
+ "height": 377,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 7,
+  "sd": 4
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true,
+   "stride": 70
+  },
+  "hurt": {
+   "frames": 3,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 8,
+   "duration": 1,
+   "loop": false
+  },
+  "telegraph:toss_poison": {
+   "frames": 4,
+   "duration": 0.7,
+   "loop": false
+  },
+  "attack:toss_poison": {
+   "frames": 6,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.4
+  },
+  "telegraph:mud_wave": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:mud_wave": {
+   "frames": 6,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:steam_beam": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:steam_beam": {
+   "frames": 6,
+   "duration": 0.8,
+   "loop": false,
+   "hitAt": 0.3
+  },
+  "telegraph:summon": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:summon": {
+   "frames": 6,
+   "duration": 0.9,
+   "loop": false,
+   "hitAt": 0.45
+  }
+ }
+}
