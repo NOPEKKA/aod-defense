@@ -9,7 +9,7 @@ import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
 import { defineSprite, type AnimDef } from '../sprite';
 import { glow } from '../props';
-import { addSampler, boneSpear, DEAD, deaditeEyes, LEFT_ARM, overlay, RECOLOR, clipLength } from '../props_enemies';
+import { addSampler, boneSpear, wingPair, flap, claws, TAU, DEAD, deaditeEyes, LEFT_ARM, overlay, RECOLOR, clipLength } from '../props_enemies';
 
 const SKE = '/kaykit/skeletons';
 const HELM = (rc: Record<string, string | [string, string]> = {}) => ({ from: SKE + '/Skeleton_Warrior.glb', node: 'Skeleton_Warrior_Helmet', to: 'head', recolor: { '3,0': DEAD.rust, '4,0': DEAD.rustDark, '2,2': DEAD.red, ...rc } });
@@ -218,3 +218,38 @@ defineSprite({
 definePortrait('portrait_enemy_skeleton_knight', 'enemies', buildKnight, { yaw: -32 });
 
 void clipLength;
+
+// ---------------------------------------------------------------------------
+// Winged Deadite: baked at ground level, the game lifts it. Wings flap in every animation.
+// ---------------------------------------------------------------------------
+async function buildWinged() {
+  const w = wingPair(1.4);
+  const b = await character({
+    base: `${SKE}/Skeleton_Rogue.glb`,
+    hide: ['Skeleton_Rogue_Cape', 'Skeleton_Rogue_Hood'],
+    recolor: RECOLOR.Rogue,
+    emissive: deaditeEyes('Skeleton_Rogue', 2.8),
+    attach: [
+      { to: 'chest', object: w.left, as: 'wingL' },
+      { to: 'chest', object: w.right, as: 'wingR' },
+      { to: 'handslot.r', object: claws() },
+      { to: 'handslot.l', object: claws() },
+    ],
+    scale: 0.95,
+  });
+  return b;
+}
+const wingAnim = (cycles: number, amp = 32, fold = 0) => (b: Built, u: number) => flap(b, amp * Math.sin(u * TAU * cycles) + 52, fold);
+defineSprite({
+  id: 'enemy_winged_deadite',
+  facing: -1,
+  build: buildWinged,
+  anims: {
+    idle: { clip: 'Idle', frames: 8, loop: true, apply: wingAnim(2) },
+    walk: { clip: 'Idle', frames: 12, loop: true, duration: 0.8, apply: wingAnim(2, 42) },
+    attack: { clip: '1H_Melee_Attack_Slice_Diagonal', frames: 10, duration: 0.6, hitAt: 0.45, apply: wingAnim(1.5, 45) },
+    hurt: { clip: 'Hit_A', frames: 4, duration: 0.3, apply: wingAnim(1, 30) },
+    die: { clip: 'Death_C_Skeletons', frames: 12, duration: 1.0, apply: (b, u) => flap(b, 52 + 30 * (1 - u) * Math.sin(u * TAU * 2) - 40 * u, u) },
+  },
+});
+definePortrait('portrait_enemy_winged_deadite', 'enemies', buildWinged, { yaw: -32 });
