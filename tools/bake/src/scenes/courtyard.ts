@@ -64,7 +64,115 @@ const DUSK: Variant = {
   extras: {},
 };
 
-export const VARIANTS: Record<string, Variant> = { courtyard_dusk: DUSK };
+
+const STORM: Variant = {
+  id: 'courtyard_storm',
+  chapter: 2,
+  sky: {
+    stops: [
+      [0, '#161b2a'],
+      [0.5, '#2c3548'],
+      [1, '#56627a'],
+    ],
+    glow: { x: 800, y: 120, r: 520, color: '#9ab0d8', a: 0.3 },
+    stars: 0,
+    clouds: { n: 22, color: '#10141f', a: 0.9, y0: 10, y1: 200 },
+  },
+  light: {
+    sun: { dir: [0.2, 0.7, 0.6], color: 0x9ab4e8, intensity: 0.7 },
+    sky: { color: 0x7488b8, intensity: 0.95 },
+    bounce: { color: 0x2c3a4c, intensity: 0.3 },
+    ambient: { color: 0x44506e, intensity: 0.55 },
+  },
+  torch: { color: 0xffa550, intensity: 6.5, glow: '#ffa550', glowA: 0.3 },
+  haze: { color: '#34405a', a: 0.7 },
+  fog: { color: [0.08, 0.1, 0.16], amount: 0.2 },
+  grade: { spriteTint: '#c4d0e8', fog: 0.2, weather: 'rain' },
+  extras: { wet: true },
+};
+
+const NIGHT: Variant = {
+  id: 'courtyard_night',
+  chapter: 3,
+  sky: {
+    stops: [
+      [0, '#070b1c'],
+      [0.6, '#12204a'],
+      [1, '#2a3f78'],
+    ],
+    glow: { x: 1050, y: 110, r: 480, color: '#7fa6ff', a: 0.28 },
+    moon: { x: 1040, y: 52, r: 42, color: '#e8f0ff', halo: 'rgba(120,160,255,0.35)' },
+    stars: 260,
+    clouds: { n: 5, color: '#1b2a55', a: 0.5, y0: 40, y1: 170 },
+  },
+  light: {
+    sun: { dir: [0.5, 0.6, 0.62], color: 0x9ab8ff, intensity: 1.15 },
+    sky: { color: 0x6a86d0, intensity: 0.95 },
+    bounce: { color: 0x2a3858, intensity: 0.3 },
+    ambient: { color: 0x3c4a84, intensity: 0.55 },
+  },
+  torch: { color: 0xff9a3c, intensity: 9, glow: '#ff9a3c', glowA: 0.38 },
+  haze: { color: '#233a78', a: 0.6 },
+  fog: { color: [0.05, 0.08, 0.2], amount: 0.1 },
+  grade: { spriteTint: '#c8d8ff', fog: 0.1, weather: 'none' },
+  extras: {},
+};
+
+const FIRE: Variant = {
+  id: 'courtyard_fire',
+  chapter: 4,
+  sky: {
+    stops: [
+      [0, '#1c0c10'],
+      [0.45, '#5a1c14'],
+      [1, '#d4501c'],
+    ],
+    glow: { x: 700, y: 230, r: 800, color: '#ff7a24', a: 0.6 },
+    stars: 0,
+    clouds: { n: 16, color: '#150a0c', a: 0.85, y0: 20, y1: 200 },
+  },
+  light: {
+    sun: { dir: [-0.2, 0.35, 0.8], color: 0xff7a38, intensity: 0.5 },
+    sky: { color: 0xa05a58, intensity: 0.6 },
+    bounce: { color: 0x7a3418, intensity: 0.4 },
+    ambient: { color: 0x40282e, intensity: 0.3 },
+  },
+  torch: { color: 0xff8a2a, intensity: 3.5, glow: '#ff7a1e', glowA: 0.4 },
+  haze: { color: '#a8381c', a: 0.65 },
+  fog: { color: [0.14, 0.05, 0.04], amount: 0.2 },
+  grade: { spriteTint: '#ffc8a0', fog: 0.15, weather: 'embers' },
+  extras: { burning: true },
+};
+
+const BLOOD: Variant = {
+  id: 'courtyard_bloodmoon',
+  chapter: 5,
+  sky: {
+    stops: [
+      [0, '#12040c'],
+      [0.55, '#3a0c1c'],
+      [1, '#6a1830'],
+    ],
+    glow: { x: 900, y: 120, r: 560, color: '#ff3040', a: 0.4 },
+    moon: { x: 880, y: 56, r: 50, color: '#d83a36', halo: 'rgba(220,40,50,0.4)' },
+    stars: 90,
+    clouds: { n: 8, color: '#2a0c1c', a: 0.7, y0: 40, y1: 190 },
+  },
+  light: {
+    sun: { dir: [0.35, 0.55, 0.7], color: 0xff5a54, intensity: 1.1 },
+    sky: { color: 0xa0508c, intensity: 0.9 },
+    bounce: { color: 0x4a2040, intensity: 0.35 },
+    ambient: { color: 0x5a3070, intensity: 0.6 },
+  },
+  torch: { color: 0xffa04a, intensity: 5, glow: '#ff9040', glowA: 0.3 },
+  haze: { color: '#6a2a70', a: 0.65 },
+  fog: { color: [0.16, 0.07, 0.2], amount: 0.16 },
+  grade: { spriteTint: '#e8b8e8', fog: 0.3, weather: 'fog' },
+  extras: { graves: true, mist: true },
+};
+
+export const VARIANTS: Record<string, Variant> = { courtyard_dusk: DUSK, courtyard_storm: STORM, courtyard_night: NIGHT, courtyard_fire: FIRE, courtyard_bloodmoon: BLOOD };
+
 
 // ---------------------------------------------------------------------------
 // layout (world units)
@@ -163,7 +271,7 @@ function hexA(css: string, a: number): string {
 // far layer: silhouettes behind the wall
 // ---------------------------------------------------------------------------
 
-const FAR_CAM: LayerCam = { ppu: 50, originX: 0, groundY: 235 };
+const FAR_CAM: LayerCam = { ppu: 50, originX: 0, groundY: 285 };
 
 async function buildFar(v: Variant) {
   const root = sceneRoot();
@@ -438,6 +546,50 @@ async function buildMain(v: Variant) {
   }
   b.points.push({ pos: [33.2, 1.0, -1.0], color: 0xa04a30, intensity: 3, distance: 8, decay: 2, jitter: 0.1 });
 
+
+  // ---- variant dressing ---------------------------------------------------------
+  if (v.extras.graves) {
+    const stones: Array<[string, number, number, number, number]> = [
+      ['gravestone', 14.2, -2.7, 0.9, 5], ['grave_A', 15.1, -2.4, 0.9, -8], ['gravemarker_B', 16.0, -2.9, 1.0, 12],
+      ['gravestone', 20.0, -2.5, 0.9, -4], ['gravemarker_A', 21.0, -2.9, 1.0, 20], ['grave_B', 22.2, -2.5, 0.9, 0],
+      ['gravestone', 26.1, -2.8, 0.9, 8], ['grave_A_destroyed', 27.4, -2.4, 0.9, -15], ['gravemarker_B', 28.3, -2.9, 1.0, -6],
+      ['gravestone', 11.8, -2.3, 0.9, 10], ['coffin', 18.2, -2.2, 0.9, 80],
+    ];
+    for (const [n, x, z, sc, ry] of stones) await put(root, `${HAL}${n}.gltf`, x, z, { s: sc * 1.1, ry });
+    await put(root, `${HAL}tree_dead_large.gltf`, 12.6, -2.9, { s: 0.9, ry: 20 });
+    await put(root, `${HAL}tree_dead_large_decorated.gltf`, 24.0, -3.0, { s: 0.9, ry: 200 });
+    await put(root, `${HAL}tree_dead_medium.gltf`, 30.0, -2.8, { s: 0.8, ry: 90 });
+    await put(root, `${HAL}skull.gltf`, 19.5, -1.9, { s: 0.6 });
+    await put(root, `${HAL}ribcage.gltf`, 29.1, -1.8, { s: 0.6, ry: 40 });
+    await put(root, `${HAL}bone_A.gltf`, 13.4, -1.9, { s: 1.0, ry: 70 });
+    await put(root, `${HAL}pumpkin_orange_jackolantern.gltf`, 25.3, -2.1, { s: 1.0 });
+  }
+  if (v.extras.burning) {
+    for (const x of [px(1560), px(1850), px(2150)]) {
+      const c = cart({ charred: true, load: 'hay' });
+      c.position.set(x + 1.6, 0, -2.5);
+      c.rotation.y = 0.3;
+      root.add(c);
+    }
+    const fireSpots: Array<[number, number, number, number]> = [
+      [px(1560) + 1.6, 1.6, -2.2, 1.7], [px(1850) + 1.6, 1.6, -2.4, 1.7], [px(2150) + 1.6, 1.6, -2.6, 1.7],
+      [px(640), 3.4, -2.6, 1.5], [px(560), 3.3, -2.5, 1.2], [px(700), 3.2, -2.5, 1.3],
+      [12.0, 4.2, -3.6, 1.4], [29.6, 4.3, -3.6, 1.6],
+    ];
+    for (const [x, y, z, sc] of fireSpots) {
+      const fp = project(x, y, z);
+      b.torches.push({ x: Math.round(fp.x), y: Math.round(fp.y), scale: sc });
+      b.glows.push({ x: Math.round(fp.x), y: Math.round(fp.y - 20), r: 300, color: '#ff6a18', a: 0.4 });
+      b.points.push({ pos: [x, y + 0.6, z + 0.6], color: 0xff6a22, intensity: 3.5, distance: 12, decay: 2, jitter: 0.25, shadow: false });
+    }
+    for (const x of [8.5, 12.5, 29.0]) {
+      const m = box(3.2, 3.0, 0.05, mat(0x0c0807, { opacity: 0.55 }));
+      m.position.set(x, 2.0, FACE_Z + 0.03);
+      m.castShadow = false;
+      root.add(m);
+    }
+  }
+
   return { b, gt };
 }
 
@@ -520,7 +672,28 @@ async function build(v: Variant): Promise<BuiltScene> {
       grade,
       yRange: [-1, 14],
       zRange: [-12, 11],
+      post: v.fog.amount > 0
+        ? (p): void => {
+            const low = Math.exp(-Math.max(p.y, 0) * 0.55) * (0.45 + 0.55 * clamp01((p.z + 3.5) / 5));
+            const t = clamp01(v.fog.amount * (0.35 + low * 1.4) + (p.lx > 2380 ? 0.12 : 0));
+            p.r += (v.fog.color[0] - p.r) * t;
+            p.g += (v.fog.color[1] - p.g) * t;
+            p.b += (v.fog.color[2] - p.b) * t;
+          }
+        : undefined,
       paint: (g, w, h) => {
+        if (v.extras.burning) {
+          g.save();
+          g.globalCompositeOperation = 'source-atop';
+          for (const t of b.torches.filter((q) => q.scale > 1.1)) {
+            const sg = g.createLinearGradient(t.x, t.y, t.x + 10, t.y - 190);
+            sg.addColorStop(0, 'rgba(8,4,4,0.5)');
+            sg.addColorStop(1, 'rgba(8,4,4,0)');
+            g.fillStyle = sg;
+            g.fillRect(t.x - 55, t.y - 200, 110, 200);
+          }
+          g.restore();
+        }
         g.save();
         g.globalCompositeOperation = 'source-atop';
         const gr = g.createLinearGradient(0, 540, 0, 720);
