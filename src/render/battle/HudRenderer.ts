@@ -274,6 +274,10 @@ export class HudRenderer implements BattleRenderer {
       this.showBanner(this.view.t(key, { n: p.wave, total: this.view.data.balance.campaignWaves }), p.kind === 'boss' ? this.view.t('hud.boss_wave') : '', 2.2);
       this.refreshLabels();
     });
+    on('boss:spawned', () => {
+      // the FX boss banner takes the stage
+      this.bannerT = 0;
+    });
     on('settings:changed', () => {
       this.refreshLabels();
       this.pause.rebuild(this.layout);

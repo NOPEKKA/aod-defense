@@ -20,6 +20,7 @@ import { DEPTH } from './depth';
 export interface EntityFxHooks {
   footDust(x: number, y: number, big: boolean): void;
   ember(x: number, y: number): void;
+  trail(x: number, y: number, tint: number): void;
 }
 
 const BAR_W = { small: 46, normal: 54, large: 66, huge: 0 } as const;
@@ -82,6 +83,8 @@ export interface Vis {
   flip: boolean;
   scaleBase: number;
   role: PlaceholderRole;
+  /** multiply tint of an aliased projectile */
+  tintKey: number;
 }
 
 export class EntityLayer {
@@ -92,6 +95,7 @@ export class EntityLayer {
   private pool: Vis[] = [];
   private corpses: Vis[] = [];
   private frameNo = 0;
+  private paused = false;
   private clock = 0;
   private postClock = 0;
   private bars!: Phaser.GameObjects.Graphics;
@@ -157,7 +161,7 @@ export class EntityLayer {
         id: 0, kind: e.kind, img, shadow, sprite: '', shown: '', info: null, ph: null, height: 100, clip: null, anim: '', action: '',
         lastTA: 0, hitBase: -1, hitTick: -1, windup: 0, windupAlt: 0, teleT: 0, dist: 0, lastX: 0, phase: 0, seen: 0, age: 0,
         flash: 0, kick: 0, lunge: 0, hpShown: 1, hpLag: 1, dying: false, corpse: -1, x: 0, y: 0, drawY: 0, frame: -1, retry: 0,
-        dustT: 0, emberT: 0, flip: false, scaleBase: 1, role: 'ally',
+        dustT: 0, emberT: 0, flip: false, scaleBase: 1, role: 'ally', tintKey: 0xffffff,
       };
     }
     v.id = e.id;
@@ -211,9 +215,17 @@ export class EntityLayer {
   }
 
   /** (Re)binds the sprite: baked info when loaded, else the neutral placeholder (lazy-loads the atlas). */
-  private bind(v: Vis, e: EntityState, key: string): void {
-    v.shown = key;
+  private bind(v: Vis, e: EntityState, want: string): void {
+    v.shown = want;
     v.sprite = e.sprite;
+    // thrown things without baked art borrow a baked look-alike (coffin -> rock, poison -> green orb)
+    let key = want;
+    v.tintKey = 0xffffff;
+    if ((e.kind === 'projectile' || e.kind === 'effect') && !spriteMeta(want)) {
+      const al = projectileAlias(want);
+      key = al.key;
+      v.tintKey = al.tint;
+    }
     v.info = getSpriteInfo(this.scene, key);
     v.clip = null;
     v.anim = '';
@@ -259,6 +271,7 @@ export class EntityLayer {
   frame(view: RenderView, alpha: number, dt: number): void {
     const world = view.world;
     const paused = view.paused;
+    this.paused = paused;
     if (!paused) this.clock += dt;
     if (world.outcome && !paused) this.postClock += dt;
     this.frameNo++;
@@ -703,15 +716,20 @@ export class EntityLayer {
     const dx = e.x - e.prevX;
     const dy = e.y - e.alt - (e.prevY - e.prevAlt);
     let rot = dx === 0 && dy === 0 ? (e.facing < 0 ? Math.PI : 0) : Math.atan2(dy, dx);
-    if (e.sprite === 'rock') rot = this.clock * 9 + v.phase;
+    const tumbling = e.sprite === 'rock' || v.tintKey !== 0xffffff || (v.info !== null && v.info.key === 'rock');
+    if (tumbling) rot = this.clock * 9 + v.phase;
     if (v.info) {
       const clip = v.info.rest;
       const f = clip.frames > 1 ? Math.floor(((this.clock + v.phase) / clip.duration) * clip.frames) % clip.frames : 0;
       img.setFrame(clip.names[f], false, false);
     }
     const s = v.scaleBase;
-    img.setPosition(x, y - alt).setRotation(rot).setScale(s, s).setAlpha(1).setDepth(DEPTH.char + y + 0.5);
-    img.clearTint();
+    // pre-v2 sim: a projectile's y is its height on screen; keep it in front of the ground units it flies past
+    const airborne = alt <= 0 && y < this.gy - 24;
+    img.setPosition(x, y - alt).setRotation(rot).setScale(s, s).setAlpha(1).setDepth(DEPTH.char + (airborne ? this.gy + 80 : y + 0.5));
+    if (v.tintKey !== 0xffffff) img.setTint(v.tintKey);
+    else img.clearTint();
+    if (this.fx && !this.paused && (e.sprite === 'fireball' || v.tintKey === 0x9aff6a) && (this.frameNo & 1) === 0) this.fx.trail(x, y - alt, e.sprite === 'fireball' ? 0xff8a2a : 0x8aff5a);
     v.drawY = y - alt;
     // small shadow for things in the air
     if (alt > 8 && (e.sprite === 'rock' || e.sprite === 'fireball')) {
@@ -805,6 +823,16 @@ function roleOf(e: EntityState): PlaceholderRole {
     default:
       return 'ally';
   }
+}
+
+/** baked stand-ins for thrown things that have no art of their own */
+function projectileAlias(key: string): { key: string; tint: number } {
+  if (key.includes('poison') || key.includes('mire') || key.includes('acid') || key.includes('slime')) return { key: 'mana_orb', tint: 0x9aff6a };
+  if (key.includes('head') || key.includes('pumpkin') || key.includes('fire') || key.includes('flame')) return { key: 'fireball', tint: 0xffffff };
+  if (key.includes('coffin') || key.includes('stone') || key.includes('boulder') || key.includes('rock')) return { key: 'rock', tint: 0xd8c8b0 };
+  if (key.includes('bolt')) return { key: 'bolt', tint: 0xffffff };
+  if (key.includes('arrow')) return { key: 'arrow', tint: 0xffffff };
+  return { key, tint: 0xffffff };
 }
 
 function hasStatus(e: EntityState, id: string): boolean {

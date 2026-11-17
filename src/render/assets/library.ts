@@ -34,6 +34,8 @@ export interface SpriteMeta {
   shadow: boolean;
   pages: Record<string, number>;
   anims: Record<string, AnimMeta>;
+  /** display multiplier baked into the meta (bosses 1.1-1.45); anchors scale with it. Missing = 1 */
+  scale?: number;
   /** fx_* sprites: how to blend the effect ('add' for fire, sparks, magic) */
   blend?: 'add' | 'normal';
   /** fx_* ground-plane sheets (already squashed for the camera pitch): scale uniformly */

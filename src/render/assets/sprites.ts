@@ -28,7 +28,7 @@ export interface SpriteInfo {
   /** origin fractions of the anchor inside the untrimmed frame */
   ox: number;
   oy: number;
-  /** display scale (1 / texture px per logical px) */
+  /** display scale (meta.scale / texture px per logical px) */
   scale: number;
   facing: 1 | -1;
   /** logical px from the anchor to the top of the resting pose */
@@ -95,15 +95,19 @@ export function getSpriteInfo(scene: Phaser.Scene, key: string): SpriteInfo | nu
     cache.set(key, null);
     return null;
   }
+  // bosses carry a display multiplier; their meta.height is not reliable, the anchor is
+  const mul = meta.scale && meta.scale > 0 ? meta.scale : 1;
+  const unreliable = key.startsWith('boss_') || !(meta.height > meta.anchorY * 0.3);
+  const height = (unreliable ? meta.anchorY * 0.92 : meta.height) * mul;
   const info: SpriteInfo = {
     key,
     tex,
     meta,
     ox: meta.frameW > 0 ? meta.anchorX / meta.frameW : 0.5,
     oy: meta.frameH > 0 ? meta.anchorY / meta.frameH : 1,
-    scale: 1 / assetScale(),
+    scale: mul / assetScale(),
     facing: meta.facing === -1 ? -1 : 1,
-    height: meta.height > 0 ? meta.height : meta.frameH * 0.8,
+    height: height > 0 ? height : meta.frameH * 0.8 * mul,
     frameW: meta.frameW,
     frameH: meta.frameH,
     hasShadow: meta.shadow && texture.has('shadow'),

@@ -337,7 +337,7 @@ export class FxRenderer implements BattleRenderer {
       this.number(hx + (Math.random() - 0.5) * 20, top - 4, p.blocked ? '0' : numStr(Math.max(1, Math.round(p.amount))), tint, big ? 30 : 22);
     }
     if (isAsh && !p.blocked) {
-      this.vignetteA = Math.min(0.55, this.vignetteA + 0.25 + p.amount / 100);
+      this.vignetteA = Math.min(0.42, this.vignetteA + 0.2 + p.amount / 120);
       this.haptic(35);
       if (p.amount >= 15) {
         this.shake(120, 0.004);
@@ -869,7 +869,7 @@ export class FxRenderer implements BattleRenderer {
     this.flashA = Math.max(0, this.flashA - realDt * 3);
     const ash = this.ent(view.world.ashId);
     let low = 0;
-    if (ash && ash.hp > 0 && ash.hp / ash.maxHp < 0.3) low = 0.22 + 0.1 * Math.sin(this.clock * 6);
+    if (ash && ash.hp > 0 && ash.hp / ash.maxHp < 0.3) low = 0.16 + 0.08 * Math.sin(this.clock * 6);
     if (this.ashDead) {
       low = 0.55;
       this.dimA = Math.min(0.45, this.dimA + realDt * 0.6);
