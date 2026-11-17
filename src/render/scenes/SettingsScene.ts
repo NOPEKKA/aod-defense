@@ -1,5 +1,6 @@
 import { SceneKey, type Settings, type SettingsSceneData } from '../../contracts';
 import { C, addNum, addText, numStr } from '../style';
+import { barFill, trough } from '../ui/skin';
 import { Button, confirmDialog, panel, toast } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
 
@@ -34,9 +35,9 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     const lx = vw / 2 - colW - 14;
     const rx = vw / 2 + 14;
     const top = 100;
-    const rowH = 82;
-    panel(this, lx - 12, top - 10, colW + 24, rowH * 6 + 24);
-    panel(this, rx - 12, top - 10, colW + 24, rowH * 6 + 24);
+    const rowH = 76;
+    panel(this, lx - 12, top - 10, colW + 24, rowH * 7 + 24);
+    panel(this, rx - 12, top - 10, colW + 24, rowH * 7 + 24);
 
     let y = top + rowH / 2;
     this.choice(lx, y, colW, this.t('settings.lang'), [['th', this.t('lang.th')], ['en', this.t('lang.en')]], s.lang, (v) => this.apply({ lang: v as Settings['lang'] }));
@@ -44,6 +45,9 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     this.choice(lx, y, colW, this.t('settings.fps'), [['0', this.t('settings.fps_unlimited', { hz: this.app.refreshHz })], ['60', '60 fps']], String(s.fpsCap), (v) => this.apply({ fpsCap: v === '60' ? 60 : 0 }));
     y += rowH;
     this.choice(lx, y, colW, this.t('settings.fx'), [['low', this.t('settings.low')], ['high', this.t('settings.high')]], s.fxQuality, (v) => this.apply({ fxQuality: v as Settings['fxQuality'] }));
+    y += rowH;
+    // sprite / background resolution: takes effect on the next load (battle or menu)
+    this.choice(lx, y, colW, this.t('ui.tex_quality'), [['auto', this.t('ui.tex_auto')], ['hd', 'HD'], ['sd', 'SD']], s.texQuality ?? 'auto', (v) => this.apply({ texQuality: v as Settings['texQuality'] }));
     y += rowH;
     this.toggle(lx, y, colW, this.t('settings.show_fps'), s.showFps, (v) => this.apply({ showFps: v }));
     y += rowH;
@@ -89,24 +93,63 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     this.choice(x, y, w, label, [['off', this.t('settings.off')], ['on', this.t('settings.on')]], on ? 'on' : 'off', (v) => set(v === 'on'));
   }
 
+  /**
+   * Draggable volume slider (plus -/+ steps). Dragging only redraws; the value is committed on
+   * release, because committing settings rebuilds this scene.
+   */
   private volume(x: number, y: number, w: number, label: string, value: number, set: (v: number) => void): void {
     this.label(x, y, label, w * 0.36);
     const step = 0.1;
     const right = x + w;
-    const barW = w * 0.32;
-    const barX = right - 64 - 10 - barW;
-    new Button(this, barX - 10 - 32, y, '−', () => set(Math.max(0, Math.round((value - step) * 10) / 10)), { w: 64, h: 58, variant: 'ghost', size: 28 });
-    new Button(this, right - 32, y, '+', () => set(Math.min(1, Math.round((value + step) * 10) / 10)), { w: 64, h: 58, variant: 'ghost', size: 28 });
+    const barW = w * 0.36;
+    const barX = right - 58 - 10 - barW;
+    new Button(this, barX - 10 - 29, y, '−', () => set(Math.max(0, Math.round((value - step) * 10) / 10)), { w: 58, h: 56, variant: 'ghost', size: 28 });
+    new Button(this, right - 29, y, '+', () => set(Math.min(1, Math.round((value + step) * 10) / 10)), { w: 58, h: 56, variant: 'ghost', size: 28 });
     const g = this.add.graphics();
-    g.fillStyle(C.inkN, 1);
-    g.fillRoundedRect(barX - 2, y - 11, barW + 4, 22, 11);
-    g.fillStyle(0x3a2f48, 1);
-    g.fillRoundedRect(barX, y - 9, barW, 18, 9);
-    if (value > 0) {
-      g.fillStyle(C.blueN, 1);
-      g.fillRoundedRect(barX, y - 9, Math.max(18, barW * value), 18, 9);
-    }
-    addNum(this, barX + barW / 2, y, `${numStr(Math.round(value * 100))}%`, 14).setOrigin(0.5, 0.5);
+    const knob = this.add.graphics();
+    const pct = addNum(this, barX + barW / 2, y + 24, '', 13).setOrigin(0.5, 0.5);
+    let cur = value;
+    const draw = (v: number) => {
+      g.clear();
+      trough(g, { x: barX, y: y - 8, w: barW, h: 16 });
+      barFill(g, { x: barX, y: y - 8, w: barW, h: 16 }, v, 0x3a8ce8);
+      knob.clear();
+      const kx = barX + barW * v;
+      knob.fillStyle(0x000000, 0.4);
+      knob.fillCircle(kx + 1, y + 3, 13);
+      knob.fillStyle(0x15131a, 1);
+      knob.fillCircle(kx, y, 13);
+      knob.fillStyle(0xd8c49a, 1);
+      knob.fillCircle(kx, y, 10);
+      knob.fillStyle(0xffffff, 0.5);
+      knob.fillCircle(kx - 3, y - 3, 3.5);
+      pct.setText(`${numStr(Math.round(v * 100))}%`);
+    };
+    draw(cur);
+    const zone = this.add.zone(barX - 14, y - 24, barW + 28, 48).setOrigin(0, 0).setInteractive({ useHandCursor: true, draggable: false });
+    let dragging = false;
+    const at = (p: Phaser.Input.Pointer) => Math.max(0, Math.min(1, Math.round(((p.worldX - barX) / barW) * 20) / 20));
+    zone.on('pointerdown', (p: Phaser.Input.Pointer) => {
+      dragging = true;
+      cur = at(p);
+      draw(cur);
+    });
+    const move = (p: Phaser.Input.Pointer) => {
+      if (!dragging || !p.isDown) return;
+      cur = at(p);
+      draw(cur);
+    };
+    const up = () => {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(cur - value) > 1e-3) set(cur);
+    };
+    this.input.on('pointermove', move);
+    this.input.on('pointerup', up);
+    this.events.once('shutdown', () => {
+      this.input.off('pointermove', move);
+      this.input.off('pointerup', up);
+    });
   }
 
   private exportSave(): void {

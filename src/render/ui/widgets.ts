@@ -5,18 +5,18 @@
  */
 import { inRect } from '../../core/layout';
 import type { Rect } from '../../contracts';
-import { addArt, fitScale } from '../art/atlas';
+import { SKIN, addIcon, stonePanel } from './skin';
 import { C, addText, fitText } from '../style';
 
 export type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'gold' | 'selected';
 
 const VARIANT: Record<Variant, { fill: number; text: string }> = {
-  primary: { fill: C.primaryN, text: '#fff7e6' },
-  secondary: { fill: C.secondaryN, text: '#fff7e6' },
-  danger: { fill: C.dangerN, text: '#fff7e6' },
-  ghost: { fill: C.ghostN, text: '#e8deef' },
-  gold: { fill: 0xc9921f, text: '#fff7e6' },
-  selected: { fill: 0x3f9a6a, text: '#ffffff' },
+  primary: { fill: 0xb8661c, text: '#fff4dc' },
+  secondary: { fill: 0x2f4f8a, text: '#f0f4ff' },
+  danger: { fill: 0x9a2a22, text: '#fff0ea' },
+  ghost: { fill: 0x3a3442, text: '#e8e0d4' },
+  gold: { fill: 0xa8801e, text: '#fff7e6' },
+  selected: { fill: 0x2f7a4a, text: '#ffffff' },
 };
 
 function lighten(c: number, k: number): number {
@@ -76,7 +76,7 @@ export class Button extends Phaser.GameObjects.Container {
     this.bg = scene.add.graphics();
     this.add(this.bg);
     if (o.icon) {
-      this.icon = addArt(scene, 0, 0, o.icon, fitScale(o.icon, this.iconSize, this.iconSize, 2));
+      this.icon = addIcon(scene, 0, 0, o.icon, o.icon, this.iconSize, this.iconSize);
       this.add(this.icon);
     }
     this.label = addText(scene, 0, 0, text, this.fontSize, { originX: 0.5, originY: 0.5, color: VARIANT[this.variant].text });
@@ -137,21 +137,41 @@ export class Button extends Phaser.GameObjects.Container {
     const g = this.bg;
     const w = this.bw;
     const h = this.bh;
-    const r = Math.min(16, h / 3);
+    const r = Math.min(12, h / 3);
     const base = this.enabled ? VARIANT[this.variant].fill : C.disabledN;
-    const fill = this.pressed ? darken(base, 0.15) : this.hovered && this.enabled ? lighten(base, 0.12) : base;
+    const face = this.pressed ? darken(base, 0.18) : this.hovered && this.enabled ? lighten(base, 0.1) : base;
     const dy = this.pressed ? 3 : 0;
     g.clear();
     if (!this.pressed) {
-      g.fillStyle(0x0b0810, 0.55);
-      g.fillRoundedRect(-w / 2, -h / 2 + 5, w, h, r);
+      g.fillStyle(0x000000, 0.45);
+      g.fillRoundedRect(-w / 2 + 1, -h / 2 + 5, w, h, r);
     }
-    g.fillStyle(fill, 1);
+    // forged iron rim
+    g.fillStyle(0x15131a, 1);
+    g.fillRoundedRect(-w / 2 - 2, -h / 2 + dy - 2, w + 4, h + 4, r + 2);
+    g.fillStyle(0x5a5662, 1);
     g.fillRoundedRect(-w / 2, -h / 2 + dy, w, h, r);
-    g.fillStyle(0xffffff, this.enabled ? 0.14 : 0.05);
-    g.fillRoundedRect(-w / 2 + 4, -h / 2 + dy + 3, w - 8, h * 0.4, { tl: r - 3, tr: r - 3, bl: 4, br: 4 });
-    g.lineStyle(3, C.inkN, 1);
-    g.strokeRoundedRect(-w / 2, -h / 2 + dy, w, h, r);
+    // enamelled face: lighter top, darker foot
+    g.fillStyle(face, 1);
+    g.fillRoundedRect(-w / 2 + 3, -h / 2 + dy + 3, w - 6, h - 6, r - 2);
+    g.fillStyle(0xffffff, this.enabled ? 0.16 : 0.05);
+    g.fillRoundedRect(-w / 2 + 5, -h / 2 + dy + 5, w - 10, (h - 10) * 0.42, { tl: r - 4, tr: r - 4, bl: 3, br: 3 });
+    g.fillStyle(0x000000, 0.22);
+    g.fillRoundedRect(-w / 2 + 5, h / 2 + dy - 12, w - 10, 7, { tl: 2, tr: 2, bl: r - 4, br: r - 4 });
+    g.lineStyle(1, lighten(face, 0.35), this.enabled ? 0.55 : 0.2);
+    g.strokeRoundedRect(-w / 2 + 3.5, -h / 2 + dy + 3.5, w - 7, h - 7, r - 2);
+    if (w >= 110 && h >= 50) {
+      for (const sx of [-1, 1]) {
+        const rx = sx * (w / 2 - 9);
+        const ry = dy;
+        g.fillStyle(0x0a080c, 0.8);
+        g.fillCircle(rx + 0.6, ry + 0.8, 2.6);
+        g.fillStyle(0xb4ab98, 1);
+        g.fillCircle(rx, ry, 2.6);
+        g.fillStyle(0xffffff, 0.5);
+        g.fillCircle(rx - 0.9, ry - 0.9, 1);
+      }
+    }
     this.label.setY((this.subLabel ? -this.bh * 0.14 : 0) + dy);
     this.label.setAlpha(this.enabled ? 1 : 0.55);
     if (this.subLabel) {
@@ -194,17 +214,17 @@ export class Button extends Phaser.GameObjects.Container {
   }
 }
 
-/** Rounded panel. */
-export function panel(scene: Phaser.Scene, x: number, y: number, w: number, h: number, fill: number = C.panelN, alpha = 0.92, edge: number = C.panelEdgeN): Phaser.GameObjects.Graphics {
+/** Stone slab with a riveted iron rim (ART_BIBLE 8). `fill` tints the face. */
+export function panel(scene: Phaser.Scene, x: number, y: number, w: number, h: number, fill: number = SKIN.stone, alpha = 0.94, edge: number = C.panelEdgeN): Phaser.GameObjects.Graphics {
   const g = scene.add.graphics();
-  g.fillStyle(0x0b0810, 0.45);
-  g.fillRoundedRect(x, y + 6, w, h, 18);
-  g.fillStyle(fill, alpha);
-  g.fillRoundedRect(x, y, w, h, 18);
-  g.lineStyle(3, C.inkN, 1);
-  g.strokeRoundedRect(x, y, w, h, 18);
-  g.lineStyle(2, edge, 0.9);
-  g.strokeRoundedRect(x + 4, y + 4, w - 8, h - 8, 14);
+  if (fill === SKIN.stone || fill === C.panelN) stonePanel(g, { x, y, w, h }, 14, alpha);
+  else {
+    stonePanel(g, { x, y, w, h }, 14, alpha);
+    g.fillStyle(fill, 0.55 * alpha);
+    g.fillRoundedRect(x + 4, y + 4, w - 8, h - 8, 11);
+  }
+  g.lineStyle(1, edge, 0.35);
+  g.strokeRoundedRect(x + 6, y + 6, w - 12, h - 12, 10);
   return g;
 }
 

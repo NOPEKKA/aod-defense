@@ -1,7 +1,8 @@
 import { SceneKey, type BattleSceneData, type PreWaveSceneData } from '../../contracts';
 import { makeWaveParams } from '../../core/app';
-import { addArt, fitScale } from '../art/atlas';
+import { addArt } from '../art/atlas';
 import { C, addNum, addText, fitText, numStr } from '../style';
+import { addIcon } from '../ui/skin';
 import { Button, ScrollArea, panel } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
 
@@ -91,9 +92,7 @@ export class PreWaveScene extends MenuScene<PreWaveSceneData> {
     const g = this.add.graphics();
     g.fillStyle(boss ? 0x5a1a2a : 0x2c2238, 0.9);
     g.fillRoundedRect(x, y, w, boss ? 58 : 54, 10);
-    const s = fitScale(sprite, 50, boss ? 56 : 52, 1, boss ? 'boss' : 'enemy');
-    const img = addArt(this, x + 32, y + (boss ? 57 : 53), sprite, s, boss ? 'boss' : 'enemy');
-    img.setOrigin(0.5, 1);
+    addIcon(this, x + 30, y + (boss ? 29 : 27), `portrait_${sprite}`, sprite, 50, boss ? 54 : 50);
     const nameT = addText(this, x + 66, y + (boss ? 29 : 27), name, boss ? 20 : 18, { originY: 0.5, color: boss ? '#ff9aaa' : C.text });
     fitText(nameT, w - 66 - 90, 12);
     if (boss) addArt(this, x + w - 30, y + 29, 'ui_skull', 0.7);
@@ -178,8 +177,7 @@ export class PreWaveScene extends MenuScene<PreWaveSceneData> {
     g.lineStyle(3, selected ? 0x7ee07a : hero ? 0xffd34d : C.inkN, 1);
     g.strokeRoundedRect(-w / 2, -h / 2, w, h, 12);
     c.add(g);
-    const img = addArt(this, 0, h / 2 - 40, sprite, fitScale(sprite, w - 22, h - 52, 1, 'ally'), 'ally');
-    img.setOrigin(0.5, 1);
+    const img = addIcon(this, 0, -16, `portrait_${sprite}`, sprite, w - 18, h - 60);
     if (!unlocked) img.setTint(0x222026).setAlpha(0.8);
     c.add(img);
     const nameT = addText(this, 0, h / 2 - 30, name, 14, { originX: 0.5, originY: 0.5, color: unlocked ? C.text : C.textDim });
@@ -224,7 +222,7 @@ export class PreWaveScene extends MenuScene<PreWaveSceneData> {
     g.lineStyle(3, selected ? 0x7ee07a : C.inkN, 1);
     g.strokeRoundedRect(-w / 2, -h / 2, w, h, 12);
     c.add(g);
-    const img = addArt(this, 0, -h / 2 + 36, icon, 0.72);
+    const img = addIcon(this, 0, -h / 2 + 36, icon, icon, 58, 58);
     if (!unlocked) img.setTint(0x333038);
     c.add(img);
     const nameT = addText(this, 0, h / 2 - 30, name, 13, { originX: 0.5, originY: 0.5, color: unlocked ? C.text : C.textDim });

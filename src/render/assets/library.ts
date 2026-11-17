@@ -34,6 +34,12 @@ export interface SpriteMeta {
   shadow: boolean;
   pages: Record<string, number>;
   anims: Record<string, AnimMeta>;
+  /** display multiplier baked into the meta (bosses 1.1-1.45); anchors scale with it. Missing = 1 */
+  scale?: number;
+  /** fx_* sprites: how to blend the effect ('add' for fire, sparks, magic) */
+  blend?: 'add' | 'normal';
+  /** fx_* ground-plane sheets (already squashed for the camera pitch): scale uniformly */
+  ground?: boolean;
 }
 
 export interface BgLayerMeta {
@@ -116,6 +122,29 @@ export function getManifest(): Manifest {
 }
 export function getQuality(): Quality {
   return quality;
+}
+
+/**
+ * Re-applies the texture quality setting before a load. When it changed since the last load,
+ * every baked sprite / background texture is dropped so it reloads at the new resolution
+ * (icon atlases stay: the HUD sizes them from their real pixel size).
+ */
+export function syncQuality(scene: Phaser.Scene, settings: Pick<Settings, 'texQuality'>): boolean {
+  const want = chooseQuality(settings);
+  if (want === quality) return false;
+  quality = want;
+  for (const key of scene.textures.getTextureKeys()) {
+    if (key.startsWith('spr:') || key.startsWith('bg:')) scene.textures.remove(key);
+  }
+  return true;
+}
+
+const warned = new Set<string>();
+/** console.warn once per key (missing art, unknown anims) */
+export function warnOnce(key: string, msg: string): void {
+  if (warned.has(key)) return;
+  warned.add(key);
+  console.warn(`[render] ${msg}`);
 }
 /** texture px per logical px at the current quality: display objects use scale 1 / assetScale() */
 export function assetScale(): number {

@@ -1,0 +1,104 @@
+{
+ "id": "boss_evil_ash",
+ "frameW": 552,
+ "frameH": 400,
+ "anchorX": 357,
+ "anchorY": 354,
+ "height": 298,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 4,
+  "sd": 2
+ },
+ "anims": {
+  "idle": {
+   "frames": 4,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 6,
+   "duration": 1.6,
+   "loop": true,
+   "stride": 61
+  },
+  "hurt": {
+   "frames": 2,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 6,
+   "duration": 1.1,
+   "loop": false
+  },
+  "telegraph:melee_combo": {
+   "frames": 3,
+   "duration": 0.6,
+   "loop": false
+  },
+  "attack:melee_combo": {
+   "frames": 5,
+   "duration": 0.6,
+   "loop": false,
+   "hitAt": 0.4
+  },
+  "telegraph:summon": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:summon": {
+   "frames": 5,
+   "duration": 0.9,
+   "loop": false,
+   "hitAt": 0.45
+  },
+  "telegraph:shotgun_line": {
+   "frames": 3,
+   "duration": 0.6,
+   "loop": false
+  },
+  "attack:shotgun_line": {
+   "frames": 5,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.3
+  },
+  "telegraph:ground_wave": {
+   "frames": 3,
+   "duration": 0.7,
+   "loop": false
+  },
+  "attack:ground_wave": {
+   "frames": 5,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:drain_book": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:drain_book": {
+   "frames": 5,
+   "duration": 0.9,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:fire_storm": {
+   "frames": 3,
+   "duration": 0.9,
+   "loop": false
+  },
+  "attack:fire_storm": {
+   "frames": 5,
+   "duration": 1,
+   "loop": false,
+   "hitAt": 0.5
+  }
+ },
+ "scale": 1.2195
+}
