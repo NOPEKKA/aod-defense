@@ -94,3 +94,66 @@ export function cauldron(): { root: THREE.Group; bubbles: THREE.Object3D[]; liqu
 }
 
 export { PAL, group };
+
+/** Wide-brimmed gravedigger hat. Origin at the head top of the skull, brim tilted back so the face stays visible. */
+export function gravehat(): THREE.Group {
+  const g = new THREE.Group();
+  const felt = mat(0x1d1a22, { rough: 0.9 });
+  const band = mat(0x6a2a2a, { rough: 0.7 });
+  const brim = at(cyl(0.72, 0.78, 0.07, felt, 12), 0, 0, 0, -12, 0, 0);
+  g.add(brim);
+  g.add(at(cyl(0.34, 0.5, 0.5, felt, 10), 0, 0.28, -0.04));
+  g.add(at(cyl(0.5, 0.52, 0.1, band, 10), 0, 0.1, -0.04));
+  g.add(at(cone(0.34, 0.2, felt, 10), 0, 0.62, -0.04));
+  return g;
+}
+
+/** Coffin with iron bands and a visible lid line. Long axis +Y, 1.6 long, faces +Z (front). Origin at its centre. */
+export function bandedCoffin(): THREE.Group {
+  const g = new THREE.Group();
+  const wood = mat(0x4a2e1e, { rough: 0.85 });
+  const lid = mat(0x5e3b27, { rough: 0.8 });
+  const iron = mat(0x2a2d34, { rough: 0.5, metal: 0.5 });
+  const pts: Array<[number, number]> = [[-0.2, -0.8], [0.2, -0.8], [0.32, -0.1], [0.22, 0.8], [-0.22, 0.8], [-0.32, -0.1]];
+  g.add(extrude(pts, 0.42, wood));
+  // lid: a slightly smaller, lighter slab on the front with a dark gap line around it
+  g.add(at(extrude(pts.map(([x, y]) => [x * 0.86, y * 0.95] as [number, number]), 0.06, lid), 0, 0, 0.23));
+  g.add(at(box(0.04, 1.5, 0.02, 0x120c0a), 0, 0, 0.27));
+  for (const y of [-0.5, 0.05, 0.55]) g.add(at(box(0.72, 0.09, 0.5, iron), 0, y, 0));
+  for (const y of [-0.5, 0.05, 0.55]) for (const x of [-0.24, 0.24]) g.add(at(sphere(0.035, 0x8a8f99, 5), x, y, 0.27));
+  g.add(at(box(0.1, 0.34, 0.03, 0xb8a060), 0, 0.3, 0.27));
+  g.add(at(box(0.26, 0.09, 0.03, 0xb8a060), 0, 0.38, 0.27));
+  return g;
+}
+
+/** Bone crown: band, spikes and two curved horns. Origin at the base of the crown. */
+export function boneCrown(): THREE.Group {
+  const g = new THREE.Group();
+  const bone = mat(0xe6d8bc, { rough: 0.7 });
+  g.add(at(cyl(0.36, 0.38, 0.1, mat(0x3a2a48, { rough: 0.6 }), 10), 0, 0, 0));
+  for (let i = 0; i < 7; i++) {
+    const a = (i / 7) * Math.PI * 2;
+    const tall = i === 0 ? 0.62 : 0.38;
+    g.add(at(cone(0.06, tall, bone, 5), Math.cos(a) * 0.32, tall / 2, Math.sin(a) * 0.32, Math.sin(a) * 12, 0, -Math.cos(a) * 12));
+  }
+  g.add(at(horn(0.55, 0xe6d8bc), 0.34, 0.05, 0, 0, 0, -32));
+  g.add(at(horn(0.55, 0xe6d8bc), -0.34, 0.05, 0, 0, 0, 32));
+  g.add(at(glow('#7dff5a', 0.2, 0.5), 0, 0.3, 0));
+  return g;
+}
+
+/** Floating censer on a long chain hanging from a glowing anchor. Anchor at the origin, censer 1.3 below. */
+export function floatingCenser(): THREE.Group {
+  const g = new THREE.Group();
+  const iron = mat(0x6a5a3a, { rough: 0.4, metal: 0.6 });
+  g.add(at(glow('#b05cff', 0.2, 0.9), 0, 0, 0));
+  for (let i = 0; i < 6; i++) g.add(at(torus(0.07, 0.025, iron, 6), 0, -0.2 - i * 0.18, 0, 0, i % 2 ? 90 : 0, 0));
+  const pot = new THREE.Group();
+  pot.position.set(0, -1.45, 0);
+  pot.add(at(sphere(0.3, iron, 9), 0, 0, 0));
+  pot.add(at(cone(0.12, 0.22, iron, 6), 0, 0.34, 0));
+  pot.add(at(glow('#7dff5a', 0.3, 0.9), 0, 0, 0.1));
+  pot.add(at(glow('#b05cff', 0.18, 0.6), 0, 0.5, 0));
+  g.add(pot);
+  return g;
+}
