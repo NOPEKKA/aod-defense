@@ -436,82 +436,9 @@
   {
     "wave": 10,
     "chapter": 1,
-    "kind": "normal",
+    "kind": "boss",
     "seed": 10001,
-    "groups": [
-      {
-        "enemy": "skeleton",
-        "count": 6,
-        "interval": 2.4,
-        "startAt": 4
-      },
-      {
-        "enemy": "deadite_archer",
-        "count": 2,
-        "interval": 6,
-        "startAt": 8
-      },
-      {
-        "enemy": "skeleton_helm",
-        "count": 2,
-        "interval": 5,
-        "startAt": 10
-      },
-      {
-        "enemy": "skeleton",
-        "count": 6,
-        "interval": 1.8,
-        "startAt": 38
-      },
-      {
-        "enemy": "skeleton_helm",
-        "count": 3,
-        "interval": 3,
-        "startAt": 40
-      },
-      {
-        "enemy": "deadite_archer",
-        "count": 3,
-        "interval": 4,
-        "startAt": 42
-      },
-      {
-        "enemy": "skeleton_shield",
-        "count": 3,
-        "interval": 4,
-        "startAt": 44
-      },
-      {
-        "enemy": "skeleton",
-        "count": 6,
-        "interval": 1.3,
-        "startAt": 74
-      },
-      {
-        "enemy": "skeleton_spear",
-        "count": 3,
-        "interval": 3.5,
-        "startAt": 76
-      },
-      {
-        "enemy": "deadite_archer",
-        "count": 4,
-        "interval": 3,
-        "startAt": 78
-      },
-      {
-        "enemy": "skeleton_shield",
-        "count": 3,
-        "interval": 3,
-        "startAt": 84
-      },
-      {
-        "enemy": "skeleton_wizard",
-        "count": 2,
-        "interval": 6,
-        "startAt": 86
-      }
-    ]
+    "bossId": "gravewright"
   },
   {
     "wave": 11,
@@ -570,8 +497,9 @@
   {
     "wave": 20,
     "chapter": 2,
-    "kind": "normal",
-    "seed": 20001
+    "kind": "boss",
+    "seed": 20001,
+    "bossId": "mother_mire"
   },
   {
     "wave": 21,
@@ -630,8 +558,9 @@
   {
     "wave": 30,
     "chapter": 3,
-    "kind": "normal",
-    "seed": 30001
+    "kind": "boss",
+    "seed": 30001,
+    "bossId": "sir_hollow"
   },
   {
     "wave": 31,
@@ -690,8 +619,9 @@
   {
     "wave": 40,
     "chapter": 4,
-    "kind": "normal",
-    "seed": 40001
+    "kind": "boss",
+    "seed": 40001,
+    "bossId": "malachar"
   },
   {
     "wave": 41,
