@@ -53,10 +53,9 @@ export function spikedHelm(): THREE.Group {
   g.add(at(cyl(0.255, 0.255, 0.07, iron, 10), 0, 0.02, 0));
   for (let i = 0; i < 5; i++) {
     const a = (i / 5) * Math.PI * 2;
-    g.add(at(cone(0.045, 0.22, 0x8a8f99, 6), Math.cos(a) * 0.2, 0.28, Math.sin(a) * 0.2, Math.sin(a) * 30, 0, -Math.cos(a) * 30));
+    g.add(at(cone(0.045, 0.16, 0x8a8f99, 6), Math.cos(a) * 0.2, 0.26, Math.sin(a) * 0.2, Math.sin(a) * 30, 0, -Math.cos(a) * 30));
   }
-  g.add(at(cone(0.06, 0.3, 0x8a8f99, 6), 0, 0.4, 0));
-  g.add(at(box(0.04, 0.2, 0.05, iron), 0, 0.02, 0.24));
+  g.add(at(cone(0.06, 0.22, 0x8a8f99, 6), 0, 0.36, 0));
   return g;
 }
 
