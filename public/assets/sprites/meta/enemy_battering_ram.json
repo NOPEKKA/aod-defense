@@ -1,0 +1,43 @@
+{
+ "id": "enemy_battering_ram",
+ "frameW": 487,
+ "frameH": 299,
+ "anchorX": 255,
+ "anchorY": 245,
+ "height": 177,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 3,
+  "sd": 2
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 1.07,
+   "loop": true
+  },
+  "walk": {
+   "frames": 12,
+   "duration": 1.2,
+   "loop": true,
+   "stride": 106
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.8,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 10,
+   "duration": 1.2,
+   "loop": false
+  }
+ }
+}
