@@ -1,0 +1,62 @@
+{
+ "id": "icons_spells",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "icon_super_boomstick": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_arrow_volley": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_magic_words": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_catapult_volley": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_wrong_book": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_chainsaw": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_deathcoaster": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_salt_circle": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_matins_bell": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_hellfire_pitch": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_bear_traps": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_dawn_lance": {
+   "w": 112,
+   "h": 112
+  },
+  "icon_rally_horn": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

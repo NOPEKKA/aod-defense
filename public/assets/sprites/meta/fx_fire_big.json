@@ -1,0 +1,23 @@
+{
+ "id": "fx_fire_big",
+ "frameW": 240,
+ "frameH": 130,
+ "anchorX": 120,
+ "anchorY": 112,
+ "height": 112,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 12,
+   "duration": 0.7,
+   "loop": true
+  }
+ },
+ "blend": "normal",
+ "ground": true
+}

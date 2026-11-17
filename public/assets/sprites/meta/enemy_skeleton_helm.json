@@ -1,0 +1,48 @@
+{
+ "id": "enemy_skeleton_helm",
+ "frameW": 436,
+ "frameH": 247,
+ "anchorX": 138,
+ "anchorY": 202,
+ "height": 180,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 2,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 12,
+   "duration": 1.6,
+   "loop": true,
+   "stride": 50
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.6,
+   "loop": false,
+   "hitAt": 0.45
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 12,
+   "duration": 1,
+   "loop": false
+  },
+  "spawn": {
+   "frames": 14,
+   "duration": 1.3,
+   "loop": false
+  }
+ }
+}

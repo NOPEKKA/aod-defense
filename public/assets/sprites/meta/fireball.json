@@ -1,0 +1,21 @@
+{
+ "id": "fireball",
+ "frameW": 192,
+ "frameH": 126,
+ "anchorX": 77,
+ "anchorY": 64,
+ "height": 24,
+ "facing": -1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 0.4,
+   "loop": true
+  }
+ }
+}

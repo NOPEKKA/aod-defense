@@ -1,9 +1,9 @@
 {
  "id": "ash_left",
- "frameW": 354,
- "frameH": 247,
- "anchorX": 149,
- "anchorY": 191,
+ "frameW": 365,
+ "frameH": 289,
+ "anchorX": 160,
+ "anchorY": 220,
  "height": 167,
  "facing": -1,
  "shadow": true,
@@ -27,7 +27,7 @@
    "frames": 10,
    "duration": 0.5,
    "loop": false,
-   "hitAt": 0.4
+   "hitAt": 0.52
   },
   "attack:shoot": {
    "frames": 8,
@@ -46,6 +46,11 @@
    "duration": 0.3,
    "loop": false
   },
+  "stunned": {
+   "frames": 6,
+   "duration": 0.8,
+   "loop": true
+  },
   "dodge": {
    "frames": 6,
    "duration": 0.35,
@@ -58,7 +63,7 @@
   },
   "cheer": {
    "frames": 10,
-   "duration": 1.667,
+   "duration": 1.15,
    "loop": true
   }
  }

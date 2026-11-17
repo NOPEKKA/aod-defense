@@ -5,12 +5,33 @@
   "sd": 1
  },
  "sprites": {
+  "arrow": {
+   "id": "arrow",
+   "frameW": 117,
+   "frameH": 29,
+   "anchorX": 59,
+   "anchorY": 15,
+   "height": 8,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
   "ash": {
    "id": "ash",
-   "frameW": 345,
-   "frameH": 232,
+   "frameW": 344,
+   "frameH": 287,
    "anchorX": 178,
-   "anchorY": 192,
+   "anchorY": 220,
    "height": 169,
    "facing": 1,
    "shadow": true,
@@ -34,7 +55,7 @@
      "frames": 10,
      "duration": 0.5,
      "loop": false,
-     "hitAt": 0.4
+     "hitAt": 0.52
     },
     "attack:shoot": {
      "frames": 8,
@@ -53,6 +74,11 @@
      "duration": 0.3,
      "loop": false
     },
+    "stunned": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": true
+    },
     "dodge": {
      "frames": 6,
      "duration": 0.35,
@@ -65,17 +91,17 @@
     },
     "cheer": {
      "frames": 10,
-     "duration": 1.667,
+     "duration": 1.15,
      "loop": true
     }
    }
   },
   "ash_left": {
    "id": "ash_left",
-   "frameW": 354,
-   "frameH": 247,
-   "anchorX": 149,
-   "anchorY": 191,
+   "frameW": 365,
+   "frameH": 289,
+   "anchorX": 160,
+   "anchorY": 220,
    "height": 167,
    "facing": -1,
    "shadow": true,
@@ -99,7 +125,7 @@
      "frames": 10,
      "duration": 0.5,
      "loop": false,
-     "hitAt": 0.4
+     "hitAt": 0.52
     },
     "attack:shoot": {
      "frames": 8,
@@ -118,6 +144,11 @@
      "duration": 0.3,
      "loop": false
     },
+    "stunned": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": true
+    },
     "dodge": {
      "frames": 6,
      "duration": 0.35,
@@ -130,8 +161,215 @@
     },
     "cheer": {
      "frames": 10,
-     "duration": 1.667,
+     "duration": 1.15,
      "loop": true
+    }
+   }
+  },
+  "bolt": {
+   "id": "bolt",
+   "frameW": 112,
+   "frameH": 38,
+   "anchorX": 51,
+   "anchorY": 19,
+   "height": 13,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "book": {
+   "id": "book",
+   "frameW": 190,
+   "frameH": 279,
+   "anchorX": 95,
+   "anchorY": 217,
+   "height": 107,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    }
+   }
+  },
+  "coin": {
+   "id": "coin",
+   "frameW": 48,
+   "frameH": 55,
+   "anchorX": 24,
+   "anchorY": 47,
+   "height": 39,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   }
+  },
+  "enemy_battering_ram": {
+   "id": "enemy_battering_ram",
+   "frameW": 487,
+   "frameH": 300,
+   "anchorX": 255,
+   "anchorY": 245,
+   "height": 224,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 3,
+    "sd": 2
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.07,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.2,
+     "loop": true,
+     "stride": 106
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.8,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 1.2,
+     "loop": false
+    }
+   }
+  },
+  "enemy_deadite_archer": {
+   "id": "enemy_deadite_archer",
+   "frameW": 453,
+   "frameH": 256,
+   "anchorX": 185,
+   "anchorY": 180,
+   "height": 164,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 50
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.4
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "spawn": {
+     "frames": 14,
+     "duration": 1.3,
+     "loop": false
+    }
+   }
+  },
+  "enemy_pit_hag": {
+   "id": "enemy_pit_hag",
+   "frameW": 234,
+   "frameH": 176,
+   "anchorX": 96,
+   "anchorY": 150,
+   "height": 117,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 63
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "leap": {
+     "frames": 6,
+     "duration": 0.4,
+     "loop": false
     }
    }
   },
@@ -183,10 +421,1659 @@
     }
    }
   },
+  "enemy_skeleton_catapult": {
+   "id": "enemy_skeleton_catapult",
+   "frameW": 553,
+   "frameH": 367,
+   "anchorX": 165,
+   "anchorY": 316,
+   "height": 200,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 3,
+    "sd": 2
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.07,
+     "loop": true
+    },
+    "walk": {
+     "frames": 10,
+     "duration": 1.2,
+     "loop": true,
+     "stride": 118
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 1,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 1.2,
+     "loop": false
+    }
+   }
+  },
+  "enemy_skeleton_helm": {
+   "id": "enemy_skeleton_helm",
+   "frameW": 436,
+   "frameH": 247,
+   "anchorX": 138,
+   "anchorY": 202,
+   "height": 180,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 50
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "spawn": {
+     "frames": 14,
+     "duration": 1.3,
+     "loop": false
+    }
+   }
+  },
+  "enemy_skeleton_knight": {
+   "id": "enemy_skeleton_knight",
+   "frameW": 544,
+   "frameH": 286,
+   "anchorX": 183,
+   "anchorY": 235,
+   "height": 218,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 61
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.8,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "spawn": {
+     "frames": 14,
+     "duration": 1.3,
+     "loop": false
+    }
+   }
+  },
+  "enemy_skeleton_shield": {
+   "id": "enemy_skeleton_shield",
+   "frameW": 453,
+   "frameH": 244,
+   "anchorX": 155,
+   "anchorY": 195,
+   "height": 180,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 50
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "spawn": {
+     "frames": 14,
+     "duration": 1.3,
+     "loop": false
+    }
+   }
+  },
+  "enemy_skeleton_spear": {
+   "id": "enemy_skeleton_spear",
+   "frameW": 485,
+   "frameH": 303,
+   "anchorX": 217,
+   "anchorY": 243,
+   "height": 155,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 50
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "spawn": {
+     "frames": 14,
+     "duration": 1.3,
+     "loop": false
+    }
+   }
+  },
+  "enemy_skeleton_wizard": {
+   "id": "enemy_skeleton_wizard",
+   "frameW": 436,
+   "frameH": 254,
+   "anchorX": 161,
+   "anchorY": 209,
+   "height": 193,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 50
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    },
+    "spawn": {
+     "frames": 14,
+     "duration": 1.3,
+     "loop": false
+    }
+   }
+  },
+  "enemy_winged_deadite": {
+   "id": "enemy_winged_deadite",
+   "frameW": 406,
+   "frameH": 223,
+   "anchorX": 148,
+   "anchorY": 194,
+   "height": 179,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 0
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 12,
+     "duration": 1,
+     "loop": false
+    }
+   }
+  },
+  "fireball": {
+   "id": "fireball",
+   "frameW": 192,
+   "frameH": 126,
+   "anchorX": 77,
+   "anchorY": 64,
+   "height": 24,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 0.4,
+     "loop": true
+    }
+   }
+  },
+  "food": {
+   "id": "food",
+   "frameW": 98,
+   "frameH": 83,
+   "anchorX": 52,
+   "anchorY": 63,
+   "height": 49,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "fx_bone_burst": {
+   "id": "fx_bone_burst",
+   "frameW": 140,
+   "frameH": 140,
+   "anchorX": 70,
+   "anchorY": 76,
+   "height": 76,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 6,
+     "duration": 0.6,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_deathcoaster": {
+   "id": "fx_deathcoaster",
+   "frameW": 313,
+   "frameH": 247,
+   "anchorX": 139,
+   "anchorY": 176,
+   "height": 159,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "walk": {
+     "frames": 8,
+     "duration": 0.4,
+     "loop": true,
+     "stride": 150
+    }
+   }
+  },
+  "fx_dust_puff": {
+   "id": "fx_dust_puff",
+   "frameW": 90,
+   "frameH": 56,
+   "anchorX": 45,
+   "anchorY": 46,
+   "height": 46,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 6,
+     "duration": 0.45,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_ember": {
+   "id": "fx_ember",
+   "frameW": 40,
+   "frameH": 56,
+   "anchorX": 20,
+   "anchorY": 24,
+   "height": 24,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_explosion": {
+   "id": "fx_explosion",
+   "frameW": 220,
+   "frameH": 220,
+   "anchorX": 110,
+   "anchorY": 110,
+   "height": 110,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 0.7,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_fire": {
+   "id": "fx_fire",
+   "frameW": 60,
+   "frameH": 90,
+   "anchorX": 30,
+   "anchorY": 86,
+   "height": 86,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 0.6,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_fire_big": {
+   "id": "fx_fire_big",
+   "frameW": 240,
+   "frameH": 130,
+   "anchorX": 120,
+   "anchorY": 112,
+   "height": 112,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 0.7,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_glow": {
+   "id": "fx_glow",
+   "frameW": 120,
+   "frameH": 120,
+   "anchorX": 60,
+   "anchorY": 60,
+   "height": 60,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_heal": {
+   "id": "fx_heal",
+   "frameW": 100,
+   "frameH": 140,
+   "anchorX": 50,
+   "anchorY": 128,
+   "height": 128,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.9,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_holy_beam": {
+   "id": "fx_holy_beam",
+   "frameW": 150,
+   "frameH": 440,
+   "anchorX": 75,
+   "anchorY": 420,
+   "height": 420,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_lightning": {
+   "id": "fx_lightning",
+   "frameW": 110,
+   "frameH": 340,
+   "anchorX": 55,
+   "anchorY": 330,
+   "height": 330,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 4,
+     "duration": 0.2,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_magic_circle": {
+   "id": "fx_magic_circle",
+   "frameW": 230,
+   "frameH": 84,
+   "anchorX": 115,
+   "anchorY": 42,
+   "height": 42,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": true
+  },
+  "fx_muzzle_flash": {
+   "id": "fx_muzzle_flash",
+   "frameW": 132,
+   "frameH": 80,
+   "anchorX": 18,
+   "anchorY": 40,
+   "height": 40,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 4,
+     "duration": 0.12,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_poison_pool": {
+   "id": "fx_poison_pool",
+   "frameW": 190,
+   "frameH": 80,
+   "anchorX": 95,
+   "anchorY": 40,
+   "height": 40,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 1.2,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_portal": {
+   "id": "fx_portal",
+   "frameW": 260,
+   "frameH": 100,
+   "anchorX": 130,
+   "anchorY": 50,
+   "height": 50,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 12,
+     "duration": 1.2,
+     "loop": true
+    }
+   },
+   "blend": "normal",
+   "ground": true
+  },
+  "fx_shockwave": {
+   "id": "fx_shockwave",
+   "frameW": 300,
+   "frameH": 110,
+   "anchorX": 150,
+   "anchorY": 55,
+   "height": 55,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.45,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": true
+  },
+  "fx_slash": {
+   "id": "fx_slash",
+   "frameW": 150,
+   "frameH": 150,
+   "anchorX": 75,
+   "anchorY": 75,
+   "height": 75,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 5,
+     "duration": 0.2,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_smoke_puff": {
+   "id": "fx_smoke_puff",
+   "frameW": 110,
+   "frameH": 110,
+   "anchorX": 55,
+   "anchorY": 62,
+   "height": 62,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": false
+    }
+   },
+   "blend": "normal",
+   "ground": false
+  },
+  "fx_soul": {
+   "id": "fx_soul",
+   "frameW": 60,
+   "frameH": 96,
+   "anchorX": 30,
+   "anchorY": 30,
+   "height": 30,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "fx_spark_burst": {
+   "id": "fx_spark_burst",
+   "frameW": 110,
+   "frameH": 110,
+   "anchorX": 55,
+   "anchorY": 55,
+   "height": 55,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "play": {
+     "frames": 6,
+     "duration": 0.3,
+     "loop": false
+    }
+   },
+   "blend": "add",
+   "ground": false
+  },
+  "gib_bone_a": {
+   "id": "gib_bone_a",
+   "frameW": 108,
+   "frameH": 67,
+   "anchorX": 60,
+   "anchorY": 53,
+   "height": 47,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "gib_bone_b": {
+   "id": "gib_bone_b",
+   "frameW": 98,
+   "frameH": 83,
+   "anchorX": 45,
+   "anchorY": 52,
+   "height": 45,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "gib_bone_c": {
+   "id": "gib_bone_c",
+   "frameW": 96,
+   "frameH": 83,
+   "anchorX": 55,
+   "anchorY": 53,
+   "height": 46,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "gib_skull": {
+   "id": "gib_skull",
+   "frameW": 65,
+   "frameH": 66,
+   "anchorX": 33,
+   "anchorY": 53,
+   "height": 47,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "hero_arthur": {
+   "id": "hero_arthur",
+   "frameW": 474,
+   "frameH": 293,
+   "anchorX": 285,
+   "anchorY": 252,
+   "height": 228,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 60
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_evil_ash": {
+   "id": "hero_evil_ash",
+   "frameW": 353,
+   "frameH": 270,
+   "anchorX": 188,
+   "anchorY": 233,
+   "height": 179,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 83
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.52
+    },
+    "attack:shoot": {
+     "frames": 8,
+     "duration": 0.45,
+     "loop": false,
+     "hitAt": 0.2
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "stunned": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": true
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_garrick": {
+   "id": "hero_garrick",
+   "frameW": 326,
+   "frameH": 300,
+   "anchorX": 224,
+   "anchorY": 237,
+   "height": 214,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 56
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.35
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_henry": {
+   "id": "hero_henry",
+   "frameW": 420,
+   "frameH": 286,
+   "anchorX": 268,
+   "anchorY": 214,
+   "height": 188,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 61
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_morwen": {
+   "id": "hero_morwen",
+   "frameW": 460,
+   "frameH": 270,
+   "anchorX": 268,
+   "anchorY": 215,
+   "height": 191,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 3,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 56
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "cast": {
+     "frames": 8,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_sheila": {
+   "id": "hero_sheila",
+   "frameW": 332,
+   "frameH": 211,
+   "anchorX": 181,
+   "anchorY": 179,
+   "height": 157,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 76
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_wiseman": {
+   "id": "hero_wiseman",
+   "frameW": 360,
+   "frameH": 232,
+   "anchorX": 222,
+   "anchorY": 195,
+   "height": 172,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 56
+    },
+    "attack": {
+     "frames": 8,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "cast": {
+     "frames": 8,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "mana_orb": {
+   "id": "mana_orb",
+   "frameW": 66,
+   "frameH": 60,
+   "anchorX": 33,
+   "anchorY": 52,
+   "height": 43,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": true
+    }
+   }
+  },
+  "npc_blacksmith": {
+   "id": "npc_blacksmith",
+   "frameW": 220,
+   "frameH": 240,
+   "anchorX": 90,
+   "anchorY": 194,
+   "height": 172,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.8,
+     "loop": true,
+     "hitAt": 0.5
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "pit_lid": {
+   "id": "pit_lid",
+   "frameW": 118,
+   "frameH": 67,
+   "anchorX": 59,
+   "anchorY": 37,
+   "height": 29,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    },
+    "open": {
+     "frames": 6,
+     "duration": 0.45,
+     "loop": false
+    }
+   }
+  },
+  "rock": {
+   "id": "rock",
+   "frameW": 66,
+   "frameH": 71,
+   "anchorX": 33,
+   "anchorY": 34,
+   "height": 20,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": true
+    }
+   }
+  },
+  "shot": {
+   "id": "shot",
+   "frameW": 185,
+   "frameH": 116,
+   "anchorX": 92,
+   "anchorY": 58,
+   "height": 13,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    }
+   }
+  },
+  "unit_archer": {
+   "id": "unit_archer",
+   "frameW": 294,
+   "frameH": 222,
+   "anchorX": 188,
+   "anchorY": 181,
+   "height": 160,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 51
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.4
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_armored_guard": {
+   "id": "unit_armored_guard",
+   "frameW": 413,
+   "frameH": 292,
+   "anchorX": 248,
+   "anchorY": 261,
+   "height": 234,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 58
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_crossbowman": {
+   "id": "unit_crossbowman",
+   "frameW": 299,
+   "frameH": 240,
+   "anchorX": 205,
+   "anchorY": 181,
+   "height": 160,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 51
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.35
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_horseman": {
+   "id": "unit_horseman",
+   "frameW": 413,
+   "frameH": 407,
+   "anchorX": 160,
+   "anchorY": 353,
+   "height": 266,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 3,
+    "sd": 2
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.7,
+     "loop": true,
+     "stride": 150
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.35,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 1,
+     "loop": false
+    }
+   }
+  },
+  "unit_peasant": {
+   "id": "unit_peasant",
+   "frameW": 424,
+   "frameH": 229,
+   "anchorX": 241,
+   "anchorY": 193,
+   "height": 162,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 46
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_spearman": {
+   "id": "unit_spearman",
+   "frameW": 520,
+   "frameH": 290,
+   "anchorX": 287,
+   "anchorY": 237,
+   "height": 180,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 51
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
   "unit_swordsman": {
    "id": "unit_swordsman",
    "frameW": 344,
-   "frameH": 237,
+   "frameH": 243,
    "anchorX": 184,
    "anchorY": 205,
    "height": 175,
@@ -225,9 +2112,1369 @@
      "loop": false
     }
    }
+  },
+  "unit_torch_boy": {
+   "id": "unit_torch_boy",
+   "frameW": 280,
+   "frameH": 176,
+   "anchorX": 169,
+   "anchorY": 153,
+   "height": 132,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 65
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
   }
  },
- "backgrounds": {},
+ "backgrounds": {
+  "courtyard_bloodmoon": {
+   "id": "courtyard_bloodmoon",
+   "chapter": 5,
+   "worldW": 2560,
+   "viewH": 720,
+   "layers": [
+    {
+     "id": "sky",
+     "parallax": 0,
+     "w": 1600,
+     "h": 720,
+     "tileW": 1600,
+     "tiles": 1,
+     "alpha": false
+    },
+    {
+     "id": "far",
+     "parallax": 0.35,
+     "w": 1940,
+     "h": 720,
+     "tileW": 1940,
+     "tiles": 1,
+     "alpha": true
+    },
+    {
+     "id": "main",
+     "parallax": 1,
+     "w": 2560,
+     "h": 720,
+     "tileW": 1280,
+     "tiles": 2,
+     "alpha": true
+    },
+    {
+     "id": "front",
+     "parallax": 1.2,
+     "w": 2820,
+     "h": 720,
+     "tileW": 1410,
+     "tiles": 2,
+     "alpha": true,
+     "over": true
+    }
+   ],
+   "anchors": {
+    "book": {
+     "x": 110,
+     "y": 470
+    },
+    "smith": {
+     "x": 640,
+     "y": 470
+    },
+    "forge": {
+     "x": 600,
+     "y": 368
+    },
+    "archers": [
+     {
+      "x": 220,
+      "y": 156
+     },
+     {
+      "x": 262,
+      "y": 156
+     }
+    ],
+    "catapult": {
+     "x": 90,
+     "y": 150
+    },
+    "pit": {
+     "x": 410,
+     "y": 505,
+     "w": 70,
+     "h": 34
+    },
+    "torches": [
+     {
+      "x": 45,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 150,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 390,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 518,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 765,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 990,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1200,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1425,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1650,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1890,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2100,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2310,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2475,
+      "y": 248,
+      "scale": 1
+     }
+    ],
+    "glows": [
+     {
+      "x": 45,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 150,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 390,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 518,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 765,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 990,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 1200,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 1425,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 1650,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 1890,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 2100,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 2310,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     },
+     {
+      "x": 2475,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9040",
+      "a": 0.3
+     }
+    ]
+   },
+   "grade": {
+    "spriteTint": "#e8b8e8",
+    "fog": 0.3,
+    "weather": "fog"
+   }
+  },
+  "courtyard_dusk": {
+   "id": "courtyard_dusk",
+   "chapter": 1,
+   "worldW": 2560,
+   "viewH": 720,
+   "layers": [
+    {
+     "id": "sky",
+     "parallax": 0,
+     "w": 1600,
+     "h": 720,
+     "tileW": 1600,
+     "tiles": 1,
+     "alpha": false
+    },
+    {
+     "id": "far",
+     "parallax": 0.35,
+     "w": 1940,
+     "h": 720,
+     "tileW": 1940,
+     "tiles": 1,
+     "alpha": true
+    },
+    {
+     "id": "main",
+     "parallax": 1,
+     "w": 2560,
+     "h": 720,
+     "tileW": 1280,
+     "tiles": 2,
+     "alpha": true
+    },
+    {
+     "id": "front",
+     "parallax": 1.2,
+     "w": 2820,
+     "h": 720,
+     "tileW": 1410,
+     "tiles": 2,
+     "alpha": true,
+     "over": true
+    }
+   ],
+   "anchors": {
+    "book": {
+     "x": 110,
+     "y": 470
+    },
+    "smith": {
+     "x": 640,
+     "y": 470
+    },
+    "forge": {
+     "x": 600,
+     "y": 368
+    },
+    "archers": [
+     {
+      "x": 220,
+      "y": 156
+     },
+     {
+      "x": 262,
+      "y": 156
+     }
+    ],
+    "catapult": {
+     "x": 90,
+     "y": 150
+    },
+    "pit": {
+     "x": 410,
+     "y": 505,
+     "w": 70,
+     "h": 34
+    },
+    "torches": [
+     {
+      "x": 45,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 150,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 390,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 518,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 765,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 990,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1200,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1425,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1650,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1890,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2100,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2310,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2475,
+      "y": 248,
+      "scale": 1
+     }
+    ],
+    "glows": [
+     {
+      "x": 45,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 150,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 390,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 518,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 765,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 990,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 1200,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 1425,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 1650,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 1890,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 2100,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 2310,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     },
+     {
+      "x": 2475,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.32
+     }
+    ]
+   },
+   "grade": {
+    "spriteTint": "#ffe2c4",
+    "fog": 0.05,
+    "weather": "none"
+   }
+  },
+  "courtyard_fire": {
+   "id": "courtyard_fire",
+   "chapter": 4,
+   "worldW": 2560,
+   "viewH": 720,
+   "layers": [
+    {
+     "id": "sky",
+     "parallax": 0,
+     "w": 1600,
+     "h": 720,
+     "tileW": 1600,
+     "tiles": 1,
+     "alpha": false
+    },
+    {
+     "id": "far",
+     "parallax": 0.35,
+     "w": 1940,
+     "h": 720,
+     "tileW": 1940,
+     "tiles": 1,
+     "alpha": true
+    },
+    {
+     "id": "main",
+     "parallax": 1,
+     "w": 2560,
+     "h": 720,
+     "tileW": 1280,
+     "tiles": 2,
+     "alpha": true
+    },
+    {
+     "id": "front",
+     "parallax": 1.2,
+     "w": 2820,
+     "h": 720,
+     "tileW": 1410,
+     "tiles": 2,
+     "alpha": true,
+     "over": true
+    }
+   ],
+   "anchors": {
+    "book": {
+     "x": 110,
+     "y": 470
+    },
+    "smith": {
+     "x": 640,
+     "y": 470
+    },
+    "forge": {
+     "x": 600,
+     "y": 368
+    },
+    "archers": [
+     {
+      "x": 220,
+      "y": 156
+     },
+     {
+      "x": 262,
+      "y": 156
+     }
+    ],
+    "catapult": {
+     "x": 90,
+     "y": 150
+    },
+    "pit": {
+     "x": 410,
+     "y": 505,
+     "w": 70,
+     "h": 34
+    },
+    "torches": [
+     {
+      "x": 45,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 150,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 390,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 518,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 765,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 990,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1200,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1425,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1650,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1890,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2100,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2310,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2475,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1680,
+      "y": 351,
+      "scale": 1.7
+     },
+     {
+      "x": 1970,
+      "y": 346,
+      "scale": 1.7
+     },
+     {
+      "x": 2270,
+      "y": 341,
+      "scale": 1.7
+     },
+     {
+      "x": 640,
+      "y": 214,
+      "scale": 1.5
+     },
+     {
+      "x": 560,
+      "y": 223,
+      "scale": 1.2
+     },
+     {
+      "x": 700,
+      "y": 230,
+      "scale": 1.3
+     },
+     {
+      "x": 900,
+      "y": 132,
+      "scale": 1.4
+     },
+     {
+      "x": 2220,
+      "y": 125,
+      "scale": 1.6
+     }
+    ],
+    "glows": [
+     {
+      "x": 45,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 150,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 390,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 518,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 765,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 990,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 1200,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 1425,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 1650,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 1890,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 2100,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 2310,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 2475,
+      "y": 234,
+      "r": 230,
+      "color": "#ff7a1e",
+      "a": 0.4
+     },
+     {
+      "x": 1680,
+      "y": 331,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 1970,
+      "y": 326,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 2270,
+      "y": 321,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 640,
+      "y": 194,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 560,
+      "y": 203,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 700,
+      "y": 210,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 900,
+      "y": 112,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     },
+     {
+      "x": 2220,
+      "y": 105,
+      "r": 300,
+      "color": "#ff6a18",
+      "a": 0.4
+     }
+    ]
+   },
+   "grade": {
+    "spriteTint": "#ffc8a0",
+    "fog": 0.15,
+    "weather": "embers"
+   }
+  },
+  "courtyard_night": {
+   "id": "courtyard_night",
+   "chapter": 3,
+   "worldW": 2560,
+   "viewH": 720,
+   "layers": [
+    {
+     "id": "sky",
+     "parallax": 0,
+     "w": 1600,
+     "h": 720,
+     "tileW": 1600,
+     "tiles": 1,
+     "alpha": false
+    },
+    {
+     "id": "far",
+     "parallax": 0.35,
+     "w": 1940,
+     "h": 720,
+     "tileW": 1940,
+     "tiles": 1,
+     "alpha": true
+    },
+    {
+     "id": "main",
+     "parallax": 1,
+     "w": 2560,
+     "h": 720,
+     "tileW": 1280,
+     "tiles": 2,
+     "alpha": true
+    },
+    {
+     "id": "front",
+     "parallax": 1.2,
+     "w": 2820,
+     "h": 720,
+     "tileW": 1410,
+     "tiles": 2,
+     "alpha": true,
+     "over": true
+    }
+   ],
+   "anchors": {
+    "book": {
+     "x": 110,
+     "y": 470
+    },
+    "smith": {
+     "x": 640,
+     "y": 470
+    },
+    "forge": {
+     "x": 600,
+     "y": 368
+    },
+    "archers": [
+     {
+      "x": 220,
+      "y": 156
+     },
+     {
+      "x": 262,
+      "y": 156
+     }
+    ],
+    "catapult": {
+     "x": 90,
+     "y": 150
+    },
+    "pit": {
+     "x": 410,
+     "y": 505,
+     "w": 70,
+     "h": 34
+    },
+    "torches": [
+     {
+      "x": 45,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 150,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 390,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 518,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 765,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 990,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1200,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1425,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1650,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1890,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2100,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2310,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2475,
+      "y": 248,
+      "scale": 1
+     }
+    ],
+    "glows": [
+     {
+      "x": 45,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 150,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 390,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 518,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 765,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 990,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 1200,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 1425,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 1650,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 1890,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 2100,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 2310,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     },
+     {
+      "x": 2475,
+      "y": 234,
+      "r": 230,
+      "color": "#ff9a3c",
+      "a": 0.38
+     }
+    ]
+   },
+   "grade": {
+    "spriteTint": "#c8d8ff",
+    "fog": 0.1,
+    "weather": "none"
+   }
+  },
+  "courtyard_storm": {
+   "id": "courtyard_storm",
+   "chapter": 2,
+   "worldW": 2560,
+   "viewH": 720,
+   "layers": [
+    {
+     "id": "sky",
+     "parallax": 0,
+     "w": 1600,
+     "h": 720,
+     "tileW": 1600,
+     "tiles": 1,
+     "alpha": false
+    },
+    {
+     "id": "far",
+     "parallax": 0.35,
+     "w": 1940,
+     "h": 720,
+     "tileW": 1940,
+     "tiles": 1,
+     "alpha": true
+    },
+    {
+     "id": "main",
+     "parallax": 1,
+     "w": 2560,
+     "h": 720,
+     "tileW": 1280,
+     "tiles": 2,
+     "alpha": true
+    },
+    {
+     "id": "front",
+     "parallax": 1.2,
+     "w": 2820,
+     "h": 720,
+     "tileW": 1410,
+     "tiles": 2,
+     "alpha": true,
+     "over": true
+    }
+   ],
+   "anchors": {
+    "book": {
+     "x": 110,
+     "y": 470
+    },
+    "smith": {
+     "x": 640,
+     "y": 470
+    },
+    "forge": {
+     "x": 600,
+     "y": 368
+    },
+    "archers": [
+     {
+      "x": 220,
+      "y": 156
+     },
+     {
+      "x": 262,
+      "y": 156
+     }
+    ],
+    "catapult": {
+     "x": 90,
+     "y": 150
+    },
+    "pit": {
+     "x": 410,
+     "y": 505,
+     "w": 70,
+     "h": 34
+    },
+    "torches": [
+     {
+      "x": 45,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 150,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 390,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 518,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 765,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 990,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1200,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1425,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1650,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 1890,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2100,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2310,
+      "y": 248,
+      "scale": 1
+     },
+     {
+      "x": 2475,
+      "y": 248,
+      "scale": 1
+     }
+    ],
+    "glows": [
+     {
+      "x": 45,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 150,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 390,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 518,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 765,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 990,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 1200,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 1425,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 1650,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 1890,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 2100,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 2310,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     },
+     {
+      "x": 2475,
+      "y": 234,
+      "r": 230,
+      "color": "#ffa550",
+      "a": 0.3
+     }
+    ]
+   },
+   "grade": {
+    "spriteTint": "#c4d0e8",
+    "fog": 0.2,
+    "weather": "rain"
+   }
+  }
+ },
  "ui": {
   "icons_allies": {
    "id": "icons_allies",
@@ -244,6 +3491,66 @@
     "portrait_unit_swordsman": {
      "w": 112,
      "h": 112
+    },
+    "portrait_hero_arthur": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_wiseman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_henry": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_morwen": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_garrick": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_sheila": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_evil_ash": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_npc_blacksmith": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_peasant": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_archer": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_spearman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_torch_boy": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_armored_guard": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_crossbowman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_horseman": {
+     "w": 112,
+     "h": 112
     }
    }
   },
@@ -256,6 +3563,170 @@
    },
    "frames": {
     "portrait_enemy_skeleton": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_skeleton_helm": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_skeleton_shield": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_skeleton_spear": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_skeleton_wizard": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_deadite_archer": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_skeleton_knight": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_winged_deadite": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_pit_hag": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_battering_ram": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_enemy_skeleton_catapult": {
+     "w": 112,
+     "h": 112
+    }
+   }
+  },
+  "icons_items": {
+   "id": "icons_items",
+   "kind": "icons",
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "frames": {
+    "ui_iron": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_gold": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_mana": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_skull": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_book": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_banner_advance": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_banner_hold": {
+     "w": 112,
+     "h": 112
+    },
+    "ui_anvil": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_gravedigger_lantern": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_mire_cauldron_shard": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_hollow_spur": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_censer_of_matins": {
+     "w": 112,
+     "h": 112
+    },
+    "relic_doppel_boomstick": {
+     "w": 112,
+     "h": 112
+    }
+   }
+  },
+  "icons_spells": {
+   "id": "icons_spells",
+   "kind": "icons",
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "frames": {
+    "icon_super_boomstick": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_arrow_volley": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_magic_words": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_catapult_volley": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_wrong_book": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_chainsaw": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_deathcoaster": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_salt_circle": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_matins_bell": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_hellfire_pitch": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_bear_traps": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_dawn_lance": {
+     "w": 112,
+     "h": 112
+    },
+    "icon_rally_horn": {
      "w": 112,
      "h": 112
     }
