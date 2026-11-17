@@ -1,0 +1,1 @@
+{"textures":[{"image":"gib_bone_a-0.webp","format":"RGBA8888","size":{"w":104,"h":63},"scale":1,"frames":[{"filename":"idle/0","rotated":false,"trimmed":true,"sourceSize":{"w":108,"h":67},"spriteSourceSize":{"x":4,"y":4,"w":100,"h":59},"frame":{"x":2,"y":2,"w":100,"h":59}}]}],"meta":{"app":"aod-defense art bake","version":"1"}}
