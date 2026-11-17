@@ -4,7 +4,7 @@ import { byName } from '../assets';
 import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
 import { glow, PAL } from '../props';
-import { armChain, crown, glowCell, hunterHat, lanternStaff, nunVeil } from '../props_allies';
+import { anvil, apron, armChain, crown, glowCell, hunterHat, lanternStaff, nunVeil, smithHammer, sparks } from '../props_allies';
 import { defineSprite, type AnimDef } from '../sprite';
 import { addStars, anims, BLUE, bump, rested, stunSway } from './allies';
 
@@ -236,3 +236,46 @@ hero('hero_evil_ash', buildEvilAsh, {
 });
 
 void PAL;
+
+// --- Blacksmith ----------------------------------------------------------
+const ANVIL_Z = 1.1;
+const buildSmith = rested(async () => {
+  const ap = apron();
+  const rig: Built = await character({
+    base: `${ADV}/Barbarian.glb`,
+    hide: ['Barbarian_Hat', 'Barbarian_Cape'],
+    recolor: { '0,1': ['#8a5a36', '#4e301c'], '6,0': ['#7a5232', '#43291a'] },
+    attach: [
+      { to: 'handslot.r', object: smithHammer(), as: 'hammer' },
+      { to: 'chest', object: ap.bib, as: 'bib' },
+      { to: 'hips', object: ap.skirt, as: 'skirt' },
+    ],
+    scale: 1.1,
+  });
+  const root = new THREE.Group();
+  const av = anvil();
+  av.position.set(0, 0, ANVIL_Z);
+  const sp = sparks();
+  sp.position.set(0, 0.95, ANVIL_Z);
+  sp.visible = false;
+  root.add(rig.root, av, sp);
+  return { root, inst: rig.inst, parts: { ...rig.parts, sparks: sp } } as Built;
+});
+hero('npc_blacksmith', buildSmith, {
+  idle: { clip: 'Idle', frames: 8, loop: true },
+  attack: {
+    clip: '1H_Melee_Attack_Chop',
+    from: 0.15,
+    to: 1.0,
+    frames: 10,
+    loop: true,
+    duration: 0.8,
+    hitAt: 0.5,
+    apply: (b, u) => {
+      const k = bump(u, 0.45, 0.8);
+      b.parts.sparks.visible = k > 0.05;
+      b.parts.sparks.scale.setScalar(0.5 + k);
+    },
+  },
+  cheer: CHEER,
+});
