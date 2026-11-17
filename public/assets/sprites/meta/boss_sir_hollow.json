@@ -1,0 +1,71 @@
+{
+ "id": "boss_sir_hollow",
+ "frameW": 426,
+ "frameH": 406,
+ "anchorX": 272,
+ "anchorY": 351,
+ "height": 271,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 4,
+  "sd": 2
+ },
+ "anims": {
+  "idle": {
+   "frames": 4,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 6,
+   "duration": 1.067,
+   "loop": true,
+   "stride": 150
+  },
+  "hurt": {
+   "frames": 2,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 6,
+   "duration": 1.1,
+   "loop": false
+  },
+  "telegraph:charge": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:charge": {
+   "frames": 5,
+   "duration": 0.6,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:throw_head": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:throw_head": {
+   "frames": 5,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.4
+  },
+  "telegraph:double_charge": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:double_charge": {
+   "frames": 6,
+   "duration": 0.8,
+   "loop": false,
+   "hitAt": 0.35
+  }
+ },
+ "scale": 1.1364
+}

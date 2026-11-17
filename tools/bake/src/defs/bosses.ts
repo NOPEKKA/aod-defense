@@ -1,0 +1,501 @@
+/**
+ * Boss sprites and portraits. Owner: bosses art agent. See docs/ART_BIBLE.md section 5.3.
+ * All bosses are baked facing left (facing: -1).
+ */
+import * as THREE from 'three';
+import { character, type Built } from '../character';
+import { definePortrait } from '../icon';
+import { loadProp } from '../assets';
+import { at, boomstick, box, cone, cyl, extrude, glow, lathe, mat, sphere, torus } from '../props';
+import { ghostHorse, type Leg } from '../props_bosses_horse';
+import { batWing, bandedCoffin, boneCrown, cauldron, claws, floatingCenser, gravehat, horn, shovel, spikedHelm } from '../props_bosses';
+import { defineSprite, type AnimDef } from '../sprite';
+
+const ADV = '/kaykit/adventurers';
+const SKE = '/kaykit/skeletons';
+const RAD = Math.PI / 180;
+
+/**
+ * Memory budget: bosses other than Sheila are baked at a smaller model scale. The factor is the
+ * baked size relative to the design size; the sprite meta gets "scale": 1 / factor (see
+ * tools/bake/scripts/boss-meta.mjs) so the renderer displays them at full size.
+ */
+export const BOSS_SCALE = { boss_sheila_demon: 0.9, boss_evil_ash: 0.82, boss_gravewright: 0.7, boss_mother_mire: 0.8, boss_sir_hollow: 0.88, boss_malachar: 0.75 };
+const scaled = (b: Built, f: number): Built => {
+  b.root.scale.multiplyScalar(f);
+  return b;
+};
+const set = (o: THREE.Object3D | undefined, x: number, y: number, z: number): void => {
+  if (o) o.rotation.set(x * RAD, y * RAD, z * RAD);
+};
+
+// ---------------------------------------------------------------------------
+// Sheila, winged demon. Mage body and head, green skin, torn white dress, bat wings, horns.
+// Hovers: the game lifts the sprite by `alt`; the bake keeps feet near the baseline and bobs.
+// ---------------------------------------------------------------------------
+async function buildSheila() {
+  const b = await character({
+    base: `${ADV}/Mage.glb`,
+    hide: ['Mage_Hat', 'Mage_Cape'],
+    recolor: {
+      '0,0': ['#9fc79a', '#5f8f62'], // sickly green skin
+      '0,1': ['#ece6dc', '#8d8798'], // torn white dress
+      '5,0': ['#5a2a6a', '#2a1236'],
+    },
+    attach: [
+      { to: 'chest', object: batWing(1.2, 0x7a4a9a, 0x2a1830), pos: [0.1, 0.12, -0.16], rot: [0, 28, 0], as: 'wl' },
+      { to: 'chest', object: batWing(1.2, 0x7a4a9a, 0x2a1830), pos: [-0.1, 0.12, -0.16], rot: [0, -28, 0], scale: [-1, 1, 1], as: 'wr' },
+      { to: 'head', object: horn(0.7, 0xe8c090), pos: [0.26, 0.78, 0], rot: [0, 0, -38], as: 'hornl' },
+      { to: 'head', object: horn(0.7, 0xe8c090), pos: [-0.26, 0.78, 0], rot: [0, 0, 38], scale: [-1, 1, 1], as: 'hornr' },
+      { to: 'handslot.l', object: claws(), rot: [0, 0, 0] },
+      { to: 'handslot.r', object: claws(), rot: [0, 0, 0] },
+      { to: 'head', object: glow('#ff4030', 0.22, 0.9), pos: [0.0, 0.1, 0.2] },
+    ],
+    clipsFrom: [`${SKE}/Skeleton_Warrior.glb`],
+    scale: 1.8,
+  });
+  return b;
+}
+
+const flap = (b: Built, a: number, spread = 0): void => {
+  const l = b.parts.wl;
+  const r = b.parts.wr;
+  if (l) l.rotation.set(0, 28 * RAD + spread, a);
+  if (r) r.rotation.set(0, -28 * RAD - spread, -a);
+};
+const cyc = (u: number, k = 1): number => Math.sin(u * Math.PI * 2 * k);
+/** hover bob + wing flap on top of a clip */
+const hover = (amp = 0.06, flapAmp = 0.55, base = 0.25, k = 1) => (b: Built, u: number): void => {
+  b.root.position.y = 0.25 + amp * cyc(u, k);
+  flap(b, base + flapAmp * cyc(u, k));
+};
+
+const sheilaAnims: Record<string, AnimDef> = {
+  idle: { clip: 'Idle', frames: 4, loop: true, apply: hover(0.05, 0.32, 0.15) },
+  walk: { clip: 'Walking_B', frames: 6, loop: true, stride: 40, apply: hover(0.06, 0.4, 0.15) },
+  hurt: { clip: 'Hit_B', frames: 2, duration: 0.35, apply: (b, u) => { b.root.position.y = 0.25; flap(b, 0.7 - 0.3 * u); } },
+  die: {
+    clip: 'Death_B', frames: 6, duration: 1.0, to: 2.1,
+    apply: (b, u) => { b.root.position.y = 0.25 * (1 - Math.min(1, u * 1.6)); flap(b, 0.7 - 1.0 * u, -0.2 * u); },
+  },
+  'telegraph:swoop': {
+    clip: 'Dodge_Backward', frames: 3, duration: 0.8, from: 0, to: 0.4,
+    apply: (b, u) => { b.root.position.y = 0.4 + 0.15 * u; b.root.position.z -= 0.0; flap(b, 0.4 + 0.5 * u, 0.1 * u); },
+  },
+  'attack:swoop': {
+    clip: 'Running_A', frames: 5, duration: 0.5, from: 0.1, to: 0.5, hitAt: 0.5,
+    apply: (b, u) => {
+      b.root.position.y = 0.6 - 0.45 * Math.sin(Math.min(1, u * 1.2) * Math.PI * 0.9);
+      b.root.rotation.x = 0.7 * Math.sin(u * Math.PI);
+      flap(b, -0.5 - 0.2 * cyc(u * 2), -0.3);
+    },
+  },
+  'telegraph:summon': {
+    clip: 'Spellcast_Raise', frames: 3, duration: 0.8, from: 0, to: 1.4,
+    apply: (b, u) => { b.root.position.y = 0.25 + 0.15 * u; flap(b, 0.3 + 0.5 * u); },
+  },
+  'attack:summon': {
+    clip: 'Spellcast_Summon', frames: 5, duration: 0.9, from: 0.9, to: 2.6, hitAt: 0.45,
+    apply: (b, u) => { b.root.position.y = 0.4 + 0.04 * cyc(u); flap(b, 0.5 + 0.3 * cyc(u * 2)); },
+  },
+  'telegraph:scream': {
+    clip: 'Unarmed_Idle', frames: 3, duration: 0.8,
+    apply: (b, u) => { b.root.position.y = 0.25 + 0.2 * u; b.root.rotation.x = -0.35 * u; flap(b, 0.2 + 0.7 * u, 0.25 * u); },
+  },
+  'attack:scream': {
+    clip: 'Taunt', frames: 5, duration: 0.8, from: 0.1, to: 0.9, hitAt: 0.35,
+    apply: (b, u) => { b.root.position.y = 0.4; b.root.rotation.x = -0.35; flap(b, 0.9 + 0.1 * cyc(u * 4), 0.3); },
+  },
+};
+
+defineSprite({ id: 'boss_sheila_demon', facing: -1, build: async () => scaled(await buildSheila(), BOSS_SCALE.boss_sheila_demon), anims: sheilaAnims, margin: 0.2 });
+definePortrait('portrait_boss_sheila_demon', 'bosses', async () => {
+  const b = await buildSheila();
+  return b;
+}, { yaw: -32, span: 2.4, lookAt: [-0.02, 2.85, 0] });
+
+
+// ---------------------------------------------------------------------------
+// Evil Ash: undead warlord. Knight body in black plate, green face, spiked helm, red tattered cape,
+// two-handed sword. Carries a boomstick, a book and fire glows that are shown per animation.
+// ---------------------------------------------------------------------------
+const BLACK: [string, string] = ['#4a4a58', '#15151c'];
+async function buildEvilAsh() {
+  const b = await character({
+    base: `${ADV}/Knight.glb`,
+    hide: ['Knight_Helmet'],
+    recolor: {
+      '0,0': ['#a4c896', '#587f5a'], // green skin
+      '1,0': ['#3a2a2a', '#120c0c'],
+      '3,0': BLACK,
+      '7,0': ['#5a5a6a', '#22222c'],
+      '6,0': ['#3a2a30', '#14101a'],
+      '4,0': ['#2a2a34', '#0e0e14'],
+      '7,1': ['#6a2a2a', '#2a0e12'],
+      '0,1': ['#c02a2a', '#3a0a12'], // cape and trim: blood red
+      '2,1': ['#3a3340', '#18141c'],
+      '1,1': ['#7a6a4a', '#3a2c1a'],
+    },
+    borrow: [
+      { from: `${ADV}/Knight.glb`, node: '2H_Sword', as: 'sword', recolor: { '3,1': ['#8a90a0', '#2a2e3a'], '5,1': ['#c02a2a', '#5a0a12'] } },
+      { from: `${ADV}/Mage.glb`, node: 'Spellbook_open', as: 'book' },
+    ],
+    attach: [
+      { to: 'head', object: spikedHelm(), pos: [0, 0.72, -0.02], scale: 1.8, as: 'helm' },
+      { to: 'head', object: glow('#ff4030', 0.2, 0.9), pos: [0, 0.2, 0.2] },
+      { to: 'handslot.r', object: boomstick(), rot: [0, 90, 0], pos: [0.02, 0.02, 0], as: 'gun' },
+      { to: 'chest', object: glow('#ffa030', 0.6, 0.8), pos: [0, 0.8, 0.1], as: 'fire' },
+      { to: 'handslot.l', object: glow('#7dff5a', 0.3, 0.9), pos: [0, 0.2, 0], as: 'drain' },
+      { to: 'handslot.r', object: glow('#b05cff', 0.3, 0.9), pos: [0, 0.2, 0], as: 'summonfx' },
+    ],
+    clipsFrom: [`${SKE}/Skeleton_Warrior.glb`],
+    scale: 1.75,
+  });
+  return b;
+}
+type Load = 'sword' | 'gun' | 'book';
+const loadout = (b: Built, w: Load, fx: Array<'fire' | 'drain' | 'summonfx'> = []): void => {
+  b.parts.sword.visible = w === 'sword';
+  b.parts.gun.visible = w === 'gun';
+  b.parts.book.visible = w === 'book';
+  for (const k of ['fire', 'drain', 'summonfx']) b.parts[k].visible = (fx as string[]).includes(k);
+};
+const wrap = (d: AnimDef, w: Load, fx: Array<'fire' | 'drain' | 'summonfx'> = [], extra?: (b: Built, u: number) => void): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    loadout(b, w, fx);
+    extra?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+
+const ashAnimsBoss: Record<string, AnimDef> = {
+  idle: wrap({ clip: '2H_Melee_Idle', frames: 4, loop: true }, 'sword'),
+  walk: wrap({ clip: 'Walking_C', frames: 6, loop: true }, 'sword'),
+  hurt: wrap({ clip: 'Hit_A', frames: 2, duration: 0.3 }, 'sword'),
+  die: wrap({ clip: 'Death_B', frames: 6, duration: 1.1, to: 2.1 }, 'sword'),
+  'telegraph:melee_combo': wrap({ clip: '2H_Melee_Attack_Slice', frames: 3, duration: 0.6, from: 0, to: 0.4 }, 'sword'),
+  'attack:melee_combo': wrap({ clip: '2H_Melee_Attack_Slice', frames: 5, duration: 0.6, from: 0.3, to: 1.1, hitAt: 0.4 }, 'sword'),
+  'telegraph:summon': wrap({ clip: 'Spellcast_Raise', frames: 3, duration: 0.8, from: 0, to: 1.4 }, 'sword', ['summonfx']),
+  'attack:summon': wrap({ clip: 'Spellcast_Summon', frames: 5, duration: 0.9, from: 1.0, to: 2.8, hitAt: 0.45 }, 'sword', ['summonfx']),
+  'telegraph:shotgun_line': wrap({ clip: '2H_Ranged_Aiming', frames: 3, duration: 0.6, from: 0, to: 0.8 }, 'gun'),
+  'attack:shotgun_line': wrap({ clip: '2H_Ranged_Shoot', frames: 5, duration: 0.5, hitAt: 0.3 }, 'gun'),
+  'telegraph:ground_wave': wrap({ clip: '2H_Melee_Attack_Chop', frames: 3, duration: 0.7, from: 0, to: 0.6 }, 'sword', [], (b, u) => { b.root.position.y = 0.25 * Math.sin(u * Math.PI * 0.5); }),
+  'attack:ground_wave': wrap({ clip: '2H_Melee_Attack_Chop', frames: 5, duration: 0.5, from: 0.6, to: 1.3, hitAt: 0.5 }, 'sword'),
+  'telegraph:drain_book': wrap({ clip: 'Spellcast_Raise', frames: 3, duration: 0.8, from: 0, to: 1.4 }, 'book', ['drain']),
+  'attack:drain_book': wrap({ clip: 'Spellcasting', frames: 5, duration: 0.9, loop: false, hitAt: 0.5 }, 'book', ['drain']),
+  'telegraph:fire_storm': wrap({ clip: 'Cheer', frames: 3, duration: 0.9, from: 0, to: 0.8 }, 'sword', ['fire']),
+  'attack:fire_storm': wrap({ clip: 'Spellcast_Long', frames: 5, duration: 1.0, from: 0.3, to: 2.4, hitAt: 0.5 }, 'sword', ['fire']),
+};
+
+defineSprite({ id: 'boss_evil_ash', facing: -1, build: async () => scaled(await buildEvilAsh(), BOSS_SCALE.boss_evil_ash), anims: ashAnimsBoss });
+definePortrait('portrait_boss_evil_ash', 'bosses', async () => buildEvilAsh(), { yaw: -32, span: 2.4, lookAt: [-0.02, 3.05, 0] });
+
+// ---------------------------------------------------------------------------
+// The Gravewright: giant skeleton gravedigger. Warrior skeleton, rogue hood, shovel, lantern, coffin on the back.
+// ---------------------------------------------------------------------------
+const HAL = '/kaykit/halloween';
+async function buildGravewright() {
+  const b = await character({
+    base: `${SKE}/Skeleton_Warrior.glb`,
+    hide: ['Skeleton_Warrior_Helmet'],
+    recolor: { '3,0': ['#6a6a70', '#26262c'], '1,1': ['#d8ccb0', '#7a7260'], '2,2': ['#3a2c22', '#120c08'], '6,0': ['#2a2420', '#100c0a'], '7,0': ['#4a4440', '#1a1614'] },
+    emissive: [{ node: 'Skeleton_Warrior_Eyes', color: 0xff4030, intensity: 3 }],
+    attach: [
+      { to: 'head', object: gravehat(), pos: [0, 0.7, 0.02], scale: 0.85, as: 'hat' },
+      { to: 'head', object: glow('#ff4030', 0.1, 0.8), pos: [0, 0.18, 0.4] },
+      { to: 'handslot.r', object: shovel(), rot: [90, 0, 0], pos: [0, 0.05, 0], scale: 0.5, as: 'shovel' },
+      { to: 'handslot.l', object: `${HAL}/lantern_hanging.gltf`, pos: [0, 0.05, 0.1], scale: 0.5, rot: [90, 0, 0], as: 'lantern' },
+      { to: 'handslot.l', object: glow('#9dffb0', 0.08, 0.7), pos: [0, -0.3, 0.12] },
+      { to: 'chest', object: bandedCoffin(), pos: [0, 0.35, -0.5], rot: [0, 0, 16], scale: 0.95, as: 'coffin' },
+    ],
+    clipsFrom: [`${ADV}/Knight.glb`],
+    scale: 2.4,
+  });
+  b.root.scale.x *= 1.15;
+  b.root.scale.z *= 1.15;
+  return b;
+}
+const gw = (d: AnimDef, coffin = true, extra?: (b: Built, u: number) => void): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    b.parts.coffin.visible = coffin;
+    extra?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+const gwAnims: Record<string, AnimDef> = {
+  idle: gw({ clip: '2H_Melee_Idle', frames: 4, loop: true }),
+  walk: gw({ clip: 'Walking_D_Skeletons', frames: 6, loop: true }),
+  hurt: gw({ clip: 'Hit_B', frames: 2, duration: 0.35 }),
+  die: gw({ clip: 'Death_C_Skeletons', frames: 6, duration: 1.0, to: 1.0 }),
+  'telegraph:shovel_slam': gw({ clip: '2H_Melee_Attack_Chop', frames: 3, duration: 0.8, from: 0, to: 0.6 }),
+  'attack:shovel_slam': gw({ clip: '2H_Melee_Attack_Chop', frames: 5, duration: 0.5, from: 0.6, to: 1.3, hitAt: 0.5 }),
+  'telegraph:grave_hands': gw({ clip: 'PickUp', frames: 3, duration: 0.8, from: 0, to: 0.7 }),
+  'attack:grave_hands': gw({ clip: 'Interact', frames: 5, duration: 0.7, hitAt: 0.5 }),
+  'telegraph:burrow': gw({ clip: '2H_Melee_Attack_Stab', frames: 3, duration: 0.8, from: 0, to: 0.55 }),
+  'attack:burrow': gw({ clip: '2H_Melee_Idle', frames: 5, duration: 0.8, hitAt: 0.6, clipGround: true }, true, (b, u) => { b.root.position.y = -3.4 * u * u; }),
+  'telegraph:coffin_toss': gw({ clip: 'Throw', frames: 3, duration: 0.8, from: 0, to: 0.55 }),
+  'attack:coffin_toss': gw({ clip: 'Throw', frames: 5, duration: 0.5, from: 0.55, to: 1.37, hitAt: 0.45 }, true, (b, u) => { b.parts.coffin.visible = u < 0.45; }),
+};
+defineSprite({ id: 'boss_gravewright', facing: -1, build: async () => scaled(await buildGravewright(), BOSS_SCALE.boss_gravewright), anims: gwAnims });
+definePortrait('portrait_boss_gravewright', 'bosses', async () => buildGravewright(), { yaw: -32, span: 3.0, lookAt: [-0.05, 4.1, 0], clip: 'Idle' });
+
+// ---------------------------------------------------------------------------
+// Mother Mire: bog witch waist-deep in a bubbling cauldron. Legs hidden, the pot never moves except
+// for hops (walk) and tilts (mud wave).
+// ---------------------------------------------------------------------------
+async function buildMire() {
+  const witch = await character({
+    base: `${ADV}/Mage.glb`,
+    hide: ['Mage_Cape', 'Mage_LegLeft', 'Mage_LegRight'],
+    hands: [],
+    recolor: {
+      '0,0': ['#9bc48a', '#56804f'],
+      '1,0': ['#ecece4', '#9a9a98'],
+      '0,1': ['#55663f', '#1c2a1a'],
+      '1,1': ['#3a2a4a', '#150e22'],
+      '3,0': ['#6a5a3a', '#2a2214'],
+    },
+    attach: [
+      { to: 'handslot.r', object: glow('#7dff5a', 0.35, 0.9), pos: [0, 0.2, 0], as: 'orb' },
+      { to: 'handslot.l', object: glow('#b05cff', 0.35, 0.9), pos: [0, 0.2, 0], as: 'spirit' },
+      { to: 'head', object: glow('#7dff5a', 0.18, 0.9), pos: [0, 0.1, 0.2] },
+    ],
+    clipsFrom: [`${SKE}/Skeleton_Warrior.glb`],
+    scale: 2.0,
+  });
+  witch.root.position.y = -0.2;
+  const c = cauldron();
+  c.root.scale.setScalar(1.0);
+  const w = new THREE.Group();
+  const pot = new THREE.Group();
+  pot.add(c.root);
+  // steam plume pointing forward (+Z) from the rim, shown only for steam_beam
+  const steam = new THREE.Group();
+  for (let i = 0; i < 6; i++) steam.add(at(glow('#d8ffe8', 0.45 + i * 0.12, 0.7), 0, 0.2 + i * 0.1, 0.8 + i * 0.7));
+  steam.position.set(0, 1.5, 0);
+  pot.add(steam);
+  w.add(pot, witch.root);
+  return { root: w, inst: witch.inst, parts: { ...witch.parts, pot, steam, liquid: c.liquid, ...Object.fromEntries(c.bubbles.map((b, i) => ['bub' + i, b])) } } as Built;
+}
+const mire = (d: AnimDef, o: { orb?: boolean; spirit?: boolean; steam?: boolean; pot?: (b: Built, u: number) => void } = {}): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    b.parts.pot.position.set(0, 0, 0);
+    b.parts.pot.rotation.set(0, 0, 0);
+    b.parts.orb.visible = !!o.orb;
+    b.parts.spirit.visible = !!o.spirit;
+    b.parts.steam.visible = !!o.steam;
+    for (let i = 0; i < 5; i++) {
+      const t = (u * (d.loop ? 1 : 0.6) + i / 5) % 1;
+      const r = 0.25 + 0.6 * ((i * 37) % 10) / 10;
+      const a = i * 2.4;
+      const bub = b.parts['bub' + i];
+      bub.position.set(Math.cos(a) * r, 1.34 + 0.35 * Math.sin(t * Math.PI), Math.sin(a) * r);
+      bub.scale.setScalar(0.5 + Math.sin(t * Math.PI));
+    }
+    o.pot?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+const mireAnims: Record<string, AnimDef> = {
+  idle: mire({ clip: 'Idle', frames: 4, loop: true }),
+  walk: mire({ clip: 'Idle', frames: 6, loop: true, stride: 70 }, { pot: (b, u) => { b.parts.pot.position.y = 0.18 * Math.abs(Math.sin(u * Math.PI * 2)); b.parts.pot.rotation.z = 0.06 * Math.sin(u * Math.PI * 2); } }),
+  hurt: mire({ clip: 'Hit_A', frames: 2, duration: 0.3 }, { pot: (b, u) => { b.parts.pot.rotation.z = 0.12 * Math.sin(u * Math.PI); } }),
+  die: mire({ clip: 'Death_B', frames: 6, duration: 1.0, from: 0, to: 1.6 }, { pot: (b, u) => { b.parts.pot.rotation.z = -1.3 * Math.min(1, u * 1.4); b.parts.pot.position.y = 0.5 * Math.min(1, u * 1.4); } }),
+  'telegraph:toss_poison': mire({ clip: 'Throw', frames: 3, duration: 0.7, from: 0, to: 0.5 }, { orb: true }),
+  'attack:toss_poison': mire({ clip: 'Throw', frames: 5, duration: 0.5, from: 0.5, to: 1.37, hitAt: 0.4 }, { orb: true }),
+  'telegraph:mud_wave': mire({ clip: 'Spellcast_Raise', frames: 3, duration: 0.8, from: 0, to: 1.4 }, { pot: (b, u) => { b.parts.pot.rotation.x = -0.25 * u; b.parts.pot.position.y = 0.3 * u; } }),
+  'attack:mud_wave': mire({ clip: 'Spellcast_Shoot', frames: 5, duration: 0.5, hitAt: 0.5 }, { pot: (b, u) => { b.parts.pot.rotation.x = -0.25 + 0.5 * Math.min(1, u * 2); b.parts.pot.position.y = 0.3 * (1 - Math.min(1, u * 2)); } }),
+  'telegraph:steam_beam': mire({ clip: 'Spellcast_Long', frames: 3, duration: 0.8, from: 0, to: 0.9 }, { pot: (b, u) => { b.parts.pot.rotation.z = 0.04 * Math.sin(u * 40); } }),
+  'attack:steam_beam': mire({ clip: 'Spellcasting', frames: 5, duration: 0.8, hitAt: 0.3 }, { steam: true, pot: (b, u) => { b.parts.pot.rotation.z = 0.05 * Math.sin(u * 50); } }),
+  'telegraph:summon': mire({ clip: 'Spellcast_Raise', frames: 3, duration: 0.8, from: 0, to: 1.4 }, { spirit: true }),
+  'attack:summon': mire({ clip: 'Spellcast_Summon', frames: 5, duration: 0.9, from: 1.0, to: 2.8, hitAt: 0.45 }, { spirit: true }),
+};
+defineSprite({ id: 'boss_mother_mire', facing: -1, build: async () => scaled(await buildMire(), BOSS_SCALE.boss_mother_mire), anims: mireAnims });
+definePortrait('portrait_boss_mother_mire', 'bosses', async () => buildMire(), { yaw: -32, span: 2.8, lookAt: [-0.02, 3.8, 0], clip: 'Idle' });
+
+// ---------------------------------------------------------------------------
+// Sir Hollow: headless knight on a ghost horse, carrying his glowing jack-o-lantern head.
+// The rider is a Knight torso (legs hidden) sitting on the horse; the horse is animated procedurally.
+// ---------------------------------------------------------------------------
+async function headProp(): Promise<THREE.Object3D> {
+  return loadProp(`${HAL}/pumpkin_orange_jackolantern.gltf`);
+}
+async function buildHollow() {
+  const rider = await character({
+    base: `${ADV}/Knight.glb`,
+    hide: ['Knight_Head', 'Knight_Helmet', 'Knight_Cape', 'Knight_LegLeft', 'Knight_LegRight'],
+    hands: ['1H_Sword_Offhand'],
+    recolor: {
+      '3,0': ['#4a4a58', '#15151c'],
+      '7,0': ['#5a5a6a', '#22222c'],
+      '6,0': ['#3a2a30', '#14101a'],
+      '4,0': ['#2a2a34', '#0e0e14'],
+      '7,1': ['#6a2a2a', '#2a0e12'],
+      '0,1': ['#3a2a6a', '#120a2a'],
+      '3,1': ['#8a90a0', '#2a2e3a'],
+    },
+    attach: [
+      { to: 'head', object: at(cyl(0.2, 0.26, 0.14, 0x14101a, 8), 0, -0.1, 0) },
+      { to: 'handslot.r', object: await headProp(), pos: [0, 0.15, 0], scale: 0.14, as: 'head' },
+      { to: 'handslot.r', object: glow('#ff9a2a', 0.35, 0.85), pos: [0, 0.2, 0], as: 'headglow' },
+    ],
+    clipsFrom: [`${SKE}/Skeleton_Warrior.glb`],
+    scale: 1.5,
+    mirror: true,
+  });
+  rider.root.position.set(0, 2.25, -0.1);
+  const h = ghostHorse();
+  const w = new THREE.Group();
+  w.add(h.root, rider.root);
+  const parts: Record<string, THREE.Object3D> = { ...rider.parts, horse: h.root, hbody: h.body, neck: h.neck, tail: h.tail, rider: rider.root };
+  h.legs.forEach((l, i) => (parts['leg' + i] = l));
+  return { root: w, inst: rider.inst, parts } as Built;
+}
+/** gallop: leg phases, body bob, tail and neck sway */
+function gallop(b: Built, ph: number, amp = 0.8, bob = 0.08): void {
+  const off = [0, 0.18, 0.5, 0.68];
+  for (let i = 0; i < 4; i++) {
+    const hip = b.parts['leg' + i] as Leg;
+    const a = Math.sin(ph + off[i] * Math.PI * 2);
+    hip.rotation.x = amp * a;
+    hip.knee.rotation.x = amp * 0.9 * Math.max(0, -a);
+  }
+  const y = bob * Math.abs(Math.sin(ph));
+  b.parts.hbody.position.y = y;
+  b.parts.rider.position.y = 2.25 + y;
+  b.parts.neck.rotation.x = 0.08 * Math.sin(ph * 2);
+  b.parts.tail.rotation.x = 0.3 * Math.sin(ph);
+}
+const TAU2 = Math.PI * 2;
+const hol = (d: AnimDef, o: { head?: boolean; fx?: (b: Built, u: number) => void } = {}): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    b.root.rotation.set(0, 0, 0);
+    b.root.position.set(0, 0, 0);
+    b.parts.horse.rotation.set(0, 0, 0);
+    b.parts.horse.position.set(0, 0, 0);
+    b.parts.rider.rotation.set(0, 0, 0);
+    b.parts.head.visible = o.head !== false;
+    b.parts.headglow.visible = o.head !== false;
+    b.parts.headglow.scale.setScalar(1);
+    gallop(b, 0, 0, 0);
+    o.fx?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+const hollowAnims: Record<string, AnimDef> = {
+  idle: hol({ clip: 'Idle', frames: 4, loop: true }, { fx: (b, u) => { b.parts.hbody.position.y = 0.03 * Math.sin(u * TAU2); b.parts.tail.rotation.x = 0.2 * Math.sin(u * TAU2); b.parts.neck.rotation.x = 0.08 * Math.sin(u * TAU2); } }),
+  walk: hol({ clip: 'Idle', frames: 6, loop: true, stride: 150 }, { fx: (b, u) => gallop(b, u * TAU2, 0.6, 0.05) }),
+  hurt: hol({ clip: 'Hit_A', frames: 2, duration: 0.3 }, { fx: (b, u) => { b.parts.horse.rotation.x = -0.25 * Math.sin(u * Math.PI); } }),
+  die: hol({ clip: 'Death_A', frames: 6, duration: 1.1 }, { fx: (b, u) => { const k = Math.min(1, u * 1.3); b.root.rotation.z = 1.5 * k * k; } }),
+  'telegraph:charge': hol({ clip: '1H_Melee_Attack_Chop', frames: 3, duration: 0.8, from: 0, to: 0.4 }, { fx: (b, u) => { b.parts.horse.rotation.x = -0.45 * u; b.parts.leg0.rotation.x = -1.0 * u; b.parts.leg1.rotation.x = -1.1 * u; } }),
+  'attack:charge': hol({ clip: 'Running_A', frames: 5, duration: 0.6, hitAt: 0.5 }, { fx: (b, u) => { gallop(b, u * TAU2 * 1.5, 1.0, 0.12); b.parts.horse.rotation.x = 0.1; } }),
+  'telegraph:throw_head': hol({ clip: 'Throw', frames: 3, duration: 0.8, from: 0, to: 0.5 }, { fx: (b, u) => { b.parts.headglow.scale.setScalar(1 + u); } }),
+  'attack:throw_head': hol({ clip: 'Throw', frames: 5, duration: 0.5, from: 0.5, to: 1.37, hitAt: 0.4 }, { fx: (b, u) => { b.parts.head.visible = u < 0.4; b.parts.headglow.visible = u < 0.4; } }),
+  'telegraph:double_charge': hol({ clip: '2H_Melee_Idle', frames: 3, duration: 0.8 }, { fx: (b, u) => { b.parts.neck.rotation.x = 0.5 * u; b.parts.leg0.rotation.x = -0.7 * Math.abs(Math.sin(u * Math.PI * 2)); b.parts.horse.rotation.x = 0.12 * u; b.parts.rider.rotation.x = 0.15 * u; } }),
+  'attack:double_charge': hol({ clip: 'Running_B', frames: 6, duration: 0.8, hitAt: 0.35 }, { fx: (b, u) => { gallop(b, u * TAU2 * 2.5, 1.0, 0.14); b.parts.horse.rotation.x = 0.1; } }),
+};
+defineSprite({ id: 'boss_sir_hollow', facing: -1, build: async () => scaled(await buildHollow(), BOSS_SCALE.boss_sir_hollow), anims: hollowAnims });
+definePortrait('portrait_boss_sir_hollow', 'bosses', async () => buildHollow(), { yaw: -32, span: 3.4, lookAt: [-0.05, 4.1, 0], clip: 'Idle' });
+
+// ---------------------------------------------------------------------------
+// Abbot Malachar: fallen bishop. Skeleton mage, tall mitre, dark purple robe, censer on a chain, belled staff.
+// ---------------------------------------------------------------------------
+function mitre(): THREE.Group {
+  const g = new THREE.Group();
+  const cloth = mat(0x2a1a3a, { rough: 0.8 });
+  const gold = mat(0xd9a93a, { rough: 0.4, metal: 0.5 });
+  g.add(at(extrude([[-0.34, 0], [0.34, 0], [0.34, 0.5], [0, 1.0], [-0.34, 0.5]], 0.34, cloth), 0, 0, 0));
+  g.add(at(extrude([[-0.36, 0], [0.36, 0], [0.36, 0.1], [-0.36, 0.1]], 0.38, gold), 0, 0, 0));
+  g.add(at(box(0.06, 0.55, 0.37, gold), 0, 0.45, 0));
+  g.add(at(box(0.3, 0.06, 0.37, gold), 0, 0.55, 0));
+  return g;
+}
+function censer(): THREE.Group {
+  const g = new THREE.Group();
+  const iron = mat(0x6a5a3a, { rough: 0.4, metal: 0.6 });
+  g.add(at(cyl(0.025, 0.025, 1.0, iron, 5), 0, -0.5, 0));
+  const pot = new THREE.Group();
+  pot.position.set(0, -1.1, 0);
+  pot.add(at(sphere(0.2, iron, 9), 0, 0, 0));
+  pot.add(at(cone(0.08, 0.16, iron, 6), 0, 0.22, 0));
+  pot.add(at(glow('#b05cff', 0.5, 0.9), 0, 0, 0.05));
+  g.add(pot);
+  return g;
+}
+function bellStaff(): THREE.Group {
+  const g = new THREE.Group();
+  g.add(at(cyl(0.04, 0.05, 2.2, 0x3a2a1a, 6), 0, 0.5, 0));
+  const bell = new THREE.Group();
+  bell.position.set(0, 1.7, 0);
+  bell.add(at(torus(0.14, 0.03, mat(0x6a5a3a, { metal: 0.6, rough: 0.4 }), 8), 0, 0.2, 0, 90, 0, 0));
+  bell.add(at(lathe([[0.0, 0.0], [0.1, 0.02], [0.18, 0.12], [0.26, 0.28], [0.3, 0.32], [0.26, 0.3]], mat(0x2a2236, { rough: 0.4, metal: 0.5 }), 10), 0, -0.1, 0));
+  bell.add(at(sphere(0.06, 0x6a5a3a, 6), 0, -0.14, 0));
+  g.add(bell);
+  g.add(at(glow('#b05cff', 0.4, 0.8), 0, 1.65, 0));
+  (g as THREE.Group & { bell?: THREE.Object3D }).bell = bell;
+  return g;
+}
+async function buildMalachar() {
+  const staff = bellStaff();
+  const b = await character({
+    base: `${SKE}/Skeleton_Mage.glb`,
+    hide: ['Skeleton_Mage_Hat'],
+    recolor: {
+      '2,2': ['#5a3a6a', '#170c24'],
+      '3,0': ['#4a3a58', '#1a1226'],
+      '5,2': ['#b05cff', '#4a1a8a'],
+      '1,2': ['#3a2a48', '#120a1c'],
+    },
+    emissive: [{ node: 'Skeleton_Mage_Eyes', color: 0x7dff5a, intensity: 3 }],
+    attach: [
+      { to: 'head', object: boneCrown(), pos: [0, 0.55, 0], scale: 1.1, as: 'mitre' },
+      { to: 'head', object: glow('#7dff5a', 0.1, 0.8), pos: [0, 0.18, 0.4] },
+      { to: 'handslot.r', object: staff, pos: [0, 0, 0], rot: [90, 0, 0], as: 'staff' },
+      { to: 'chest', object: floatingCenser(), pos: [1.0, 1.4, 0.1], as: 'censer' },
+      { to: 'head', object: glow('#ff9a2a', 0.22, 0.9), pos: [-0.5, 0.9, 0], as: 'fb0' },
+      { to: 'head', object: glow('#ff9a2a', 0.22, 0.9), pos: [0, 1.0, 0], as: 'fb1' },
+      { to: 'head', object: glow('#ff9a2a', 0.22, 0.9), pos: [0.5, 0.9, 0], as: 'fb2' },
+      { to: 'handslot.l', object: glow('#7dff5a', 0.3, 0.9), pos: [0, 0.2, 0], as: 'dead' },
+    ],
+    clipsFrom: [`${ADV}/Knight.glb`],
+    scale: 2.2,
+  });
+  b.root.scale.y *= 1.1;
+  b.parts.bellnode = (staff as THREE.Group & { bell?: THREE.Object3D }).bell!;
+  return b;
+}
+const mal = (d: AnimDef, o: { fb?: 'orbit' | 'fire' | 'none'; dead?: boolean; bell?: number; fx?: (b: Built, u: number) => void } = {}): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    b.parts.dead.visible = !!o.dead;
+    b.parts.bellnode.rotation.z = (o.bell ?? 0) * Math.sin(u * 40);
+    b.parts.censer.rotation.z = 0.25 * Math.sin(u * 6.28);
+    for (let i = 0; i < 3; i++) {
+      const fb = b.parts['fb' + i];
+      fb.visible = o.fb === 'orbit' || o.fb === 'fire';
+      const a = (i / 3) * 6.28 + u * 6.28 * 0.5;
+      fb.position.set(Math.cos(a) * 0.7, 1.0 + 0.05 * i, Math.sin(a) * 0.7);
+      if (o.fb === 'fire') fb.position.set(0.0 - u * 2.5, 0.9 + 0.1 * i, (i - 1) * 0.6 * (0.3 + u));
+    }
+    o.fx?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+const malAnims: Record<string, AnimDef> = {
+  idle: mal({ clip: 'Idle', frames: 4, loop: true }),
+  walk: mal({ clip: 'Walking_C', frames: 6, loop: true }),
+  hurt: mal({ clip: 'Hit_A', frames: 2, duration: 0.3 }),
+  die: mal({ clip: 'Death_C_Skeletons', frames: 6, duration: 1.1, to: 1.2 }),
+  'telegraph:raise_dead': mal({ clip: 'Spellcast_Raise', frames: 3, duration: 0.8, from: 0, to: 1.4 }, { dead: true }),
+  'attack:raise_dead': mal({ clip: 'Spellcast_Summon', frames: 5, duration: 0.9, from: 1.0, to: 2.8, hitAt: 0.45 }, { dead: true }),
+  'telegraph:black_bell': mal({ clip: '2H_Melee_Attack_Chop', frames: 3, duration: 0.8, from: 0, to: 0.5 }, { bell: 0.3 }),
+  'attack:black_bell': mal({ clip: '2H_Melee_Attack_Chop', frames: 5, duration: 0.6, from: 0.5, to: 1.3, hitAt: 0.45 }, { bell: 0.6 }),
+  'telegraph:float_fireballs': mal({ clip: 'Spellcasting', frames: 3, duration: 0.8 }, { fb: 'orbit' }),
+  'attack:float_fireballs': mal({ clip: 'Spellcast_Long', frames: 5, duration: 0.9, from: 0.3, to: 2.4, hitAt: 0.4 }, { fb: 'fire' }),
+};
+defineSprite({ id: 'boss_malachar', facing: -1, build: async () => scaled(await buildMalachar(), BOSS_SCALE.boss_malachar), anims: malAnims });
+definePortrait('portrait_boss_malachar', 'bosses', async () => buildMalachar(), { yaw: -32, span: 2.8, lookAt: [-0.02, 3.8, 0], clip: 'Idle' });
