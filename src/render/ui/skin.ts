@@ -42,8 +42,12 @@ export function stonePanel(g: Phaser.GameObjects.Graphics, r: Rect, rad = 10, al
   // stone face: lighter top half, darker bottom
   g.fillStyle(SKIN.stone, alpha);
   g.fillRoundedRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2, rad);
-  g.fillStyle(SKIN.stoneHi, 0.35 * alpha);
-  g.fillRoundedRect(r.x + 3, r.y + 3, r.w - 6, Math.max(4, (r.h - 6) * 0.45), { tl: rad - 2, tr: rad - 2, bl: 2, br: 2 });
+  // top light fading down in a few steps (no hard edge across big panels)
+  const hh = Math.max(4, Math.min(44, (r.h - 6) * 0.45));
+  for (let i = 0; i < 4; i++) {
+    g.fillStyle(SKIN.stoneHi, 0.1 * alpha);
+    g.fillRoundedRect(r.x + 3, r.y + 3, r.w - 6, hh * (1 - i * 0.22), { tl: rad - 2, tr: rad - 2, bl: 2, br: 2 });
+  }
   g.fillStyle(SKIN.stoneLo, 0.6 * alpha);
   g.fillRect(r.x + rad * 0.5, r.y + r.h - 6, r.w - rad, 3);
   // inner bevel line

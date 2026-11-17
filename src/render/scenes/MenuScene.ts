@@ -5,9 +5,12 @@
 import type { AppContext, SceneKeyName } from '../../contracts';
 import { getApp } from '../../core/app';
 import { setupCamera, viewSize } from '../../core/camera';
-import { addArt } from '../art/atlas';
-import { drawGround, drawHills, drawSky } from '../scenery';
-import { C, addNum, addText, chapterLook, numStr } from '../style';
+import { spriteFrame } from '../art/atlas';
+import { bgForChapter, queueBackground, queueSprite, syncQuality } from '../assets/library';
+import { clearSpriteInfo } from '../assets/sprites';
+import { addStaticCourtyard } from '../battle/Backdrop';
+import { addNum, numStr } from '../style';
+import { SKIN, addIcon, goldStyle, stonePanel } from '../ui/skin';
 import { Button } from '../ui/widgets';
 
 export abstract class MenuScene<D extends object = object> extends Phaser.Scene {
@@ -20,6 +23,24 @@ export abstract class MenuScene<D extends object = object> extends Phaser.Scene 
 
   constructor(key: SceneKeyName) {
     super(key);
+  }
+
+  /** sprite atlases this menu shows (baked art; generated art is used until they load) */
+  protected menuSprites(): string[] {
+    return [];
+  }
+
+  /** where the battle camera would look for the backdrop (world px) */
+  protected backdropScroll(): number {
+    return 0;
+  }
+
+  preload(): void {
+    const app = getApp();
+    if (syncQuality(this, app.profile.settings)) clearSpriteInfo();
+    const bg = bgForChapter(this.chapter(app));
+    if (bg) queueBackground(this, bg.id);
+    for (const k of this.menuSprites()) queueSprite(this, k);
   }
 
   create(data: D): void {
@@ -66,28 +87,26 @@ export abstract class MenuScene<D extends object = object> extends Phaser.Scene 
   }
 
   /** chapter of the furthest reachable wave, for the backdrop palette */
-  protected chapter(): number {
-    const w = this.app.progression.maxPlayableWave(this.app.profile);
-    return this.app.data.levels[Math.max(0, Math.min(this.app.data.levels.length - 1, w - 1))]?.chapter ?? 1;
+  protected chapter(app: AppContext = this.app): number {
+    const w = app.progression.maxPlayableWave(app.profile);
+    return app.data.levels[Math.max(0, Math.min(app.data.levels.length - 1, w - 1))]?.chapter ?? 1;
   }
 
-  protected drawBackdrop(dim = 0.42): void {
-    const look = chapterLook(this.chapter());
-    const g = this.add.graphics().setDepth(-100);
-    drawSky(g, this.vw, 720, look);
-    const far = this.add.graphics().setDepth(-99);
-    drawHills(far, this.vw + 40, 520, 120, look.far, 11, false);
-    const near = this.add.graphics().setDepth(-98);
-    drawHills(near, this.vw + 40, 590, 90, look.near, 23, true);
-    const ground = this.add.graphics().setDepth(-97);
-    drawGround(ground, 0, this.vw, 650, look);
-    addArt(this, -60, 680, 'castle', 0.95).setDepth(-96);
-    if (dim > 0) this.add.rectangle(0, 0, this.vw, 720, 0x0b0612, dim).setOrigin(0, 0).setDepth(-90);
+  /** The castle courtyard of the current chapter, darkened, as the menu backdrop. */
+  protected drawBackdrop(dim = 0.5): void {
+    const scroll = Math.max(0, Math.min(this.app.data.balance.world.width - this.vw, this.backdropScroll()));
+    addStaticCourtyard(this, this.chapter(), scroll, this.vw, -100, { data: this.app.data });
+    if (dim > 0) {
+      const px = spriteFrame('px');
+      this.add.image(0, 0, px.tex, px.frame).setOrigin(0, 0).setDisplaySize(this.vw, 720).setTint(0x0b0612).setAlpha(dim).setDepth(-90);
+      const v = spriteFrame('vignette');
+      this.add.image(0, 0, v.tex, v.frame).setOrigin(0, 0).setDisplaySize(this.vw, 720).setTint(0x000000).setAlpha(0.85).setDepth(-89);
+    }
   }
 
   /** Title + optional back button + gold counter along the top. */
   protected header(title: string, back?: { label?: string; to: () => void }, showGold = true): void {
-    addText(this, this.vw / 2, 22, title, 36, { originX: 0.5, color: C.gold, shadow: true });
+    this.add.text(this.vw / 2, 46, title, goldStyle(38)).setOrigin(0.5).setResolution(this.R).setShadow(0, 3, 'rgba(0,0,0,0.6)', 4, true, true);
     if (back) {
       new Button(this, 96, 48, back.label ?? this.t('ui.back'), back.to, { w: 160, h: 60, variant: 'ghost', size: 22, icon: 'ui_back', iconSize: 28 });
     }
@@ -97,14 +116,9 @@ export abstract class MenuScene<D extends object = object> extends Phaser.Scene 
   protected goldBadge(right: number, cy: number): Phaser.GameObjects.BitmapText {
     const w = 190;
     const g = this.add.graphics();
-    g.fillStyle(0x0b0810, 0.5);
-    g.fillRoundedRect(right - w, cy - 26 + 3, w, 52, 26);
-    g.fillStyle(C.panelN, 0.92);
-    g.fillRoundedRect(right - w, cy - 26, w, 52, 26);
-    g.lineStyle(3, C.inkN, 1);
-    g.strokeRoundedRect(right - w, cy - 26, w, 52, 26);
-    addArt(this, right - w + 28, cy, 'ui_gold', 0.75);
-    return addNum(this, right - 20, cy, numStr(this.app.profile.gold), 28, true).setOrigin(1, 0.5);
+    stonePanel(g, { x: right - w, y: cy - 26, w, h: 52 }, 12);
+    addIcon(this, right - w + 30, cy, 'ui_gold', 'ui_gold', 38);
+    return addNum(this, right - 20, cy, numStr(this.app.profile.gold), 28, true).setOrigin(1, 0.5).setTint(SKIN.gold);
   }
 
   protected go(key: SceneKeyName, data?: object): void {

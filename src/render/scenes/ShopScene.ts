@@ -1,5 +1,6 @@
 import { SceneKey, type UpgradeDef } from '../../contracts';
-import { addArt, fitScale, hasFrame } from '../art/atlas';
+import { addArt, hasFrame } from '../art/atlas';
+import { addIcon } from '../ui/skin';
 import { C, addNum, addText, fitText, numStr } from '../style';
 import { Button, ScrollArea, panel, toast } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
@@ -103,8 +104,8 @@ export class ShopScene extends MenuScene {
       g.strokeRoundedRect(0, y + 4, w, rowH - 10, 14);
       area.content.add(g);
       const icon = this.rowIcon(def);
-      const ic = addArt(this, 46, y + rowH / 2, icon, fitScale(icon, 58, 62, 1.3, def.category === 'army' ? 'ally' : undefined));
-      ic.setOrigin(0.5, 0.5);
+      const baked = def.category === 'army' && (icon.startsWith('unit_') || icon.startsWith('hero_')) ? `portrait_${icon}` : icon;
+      const ic = addIcon(this, 46, y + rowH / 2, baked, icon, 60, 62);
       if (locked) ic.setTint(0x333038);
       area.content.add(ic);
       const name = addText(this, 92, y + 28, this.t(def.nameKey), 22, { originY: 0.5, color: locked ? C.textDim : C.text });

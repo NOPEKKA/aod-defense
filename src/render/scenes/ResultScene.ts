@@ -1,6 +1,7 @@
 import { SceneKey, type BattleSceneData, type PreWaveSceneData, type ResultSceneData } from '../../contracts';
 import { makeWaveParams } from '../../core/app';
-import { addArt, fitScale } from '../art/atlas';
+import { addArt } from '../art/atlas';
+import { addIcon } from '../ui/skin';
 import { C, addNum, addText, numStr } from '../style';
 import { Button, panel } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
@@ -91,7 +92,7 @@ export class ResultScene extends MenuScene<ResultSceneData> {
       const g = this.add.graphics();
       g.fillStyle(0x0b0810, 0.45);
       g.fillRoundedRect(ux, uy - 27, pw / 2 - 90, 54, 10);
-      addArt(this, ux + 30, uy, sprite, fitScale(sprite, 46, 48, 1)).setOrigin(0.5, 0.5);
+      addIcon(this, ux + 30, uy, d.units.has(id) ? `portrait_${sprite}` : sprite, sprite, 46, 48);
       addText(this, ux + 58, uy, this.unlockName(id), 19, { originY: 0.5 });
       uy += 62;
     }

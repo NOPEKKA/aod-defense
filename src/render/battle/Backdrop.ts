@@ -585,3 +585,32 @@ export function ensureFallbackTextures(scene: Phaser.Scene, chapter: number, vie
     }
   }
 }
+
+/**
+ * Static courtyard for menus: the chapter background (baked when loaded, generated otherwise)
+ * laid out as the battle camera would see it at `scrollX`. Returns the created images.
+ */
+export function addStaticCourtyard(scene: Phaser.Scene, chapter: number, scrollX: number, vw: number, depth: number, view: Pick<RenderView, 'data'>): Phaser.GameObjects.Image[] {
+  const baked = bgForChapter(chapter);
+  const bakedOk = !!baked && baked.layers.every((l) => {
+    for (let i = 0; i < l.tiles; i++) if (!scene.textures.exists(bgTextureKey(baked.id, l.id, i))) return false;
+    return true;
+  });
+  const meta = bakedOk ? baked! : fallbackMeta(chapter, view.data.balance.world);
+  if (!bakedOk) ensureFallbackTextures(scene, chapter, view);
+  const out: Phaser.GameObjects.Image[] = [];
+  meta.layers.forEach((layer, li) => {
+    for (let i = 0; i < layer.tiles; i++) {
+      const key = bakedOk ? bgTextureKey(meta.id, layer.id, i) : fallbackKey(chapter, layer.id, i);
+      if (!scene.textures.exists(key)) continue;
+      const src = scene.textures.get(key).getSourceImage() as { width: number; height: number };
+      const tileW = Math.min(layer.tileW, layer.w - i * layer.tileW);
+      const x = i * layer.tileW - scrollX * layer.parallax;
+      if (x > vw || x + tileW < 0) continue;
+      const img = scene.add.image(x, 0, key).setOrigin(0, 0).setDepth(depth + li);
+      img.setScale(tileW / src.width, layer.h / src.height);
+      out.push(img);
+    }
+  });
+  return out;
+}
