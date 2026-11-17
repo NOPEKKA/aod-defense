@@ -229,6 +229,7 @@
     "boss.stunMul": 0.25,
     "boss.slowMul": 0.5,
     "boss.minionSpread": 90,
+    "boss.standoff": 520,
     "boss.phasePush": 220,
     "boss.readyTimeout": 6,
     "boss.fallHeight": 420,

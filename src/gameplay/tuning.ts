@@ -113,6 +113,8 @@ export const TUNING_DEFAULTS = {
   'boss.stunMul': 0.25,
   'boss.slowMul': 0.5,
   'boss.minionSpread': 90,
+  /** ground bosses on a ranged step stop this far in front of the player front line */
+  'boss.standoff': 520,
   /** a phase change pushes every live minion back (to the right) this far */
   'boss.phasePush': 220,
   /** a boss that cannot get its target in range starts the step anyway after this long */
@@ -191,6 +193,7 @@ export interface Tuning {
   bossStunMul: number;
   bossSlowMul: number;
   bossMinionSpread: number;
+  bossStandoff: number;
   bossPhasePush: number;
   bossReadyTimeout: number;
   bossFallHeight: number;
@@ -290,6 +293,7 @@ export function tuningOf(data: GameData): Tuning {
     bossStunMul: get('boss.stunMul'),
     bossSlowMul: get('boss.slowMul'),
     bossMinionSpread: get('boss.minionSpread'),
+    bossStandoff: get('boss.standoff'),
     bossPhasePush: get('boss.phasePush'),
     bossReadyTimeout: get('boss.readyTimeout'),
     bossFallHeight: get('boss.fallHeight'),

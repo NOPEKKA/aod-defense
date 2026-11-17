@@ -25,6 +25,7 @@ import { cleanupTick, dropsTick } from './drops';
 import { spawnEnemyAt } from './pool';
 import { registeredIds, validateData } from './registry';
 import { castCommand, effectsTick, spellsCooldownTick, spellsInit } from './spells';
+import { spellUpkeep } from './spells_new';
 import { getState, refreshLists, type GState } from './state';
 import { summonCommand, summonInit, summonTick } from './summon';
 
@@ -182,6 +183,7 @@ function createSimSystems(): SimSystem[] {
       const s = st!;
       refreshLists(s);
       effectsTick(s, ctx);
+      spellUpkeep(s);
       bossesTick(s, ctx);
       castleTick(s, ctx);
       ironBoostTick(s, ctx);

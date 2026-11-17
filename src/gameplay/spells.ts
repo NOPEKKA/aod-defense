@@ -11,6 +11,7 @@ import { applyStatus, dealDamage, heal, kill, knockback } from './damage';
 import { middleRowY, release, spawnEffect, spawnUnitAt } from './pool';
 import { byId, refreshLists, restartAnim, type ActiveEffect, type GState } from './state';
 import { allyCount } from './summon';
+import { NEW_EFFECTS } from './spells_new';
 import { densestHostiles } from './targeting';
 
 type Params = SpellEffect['params'];
@@ -156,7 +157,11 @@ export function effectsTick(st: GState, ctx: SimContext): void {
       case 'portal_execute': portalExecute(st, ctx, fx); break;
       case 'self_buff': selfBuff(st, ctx, fx); break;
       case 'dash_vehicle': dashVehicle(st, ctx, fx); break;
-      default: fx.active = false;
+      default: {
+        const run = NEW_EFFECTS[fx.effect];
+        if (run) run(st, ctx, fx);
+        else fx.active = false;
+      }
     }
   }
 }

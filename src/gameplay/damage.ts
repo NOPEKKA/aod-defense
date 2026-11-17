@@ -147,6 +147,9 @@ export function kill(st: GState, slot: number, killerId: number | null, cause: '
   rt.kbV = 0;
   rt.engaged = false;
   rt.wState = 0;
+  rt.hidden = false;
+  // Hellfire Pitch 3B: a hostile that dies in the pitch bursts (spells_new.ts#spellUpkeep)
+  const inPitch = st.burstDamage > 0 && !!statusOf(e, 'pitch');
   for (const s of e.statuses) st.statusPool.push(s);
   e.statuses.length = 0;
   // exactly one entity:died per death; systems counts kills (world.wave.enemiesKilled) from it
@@ -168,7 +171,7 @@ export function kill(st: GState, slot: number, killerId: number | null, cause: '
       d.t = st.world.time;
       d.used = false;
     }
-    if (e.kind === 'enemy' && st.burstDamage > 0) st.bursts.push(e.x);
+    if (inPitch) st.bursts.push(e.x);
   }
 }
 

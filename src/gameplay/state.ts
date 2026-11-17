@@ -193,8 +193,14 @@ export interface Rt {
   bX0: number;
   bDir: number;
   bAltFrom: number;
+  /** charge: home x to ride back to (0 = none) */
   bA: number;
+  /** step serial */
   bB: number;
+  /** boss hp when the step/channel started (raise_dead / drain_book break checks) */
+  bA2: number;
+  /** sequential attacks: seconds since the step started (item i is armed at i * gap) */
+  bSeqT: number;
   /** telegraph owned by the current step (NONE if none) */
   bTelegraph: number;
 }
@@ -276,6 +282,21 @@ export interface Hazard {
   hop: number;
   /** burrow tracker: seconds left to track, speed */
   track: number;
+  /** step serial of the owner boss (a step ends when its hazards are done) */
+  serial: number;
+  /** strike repeats (combo): seconds between repeats */
+  repeatGap: number;
+  /** warning of every bounce after the first */
+  bounceWarn: number;
+  /** telegraph shape used when the hazard (re)arms */
+  shape: Telegraph['shape'];
+  /** the boss emerges here when the strike fires (burrow) */
+  emerge: boolean;
+  /** the strike also hits the book when it covers bookX */
+  hitsBook: boolean;
+  dkind: DamageKind;
+  /** wave fronts / rings: the beam/ring has started moving */
+  moving: boolean;
 }
 
 export interface DeathRecord {
@@ -442,7 +463,7 @@ export function newRt(): Rt {
     pPierce: 0, pHitsFlying: false, pFlyLayer: false, pBoth: false,
     pSplash: 0, pArmorPierce: false, pBonusLarge: 1, pBurnDps: 0, pBurnDur: 0, pKind: 'physical', pOwner: NONE,
     pToBook: false, pFromAsh: false, pKb: 0, pMark: 0, pMarkDur: 0, pHit: [],
-    bPhase: 0, bStep: 0, bState: 0, bTimer: 0, bT: 0, bHits: 0, bX: 0, bX0: 0, bDir: -1, bAltFrom: 0, bA: 0, bB: 0, bTelegraph: NONE,
+    bPhase: 0, bStep: 0, bState: 0, bTimer: 0, bT: 0, bHits: 0, bX: 0, bX0: 0, bDir: -1, bAltFrom: 0, bA: 0, bB: 0, bA2: 0, bSeqT: 0, bTelegraph: NONE,
   };
 }
 
