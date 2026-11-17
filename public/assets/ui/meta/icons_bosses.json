@@ -1,0 +1,14 @@
+{
+ "id": "icons_bosses",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "portrait_boss_sheila_demon": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}
