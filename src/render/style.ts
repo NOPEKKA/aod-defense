@@ -4,8 +4,8 @@
 import { getApp } from '../core/app';
 import { FONT_L, FONT_S } from './art/build';
 
-/** System stack that renders Thai well on Windows / Android / iOS. */
-export const FONT = '"Noto Sans Thai", "Leelawadee UI", "Leelawadee", "Thonburi", Tahoma, "Segoe UI", system-ui, sans-serif';
+/** Bundled Kanit (public/fonts, @font-face in style.css), then system stacks that render Thai well. */
+export const FONT = 'Kanit, "Noto Sans Thai", "Leelawadee UI", "Leelawadee", "Thonburi", Tahoma, "Segoe UI", system-ui, sans-serif';
 /** Tall Thai stacks (above + below marks) so Phaser measures enough line height. */
 const THAI_TEST = '|MÉqgyปั้ญู่ฐฎ';
 

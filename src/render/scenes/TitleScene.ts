@@ -1,6 +1,7 @@
 import { SceneKey, type SettingsSceneData } from '../../contracts';
-import { addArt } from '../art/atlas';
 import { C, addText } from '../style';
+import { addMenuShadow, addMenuSprite } from '../ui/menuSprite';
+import { goldStyle } from '../ui/skin';
 import { Button, confirmDialog, toast } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
 
@@ -12,6 +13,14 @@ export class TitleScene extends MenuScene {
     super(SceneKey.Title);
   }
 
+  protected menuSprites(): string[] {
+    return ['ash', 'unit_swordsman', 'unit_archer', 'enemy_skeleton', 'enemy_skeleton_helm', 'enemy_skeleton_knight'];
+  }
+
+  protected backdropScroll(): number {
+    return 380;
+  }
+
   private hasProgress(): boolean {
     const p = this.app.profile;
     return p.highestWave > 0 || p.gold > 0 || Object.values(p.upgrades).some((l) => l > 0);
@@ -19,19 +28,25 @@ export class TitleScene extends MenuScene {
 
   protected build(): void {
     const vw = this.vw;
-    // decoration: Ash in front of the castle, skeletons approaching
-    const ash = addArt(this, 330, 662, 'ash', 2.1);
-    this.tweens.add({ targets: ash, y: 656, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
-    for (let i = 0; i < 3; i++) {
-      const sk = addArt(this, vw - 120 - i * 110, 664 + (i % 2) * 6, i === 1 ? 'enemy_skeleton_helm' : 'enemy_skeleton', 1.5 - i * 0.12);
-      sk.setFlipX(true);
-      this.tweens.add({ targets: sk, angle: 4, duration: 420 + i * 60, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
-    }
+    // decoration: Ash and his men hold the courtyard, the dead close in from the right
+    const gy = 668;
+    const cast: Array<[string, number, number, 1 | -1, number, string]> = [
+      ['unit_archer', 120, gy - 28, 1, 1.05, 'idle'],
+      ['unit_swordsman', 215, gy - 8, 1, 1.15, 'idle'],
+      ['ash', 330, gy + 6, 1, 1.45, 'idle'],
+      ['enemy_skeleton_knight', vw - 110, gy - 30, -1, 1.15, 'idle'],
+      ['enemy_skeleton', vw - 215, gy - 6, -1, 1.2, 'walk'],
+      ['enemy_skeleton_helm', vw - 60, gy + 8, -1, 1.25, 'walk'],
+    ];
+    cast.forEach(([key, x, y, facing, scale, anim], i) => {
+      addMenuShadow(this, key, x, y, scale, facing)?.setDepth(-60);
+      addMenuSprite(this, key, x, y, { facing, scale, anim, phase: i * 0.37, speed: anim === 'walk' ? 0.5 : 1 }).setDepth(-50 + y * 0.01);
+    });
 
-    const cx = vw / 2 + 120;
-    const title = addText(this, cx, 104, this.t('game.title'), 76, { originX: 0.5, originY: 0.5, color: C.gold, stroke: 12, shadow: true });
+    const cx = vw / 2 + 60;
+    const title = this.add.text(cx, 110, this.t('game.title'), goldStyle(84)).setOrigin(0.5).setResolution(this.R).setShadow(0, 6, 'rgba(0,0,0,0.7)', 10, true, true);
     this.tweens.add({ targets: title, scale: 1.03, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
-    addText(this, cx, 166, this.t('title.subtitle'), 22, { originX: 0.5, originY: 0.5, color: C.text, bold: false });
+    addText(this, cx, 176, this.t('title.subtitle'), 22, { originX: 0.5, originY: 0.5, color: '#e8dcc8', bold: false });
 
     const bw = 380;
     let y = 270;

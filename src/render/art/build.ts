@@ -20,6 +20,7 @@ import {
 } from './characters';
 import { UI_ICONS, drawRelicIcon, drawSpellIcon } from './icons';
 import { circle, radial, type Ctx } from './kit';
+import { placeholderItems } from './placeholder';
 import * as P from './props';
 
 export const FONT_S = 'aodd_num_s';
@@ -116,6 +117,9 @@ export function buildAllTextures(scene: Phaser.Scene, data: GameData, R: number)
   add('vignette', 320, 180, P.drawVignette, 0, 0);
   add('px', 4, 4, P.drawPx, 0, 0);
   add('p_circle', 32, 32, (c, w) => circle(c, w / 2, w / 2, w / 2 - 1, '#ffffff', 0), 0.5, 0.5);
+
+  // neutral silhouettes drawn in battle for sprites that are not baked / not loaded yet
+  items.push(...placeholderItems());
 
   for (const [key, draw] of Object.entries(UI_ICONS)) add(key, 48, 48, draw, 0.5, 0.5);
   // the same coin/mana art in UI size for convenience

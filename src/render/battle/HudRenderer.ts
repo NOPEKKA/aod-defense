@@ -1,22 +1,32 @@
 /**
- * Battle HUD. Draws ONLY at core/layout rects (controls hit-tests the same
- * rects) and reacts to ui:* events for pressed feedback. Numbers use the atlas
- * bitmap fonts; Thai labels are Text objects that only change on wave start or
- * language change. Graphics layers are redrawn per frame without allocations.
+ * Battle HUD v2 (ART_BIBLE section 8), arranged like the original game and drawn ONLY at the
+ * core/layout rects (controls hit-tests the same rects):
+ *   top-left     Ash portrait in an iron frame, HP bar, smaller book bar, pause under the portrait
+ *   top-centre   wave bar with skull markers (boss HP bar during a boss), minimap under it
+ *   top-right    gold, speed; the combo counter pops under them
+ *   bottom-left  rally banner, blacksmith panel (portrait, "L2", iron, blue progress, upgrade cost),
+ *                wooden unit slots with portraits and iron costs
+ *   bottom-right round spell buttons (icon, mana ring, cooldown sweep), dodge button
+ * Stone / iron / wood skin from ui/skin.ts, baked icons with generated fallbacks. Numbers use the
+ * atlas bitmap fonts; Text objects change only on wave start, level up or language change.
+ * Graphics layers are redrawn per frame without allocations.
  */
 import type { BattleRenderer, EntityState, EventBus, GameEvents, HudLayout, Rect, RenderView, Unsubscribe } from '../../contracts';
 import { findEntity } from '../../core/world';
-import { applyFrame, atlasScale, spriteFrame } from '../art/atlas';
+import { atlasScale, spriteFrame } from '../art/atlas';
 import { FONT_L, FONT_S } from '../art/build';
-import { C, addText, clamp01, numStr } from '../style';
+import { C, FONT, addText, clamp01, easeOutBack, numStr } from '../style';
+import { SKIN, barFill, goldStyle, ironRing, setIcon, stonePanel, trough, woodPanel } from '../ui/skin';
+import { DEPTH } from './depth';
 import { PauseMenu } from './PauseMenu';
 
-const D_STATIC = 3000;
-const D_UNDER = 3005;
-const D_ICON = 3010;
-const D_OVER = 3020;
-const D_NUM = 3030;
-const D_BANNER = 3100;
+const D_STATIC = DEPTH.hud;
+const D_UNDER = DEPTH.hud + 5;
+const D_ICON = DEPTH.hud + 10;
+const D_OVER = DEPTH.hud + 20;
+const D_NUM = DEPTH.hud + 30;
+const D_BANNER = DEPTH.hud + 100;
+const MAX_MARKERS = 10;
 
 interface SlotUi {
   icon: Phaser.GameObjects.Image;
@@ -44,7 +54,8 @@ export class HudRenderer implements BattleRenderer {
   private gUnder!: Phaser.GameObjects.Graphics;
   private gOver!: Phaser.GameObjects.Graphics;
   private objs: Phaser.GameObjects.GameObject[] = [];
-  private ashIcon!: Phaser.GameObjects.Image;
+  private portrait!: Phaser.GameObjects.Image;
+  private portraitBase = 1;
   private bookIcon!: Phaser.GameObjects.Image;
   private ashNum!: Phaser.GameObjects.BitmapText;
   private bookNum!: Phaser.GameObjects.BitmapText;
@@ -52,16 +63,41 @@ export class HudRenderer implements BattleRenderer {
   private bossText!: Phaser.GameObjects.Text;
   private remainIcon!: Phaser.GameObjects.Image;
   private remainNum!: Phaser.GameObjects.BitmapText;
+  private markers: Phaser.GameObjects.Image[] = [];
+  private markerBase = 1;
   private goldIcon!: Phaser.GameObjects.Image;
+  private goldBase = 1;
   private goldNum!: Phaser.GameObjects.BitmapText;
   private speedIcon!: Phaser.GameObjects.Image;
   private speedNum!: Phaser.GameObjects.BitmapText;
   private pauseIcon!: Phaser.GameObjects.Image;
   private pauseHint!: Phaser.GameObjects.BitmapText;
   private speedHint!: Phaser.GameObjects.BitmapText;
+  // blacksmith panel
+  private smithFace!: Phaser.GameObjects.Image;
+  private smithLevel!: Phaser.GameObjects.Text;
   private ironIcon!: Phaser.GameObjects.Image;
   private ironNum!: Phaser.GameObjects.BitmapText;
   private ironMax!: Phaser.GameObjects.BitmapText;
+  private anvilIcon!: Phaser.GameObjects.Image;
+  private smithCost!: Phaser.GameObjects.BitmapText;
+  private smithHint!: Phaser.GameObjects.BitmapText;
+  private smithFlash = 0;
+  private smithDeny = 0;
+  private lastLevel = -1;
+  private lastCost = -2;
+  // rally
+  private rallyIcon!: Phaser.GameObjects.Image;
+  private rallyHint!: Phaser.GameObjects.BitmapText;
+  private rallyShown: '' | 'advance' | 'hold' = '';
+  private rallyPop = 0;
+  // combo
+  private comboNum!: Phaser.GameObjects.Text;
+  private comboLabel!: Phaser.GameObjects.Text;
+  private comboBonus!: Phaser.GameObjects.Text;
+  private comboPop = 0;
+  private comboBonusT = 0;
+  private lastCombo = -1;
   private units: SlotUi[] = [];
   private spells: SlotUi[] = [];
   private dodgeIcon!: Phaser.GameObjects.Image;
@@ -82,10 +118,13 @@ export class HudRenderer implements BattleRenderer {
   private pressPause = false;
   private pressSpeed = false;
   private pressCancel = false;
+  private pressSmith = false;
+  private pressRally = false;
   private denyUnit: number[] = [];
   private denySpell: number[] = [];
   private goldBump = 0;
   private bookFlash = 0;
+  private ashHurt = 0;
   private last = { ash: -1, ashMax: -1, book: -1, gold: -1, iron: -1, ironMax: -1, remain: -1 };
   private ft = new Float32Array(60);
   private ftIdx = 0;
@@ -112,15 +151,17 @@ export class HudRenderer implements BattleRenderer {
     this.gOver = keep(scene.add.graphics().setDepth(D_OVER));
     const icon = (key: string) => keep(this.img(key));
     const num = (large: boolean, size: number) => keep(scene.add.bitmapText(0, 0, large ? FONT_L : FONT_S, '', size).setDepth(D_NUM));
+    const R = view.data ? scene.cameras.main.zoom : 1;
 
-    this.ashIcon = icon('ui_ash');
+    this.portrait = icon('ui_ash');
     this.bookIcon = icon('ui_book');
-    this.ashNum = num(false, 14).setOrigin(1, 0.5);
-    this.bookNum = num(false, 14).setOrigin(1, 0.5);
+    this.ashNum = num(false, 15).setOrigin(1, 0.5);
+    this.bookNum = num(false, 12).setOrigin(1, 0.5);
     this.waveText = keep(addText(scene, 0, 0, '', 15, { originY: 0.5 }).setDepth(D_NUM));
     this.bossText = keep(addText(scene, 0, 0, '', 15, { originY: 0.5, color: '#ffd8e0' }).setDepth(D_NUM));
     this.remainIcon = icon('ui_skull');
     this.remainNum = num(false, 14).setOrigin(1, 0.5);
+    for (let i = 0; i < MAX_MARKERS; i++) this.markers.push(icon('ui_skull').setVisible(false));
     this.goldIcon = icon('ui_gold');
     this.goldNum = num(true, 26).setOrigin(0, 0.5);
     this.speedIcon = icon('ui_speed');
@@ -128,9 +169,21 @@ export class HudRenderer implements BattleRenderer {
     this.pauseIcon = icon('ui_pause');
     this.pauseHint = num(false, 11).setOrigin(0, 0).setText('P');
     this.speedHint = num(false, 11).setOrigin(0, 0).setText('F');
+
+    this.smithFace = icon('fallback_ally');
+    this.smithLevel = keep(scene.add.text(0, 0, '', goldStyle(22)).setOrigin(0, 0.5).setResolution(R).setDepth(D_NUM));
     this.ironIcon = icon('ui_iron');
-    this.ironNum = num(true, 28).setOrigin(0, 0.5);
-    this.ironMax = num(false, 14).setOrigin(0, 0.5);
+    this.ironNum = num(true, 24).setOrigin(0, 0.5);
+    this.ironMax = num(false, 13).setOrigin(0, 0.5);
+    this.anvilIcon = icon('ui_iron');
+    this.smithCost = num(false, 13).setOrigin(0, 0.5);
+    this.smithHint = num(false, 11).setOrigin(1, 0).setText('B');
+    this.rallyIcon = icon('ui_dodge');
+    this.rallyHint = num(false, 11).setOrigin(0, 0).setText('G');
+    this.comboNum = keep(scene.add.text(0, 0, '', goldStyle(40)).setOrigin(0.5, 0.5).setResolution(R).setDepth(D_NUM).setVisible(false));
+    this.comboLabel = keep(scene.add.text(0, 0, '', goldStyle(15, '#ffb070')).setOrigin(0.5, 0.5).setResolution(R).setDepth(D_NUM).setVisible(false));
+    this.comboBonus = keep(scene.add.text(0, 0, '', goldStyle(20)).setOrigin(0.5, 0.5).setResolution(R).setDepth(D_NUM).setVisible(false));
+
     for (let i = 0; i < view.layout.unitSlots.length; i++) {
       this.units.push(this.makeSlot(keep, String(i + 1), 'ui_iron'));
       this.pressUnit.push(false);
@@ -145,8 +198,8 @@ export class HudRenderer implements BattleRenderer {
     this.dodgeHint = num(false, 11).setOrigin(0.5, 0).setText('SPACE');
     this.cancelIcon = icon('ui_cancel');
     this.fpsText = num(false, 14).setOrigin(0, 0);
-    this.banner = keep(addText(scene, 0, 0, '', 44, { originX: 0.5, originY: 0.5, stroke: 8, align: 'center' }).setDepth(D_BANNER));
-    this.bannerSub = keep(addText(scene, 0, 0, '', 22, { originX: 0.5, originY: 0.5, stroke: 5, align: 'center', color: C.gold }).setDepth(D_BANNER));
+    this.banner = keep(scene.add.text(0, 0, '', { ...goldStyle(48, C.text), fontFamily: FONT, align: 'center' }).setOrigin(0.5).setResolution(R).setDepth(D_BANNER));
+    this.bannerSub = keep(scene.add.text(0, 0, '', { ...goldStyle(22), fontFamily: FONT, align: 'center' }).setOrigin(0.5).setResolution(R).setDepth(D_BANNER));
     this.banner.setAlpha(0);
     this.bannerSub.setAlpha(0);
 
@@ -173,6 +226,12 @@ export class HudRenderer implements BattleRenderer {
         case 'cancel':
           this.pressCancel = p.down;
           break;
+        case 'smith':
+          this.pressSmith = p.down;
+          break;
+        case 'rally':
+          this.pressRally = p.down;
+          break;
       }
     });
     on('summon:denied', (p) => {
@@ -187,20 +246,46 @@ export class HudRenderer implements BattleRenderer {
     on('book:damaged', () => {
       this.bookFlash = 0.4;
     });
+    on('entity:damaged', (p) => {
+      if (p.id === this.view.world.ashId && !p.blocked) this.ashHurt = 0.3;
+    });
+    on('smith:upgraded', (p) => {
+      this.smithFlash = 1;
+      this.showBanner(this.view.t('ui.smith_upgraded', { n: p.level }), '', 1.4, SKIN.goldText, 34);
+    });
+    on('smith:denied', () => {
+      this.smithDeny = 0.4;
+    });
+    on('rally:changed', () => {
+      this.rallyPop = 1;
+    });
+    on('combo:changed', () => {
+      this.comboPop = 1;
+    });
+    on('combo:ended', (p) => {
+      if (p.gold > 0) {
+        this.comboBonus.setText(this.view.t('ui.combo_bonus', { gold: p.gold })).setVisible(true);
+        this.comboBonusT = 1.6;
+        this.goldBump = 1;
+      }
+    });
     on('wave:started', (p) => {
       const key = p.endless ? 'ui.wave_endless' : 'ui.wave';
       this.showBanner(this.view.t(key, { n: p.wave, total: this.view.data.balance.campaignWaves }), p.kind === 'boss' ? this.view.t('hud.boss_wave') : '', 2.2);
       this.refreshLabels();
     });
-    on('boss:spawned', (p) => {
-      const def = this.view.data.bosses.get(p.bossId);
-      this.showBanner(def ? this.view.t(def.nameKey) : p.bossId, this.view.t('hud.boss_arrives'), 2.4, '#ff8a9a');
+    on('boss:spawned', () => {
+      // the FX boss banner takes the stage
+      this.bannerT = 0;
     });
     on('settings:changed', () => {
       this.refreshLabels();
       this.pause.rebuild(this.layout);
     });
 
+    // portraits are baked per sprite key; fall back to generated art
+    this.portraitBase = this.fitIcon(this.portrait, 'portrait_ash', 'ash', 70, 70);
+    this.fitIcon(this.smithFace, 'portrait_npc_blacksmith', 'fallback_ally', 46, 46);
     this.refreshLabels();
     this.relayout(view.layout);
   }
@@ -210,17 +295,24 @@ export class HudRenderer implements BattleRenderer {
     return this.scene.add.image(0, 0, f.tex, f.frame).setOrigin(0.5, 0.5).setDepth(D_ICON);
   }
 
+  /** baked icon or generated frame fitted into w x h; returns the resulting scale */
+  private fitIcon(img: Phaser.GameObjects.Image, id: string, fallback: string, w: number, h: number): number {
+    setIcon(img, id, fallback, w, h);
+    return img.scaleX;
+  }
+
   private makeSlot(keep: <T extends Phaser.GameObjects.GameObject>(o: T) => T, hint: string, costKey: 'ui_iron' | 'ui_mana'): SlotUi {
     const s = this.scene;
     const icon = keep(this.img('px'));
     const costIcon = keep(this.img(costKey));
+    setIcon(costIcon, costKey, costKey, 16, 16);
     const cost = keep(s.add.bitmapText(0, 0, FONT_S, '', 15).setOrigin(0, 0.5).setDepth(D_NUM));
-    const cd = keep(s.add.bitmapText(0, 0, FONT_L, '', 22).setOrigin(0.5, 0.5).setDepth(D_NUM));
-    const key = keep(s.add.bitmapText(0, 0, FONT_S, hint, 12).setOrigin(0, 0).setDepth(D_NUM).setTint(0xe8deef));
+    const cd = keep(s.add.bitmapText(0, 0, FONT_L, '', 24).setOrigin(0.5, 0.5).setDepth(D_NUM));
+    const key = keep(s.add.bitmapText(0, 0, FONT_S, hint, 12).setOrigin(0, 0).setDepth(D_NUM).setTint(0xf0e2c8));
     return { icon, costIcon, cost, cd, key, shown: '', lastCost: -1, lastCd: -1, baseScale: 1 };
   }
 
-  private showBanner(text: string, sub: string, seconds: number, color: string = C.text, size = 44): void {
+  private showBanner(text: string, sub: string, seconds: number, color: string = C.text, size = 48): void {
     this.banner.setText(text).setColor(color).setFontSize(size);
     this.bannerSub.setText(sub);
     this.bannerT = seconds;
@@ -232,6 +324,8 @@ export class HudRenderer implements BattleRenderer {
     const key = w.wave.endless ? 'ui.wave_endless' : 'ui.wave';
     this.waveText.setText(this.view.t(key, { n: w.wave.number, total: this.view.data.balance.campaignWaves }));
     if (w.boss) this.bossText.setText(this.view.t(w.boss.nameKey));
+    this.lastLevel = -1;
+    this.comboLabel.setText(this.view.t('ui.combo'));
   }
 
   // ---------------------------------------------------------------------------
@@ -240,51 +334,77 @@ export class HudRenderer implements BattleRenderer {
     this.layout = layout;
     const L = layout;
     const cy = (r: Rect) => r.y + r.h / 2;
-    this.ashIcon.setPosition(L.ashBar.x + 10, cy(L.ashBar)).setScale(30 / 48 / this.R);
-    this.bookIcon.setPosition(L.bookBar.x + 10, cy(L.bookBar)).setScale(28 / 48 / this.R);
-    this.ashNum.setPosition(L.ashBar.x + L.ashBar.w - 6, cy(L.ashBar));
-    this.bookNum.setPosition(L.bookBar.x + L.bookBar.w - 6, cy(L.bookBar));
-    this.waveText.setPosition(L.waveBar.x + 10, cy(L.waveBar));
-    this.bossText.setPosition(L.waveBar.x + 10, cy(L.waveBar));
-    this.remainIcon.setPosition(L.waveBar.x + L.waveBar.w - 44, cy(L.waveBar)).setScale(18 / 48 / this.R);
-    this.remainNum.setPosition(L.waveBar.x + L.waveBar.w - 8, cy(L.waveBar));
-    this.goldIcon.setPosition(L.goldLabel.x + 24, cy(L.goldLabel)).setScale(30 / 48 / this.R);
-    this.goldNum.setPosition(L.goldLabel.x + 44, cy(L.goldLabel));
-    this.speedIcon.setPosition(L.speedButton.x + L.speedButton.w / 2, cy(L.speedButton) - 5).setScale(30 / 48 / this.R);
-    this.speedNum.setPosition(L.speedButton.x + L.speedButton.w / 2, L.speedButton.y + L.speedButton.h - 9);
+    const ap = L.ashPortrait;
+    this.portrait.setPosition(ap.x + ap.w / 2, ap.y + ap.h / 2);
+    this.bookIcon.setPosition(L.bookBar.x - 2, cy(L.bookBar));
+    setIcon(this.bookIcon, 'ui_book', 'ui_book', 26, 26);
+    this.ashNum.setPosition(L.ashBar.x + L.ashBar.w - 8, cy(L.ashBar));
+    this.bookNum.setPosition(L.bookBar.x + L.bookBar.w - 8, cy(L.bookBar));
+    this.waveText.setPosition(L.waveBar.x + 12, cy(L.waveBar));
+    this.bossText.setPosition(L.waveBar.x + 12, cy(L.waveBar));
+    this.remainIcon.setPosition(L.waveBar.x + L.waveBar.w - 46, cy(L.waveBar));
+    setIcon(this.remainIcon, 'ui_skull', 'ui_skull', 18, 18);
+    this.remainNum.setPosition(L.waveBar.x + L.waveBar.w - 10, cy(L.waveBar));
+    for (const m of this.markers) setIcon(m, 'ui_skull', 'ui_skull', 20, 20);
+    this.markerBase = this.markers[0]?.scaleX ?? 1;
+    this.goldIcon.setPosition(L.goldLabel.x + 28, cy(L.goldLabel));
+    this.goldBase = this.fitIcon(this.goldIcon, 'ui_gold', 'ui_gold', 34, 34);
+    this.goldNum.setPosition(L.goldLabel.x + 52, cy(L.goldLabel) + 1);
+    this.speedIcon.setPosition(L.speedButton.x + L.speedButton.w / 2, cy(L.speedButton) - 6).setScale(28 / 48 / this.R);
+    this.speedNum.setPosition(L.speedButton.x + L.speedButton.w / 2, L.speedButton.y + L.speedButton.h - 11);
     this.pauseIcon.setPosition(L.pauseButton.x + L.pauseButton.w / 2, cy(L.pauseButton)).setScale(30 / 48 / this.R);
-    this.pauseHint.setPosition(L.pauseButton.x + 5, L.pauseButton.y + 3).setVisible(this.showKeys);
-    this.speedHint.setPosition(L.speedButton.x + 5, L.speedButton.y + 3).setVisible(this.showKeys);
+    this.pauseHint.setPosition(L.pauseButton.x + 6, L.pauseButton.y + 4).setVisible(this.showKeys);
+    this.speedHint.setPosition(L.speedButton.x + 6, L.speedButton.y + 4).setVisible(this.showKeys);
+
+    // blacksmith panel
     const ip = L.ironPanel;
-    this.ironIcon.setPosition(ip.x + 26, ip.y + 30).setScale(34 / 48 / this.R);
-    this.ironNum.setPosition(ip.x + 50, ip.y + 24);
-    this.ironMax.setPosition(ip.x + 52, ip.y + 50);
+    this.smithFace.setPosition(ip.x + 30, ip.y + 31);
+    this.smithLevel.setPosition(ip.x + 60, ip.y + 18);
+    this.ironIcon.setPosition(ip.x + 68, ip.y + 45);
+    setIcon(this.ironIcon, 'ui_iron', 'ui_iron', 18, 18);
+    this.ironNum.setPosition(ip.x + 79, ip.y + 45);
+    this.ironMax.setPosition(ip.x + 80, ip.y + 45);
+    this.anvilIcon.setPosition(ip.x + 18, ip.y + ip.h - 15);
+    setIcon(this.anvilIcon, 'ui_anvil', 'ui_iron', 20, 20);
+    this.smithCost.setPosition(ip.x + 31, ip.y + ip.h - 15);
+    this.smithHint.setPosition(ip.x + ip.w - 6, ip.y + 4).setVisible(this.showKeys);
+    // rally banner
+    const rb = L.rallyButton;
+    this.rallyIcon.setPosition(rb.x + rb.w / 2, rb.y + rb.h / 2);
+    this.rallyShown = '';
+    this.rallyHint.setPosition(rb.x + 6, rb.y + 4).setVisible(this.showKeys);
+    // combo under the gold
+    const comboX = L.goldLabel.x + L.goldLabel.w / 2 - 20;
+    this.comboNum.setPosition(comboX, L.goldLabel.y + L.goldLabel.h + 44);
+    this.comboLabel.setPosition(comboX, L.goldLabel.y + L.goldLabel.h + 74);
+    this.comboBonus.setPosition(comboX, L.goldLabel.y + L.goldLabel.h + 100);
+
     for (let i = 0; i < this.units.length; i++) {
       const r = L.unitSlots[i];
       const s = this.units[i];
-      s.costIcon.setPosition(r.x + r.w / 2 - 14, r.y + r.h - 13).setScale(16 / 48 / this.R);
-      s.cost.setPosition(r.x + r.w / 2 - 4, r.y + r.h - 13);
+      s.costIcon.setPosition(r.x + r.w / 2 - 14, r.y + r.h - 14);
+      s.cost.setPosition(r.x + r.w / 2 - 4, r.y + r.h - 14);
       s.cd.setPosition(r.x + r.w / 2, r.y + 38);
-      s.key.setPosition(r.x + 6, r.y + 4).setVisible(this.showKeys);
+      s.key.setPosition(r.x + 7, r.y + 5).setVisible(this.showKeys);
       s.shown = '';
     }
     for (let i = 0; i < this.spells.length; i++) {
       const r = L.spellButtons[i];
       const s = this.spells[i];
-      s.costIcon.setPosition(r.x + r.w / 2 - 12, r.y + r.h - 6).setScale(18 / 48 / this.R);
+      s.costIcon.setPosition(r.x + r.w / 2 - 12, r.y + r.h - 6);
       s.cost.setPosition(r.x + r.w / 2 - 2, r.y + r.h - 6);
       s.cd.setPosition(r.x + r.w / 2, r.y + r.h / 2);
       s.key.setPosition(r.x + 2, r.y).setVisible(this.showKeys);
       s.shown = '';
     }
     const d = L.dodgeButton;
-    this.dodgeIcon.setPosition(d.x + d.w / 2, d.y + d.h / 2).setScale(46 / 48 / this.R);
-    this.dodgeHint.setPosition(d.x + d.w / 2, d.y + d.h - 4);
+    this.dodgeIcon.setPosition(d.x + d.w / 2, d.y + d.h / 2).setScale(44 / 48 / this.R);
+    this.dodgeHint.setPosition(d.x + d.w / 2, d.y + d.h - 2);
     const c = L.cancelAimButton;
     this.cancelIcon.setPosition(c.x + c.w / 2, c.y + c.h / 2).setScale(34 / 48 / this.R);
-    this.fpsText.setPosition(L.bookBar.x, L.bookBar.y + L.bookBar.h + 10);
+    this.fpsText.setPosition(L.pauseButton.x + L.pauseButton.w + 12, L.pauseButton.y + 4);
     this.banner.setPosition(L.viewW / 2, 210);
-    this.bannerSub.setPosition(L.viewW / 2, 268);
+    this.bannerSub.setPosition(L.viewW / 2, 262);
     this.sig = -1;
     this.pause.rebuild(L);
   }
@@ -293,87 +413,63 @@ export class HudRenderer implements BattleRenderer {
     const g = this.gStatic;
     const L = this.layout;
     g.clear();
-    const panelR = (r: Rect, rad: number, fill: number = C.panelN, alpha = 0.82) => {
-      g.fillStyle(0x0b0810, 0.4);
-      g.fillRoundedRect(r.x, r.y + 3, r.w, r.h, rad);
-      g.fillStyle(fill, alpha);
-      g.fillRoundedRect(r.x, r.y, r.w, r.h, rad);
-      g.lineStyle(2.5, C.inkN, 1);
-      g.strokeRoundedRect(r.x, r.y, r.w, r.h, rad);
-    };
-    const bar = (r: Rect) => {
-      g.fillStyle(C.inkN, 0.9);
-      g.fillRoundedRect(r.x - 2, r.y - 2, r.w + 4, r.h + 4, (r.h + 4) / 2);
-      g.fillStyle(0x3a2f48, 1);
-      g.fillRoundedRect(r.x + 20, r.y, r.w - 20, r.h, r.h / 2);
-    };
-    bar(L.ashBar);
-    bar(L.bookBar);
-    // wave bar
-    g.fillStyle(C.inkN, 0.9);
-    g.fillRoundedRect(L.waveBar.x - 2, L.waveBar.y - 2, L.waveBar.w + 4, L.waveBar.h + 4, 8);
-    g.fillStyle(0x3a2f48, 1);
-    g.fillRoundedRect(L.waveBar.x, L.waveBar.y, L.waveBar.w, L.waveBar.h, 6);
-    // minimap
+    // portrait frame
+    const ap = L.ashPortrait;
+    stonePanel(g, ap, 8);
+    g.fillStyle(0x0c0a10, 1);
+    g.fillRoundedRect(ap.x + 5, ap.y + 5, ap.w - 10, ap.h - 10, 5);
+    // bars
+    trough(g, L.ashBar);
+    trough(g, L.bookBar);
+    // wave bar + minimap
+    trough(g, L.waveBar, 8);
     const m = L.minimap;
-    g.fillStyle(C.inkN, 0.85);
-    g.fillRoundedRect(m.x - 3, m.y - 3, m.w + 6, m.h + 6, 5);
-    g.fillStyle(0x2a3a2a, 1);
-    g.fillRect(m.x, m.y, m.w, m.h);
+    trough(g, m, 3);
     const ww = this.view.data.balance.world;
-    g.fillStyle(0x6a6278, 1);
+    g.fillStyle(0x5a5464, 1);
     g.fillRect(m.x, m.y, (ww.castleRight / ww.width) * m.w, m.h);
-    panelR(L.goldLabel, 14);
-    panelR(L.speedButton, 14, C.panel2N, 0.9);
-    panelR(L.pauseButton, 14, C.panel2N, 0.9);
-    // iron panel
-    panelR(L.ironPanel, 14);
+    stonePanel(g, L.goldLabel, 12);
+    stonePanel(g, L.speedButton, 12);
+    stonePanel(g, L.pauseButton, 12);
+    // blacksmith panel
     const ip = L.ironPanel;
-    g.fillStyle(0x3a2f48, 1);
-    g.fillRoundedRect(ip.x + 10, ip.y + ip.h - 20, ip.w - 20, 10, 5);
+    stonePanel(g, ip, 12, 0.96, false);
+    g.fillStyle(0x0c0a10, 1);
+    g.fillRoundedRect(ip.x + 6, ip.y + 7, 48, 48, 6);
+    g.lineStyle(2, 0x8a6a3a, 1);
+    g.strokeRoundedRect(ip.x + 6, ip.y + 7, 48, 48, 6);
+    trough(g, { x: ip.x + 8, y: ip.y + 62, w: ip.w - 16, h: 8 });
+    // rally banner pole plate
+    const rb = L.rallyButton;
+    ironRing(g, rb.x + rb.w / 2, rb.y + rb.h / 2, rb.w / 2 - 2, 0x2a2232);
     for (let i = 0; i < L.unitSlots.length; i++) {
       const r = L.unitSlots[i];
       if (i < nUnits) {
-        panelR(r, 12, 0x2c2238, 0.92);
-        g.fillStyle(0xffffff, 0.06);
-        g.fillRoundedRect(r.x + 4, r.y + 4, r.w - 8, r.h * 0.42, 8);
-        g.fillStyle(0x1b1424, 0.6);
-        g.fillRoundedRect(r.x + 6, r.y + r.h - 24, r.w - 12, 19, 8);
+        woodPanel(g, r, 9);
+        g.fillStyle(0x140c08, 0.75);
+        g.fillRoundedRect(r.x + 8, r.y + r.h - 24, r.w - 16, 20, 9);
       } else {
-        g.lineStyle(2, 0xffffff, 0.12);
-        g.strokeRoundedRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, 12);
+        g.fillStyle(0x000000, 0.22);
+        g.fillRoundedRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, 10);
+        g.lineStyle(2, 0x8a6a4a, 0.25);
+        g.strokeRoundedRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, 10);
       }
     }
     for (let i = 0; i < L.spellButtons.length && i < nSpells; i++) {
       const r = L.spellButtons[i];
-      const cx = r.x + r.w / 2;
-      const cy = r.y + r.h / 2;
-      g.fillStyle(0x0b0810, 0.45);
-      g.fillCircle(cx, cy + 3, r.w / 2);
-      g.fillStyle(0x2a1f38, 0.95);
-      g.fillCircle(cx, cy, r.w / 2);
-      g.lineStyle(3, C.inkN, 1);
-      g.strokeCircle(cx, cy, r.w / 2);
-      g.fillStyle(C.inkN, 0.85);
-      g.fillRoundedRect(cx - 26, r.y + r.h - 16, 52, 20, 10);
+      ironRing(g, r.x + r.w / 2, r.y + r.h / 2, r.w / 2, 0x241a30);
+      g.fillStyle(0x0c0a10, 0.9);
+      g.fillRoundedRect(r.x + r.w / 2 - 27, r.y + r.h - 17, 54, 21, 10);
+      g.lineStyle(1.5, 0x4a6aa0, 0.9);
+      g.strokeRoundedRect(r.x + r.w / 2 - 27, r.y + r.h - 17, 54, 21, 10);
     }
     if (dodge) {
       const d = L.dodgeButton;
-      g.fillStyle(0x0b0810, 0.45);
-      g.fillCircle(d.x + d.w / 2, d.y + d.h / 2 + 3, d.w / 2);
-      g.fillStyle(0x2f4a6a, 0.92);
-      g.fillCircle(d.x + d.w / 2, d.y + d.h / 2, d.w / 2);
-      g.lineStyle(3, C.inkN, 1);
-      g.strokeCircle(d.x + d.w / 2, d.y + d.h / 2, d.w / 2);
+      ironRing(g, d.x + d.w / 2, d.y + d.h / 2, d.w / 2, 0x223650);
     }
     if (aiming) {
       const c = L.cancelAimButton;
-      g.fillStyle(0x0b0810, 0.45);
-      g.fillCircle(c.x + c.w / 2, c.y + c.h / 2 + 3, c.w / 2);
-      g.fillStyle(0xa8322a, 0.95);
-      g.fillCircle(c.x + c.w / 2, c.y + c.h / 2, c.w / 2);
-      g.lineStyle(3, C.inkN, 1);
-      g.strokeCircle(c.x + c.w / 2, c.y + c.h / 2, c.w / 2);
+      ironRing(g, c.x + c.w / 2, c.y + c.h / 2, c.w / 2, 0x8a2a24);
     }
   }
 
@@ -397,11 +493,23 @@ export class HudRenderer implements BattleRenderer {
     gu.clear();
     go.clear();
 
-    // --- Ash / book bars
+    // --- portrait + bars
     const ash = findEntity(w as never, w.ashId) as EntityState | undefined;
     const ashHp = ash ? Math.max(0, Math.ceil(ash.hp)) : 0;
     const ashMax = ash ? Math.ceil(ash.maxHp) : 1;
-    this.fillBar(L.ashBar, ashMax > 0 ? ashHp / ashMax : 0, ashHp / ashMax < 0.3 ? 0xff5a4f : 0x59d36b);
+    const ashFrac = ashMax > 0 ? ashHp / ashMax : 0;
+    if (this.ashHurt > 0) this.ashHurt -= dt;
+    const ap = L.ashPortrait;
+    if (this.ashHurt > 0) this.portrait.setTint(0xff7060);
+    else if (ashFrac < 0.3 && ashHp > 0) this.portrait.setTint(Math.sin(this.clock * 6) > 0 ? 0xffb0a0 : 0xffffff);
+    else if (ashHp <= 0) this.portrait.setTint(0x605860);
+    else this.portrait.clearTint();
+    this.portrait.setScale(this.portraitBase * (this.ashHurt > 0 ? 1.06 : 1));
+    if (ashFrac < 0.3) {
+      go.lineStyle(3, 0xff3a2a, 0.5 + 0.4 * Math.sin(this.clock * 6));
+      go.strokeRoundedRect(ap.x - 1, ap.y - 1, ap.w + 2, ap.h + 2, 9);
+    }
+    barFill(gu, L.ashBar, ashFrac, ashFrac < 0.3 ? 0xe8483a : 0x52c85a);
     if (ashHp !== this.last.ash || ashMax !== this.last.ashMax) {
       this.last.ash = ashHp;
       this.last.ashMax = ashMax;
@@ -409,7 +517,8 @@ export class HudRenderer implements BattleRenderer {
     }
     const bookHp = Math.max(0, Math.ceil(w.book.hp));
     if (this.bookFlash > 0) this.bookFlash -= dt;
-    this.fillBar(L.bookBar, w.book.maxHp > 0 ? w.book.hp / w.book.maxHp : 0, this.bookFlash > 0 && Math.sin(this.clock * 40) > 0 ? 0xffffff : 0xf0b43c);
+    const bookFrac = w.book.maxHp > 0 ? w.book.hp / w.book.maxHp : 0;
+    barFill(gu, L.bookBar, bookFrac, this.bookFlash > 0 && Math.sin(this.clock * 40) > 0 ? 0xffffff : bookFrac < 0.3 ? 0xe86a3a : 0x9a6ad8);
     if (bookHp !== this.last.book) {
       this.last.book = bookHp;
       this.bookNum.setText(numStr(bookHp));
@@ -423,22 +532,22 @@ export class HudRenderer implements BattleRenderer {
       this.bossText.setVisible(true);
       this.remainIcon.setVisible(false);
       this.remainNum.setVisible(false);
+      for (const mk of this.markers) mk.setVisible(false);
       const frac = clamp01(w.boss.hpFrac);
-      gu.fillStyle(0xd0304a, 1);
-      gu.fillRoundedRect(wb.x, wb.y, Math.max(2, wb.w * frac), wb.h, 6);
-      gu.fillStyle(0xffffff, 0.18);
-      gu.fillRect(wb.x + 4, wb.y + 3, Math.max(0, wb.w * frac - 8), 4);
+      barFill(gu, wb, frac, 0xc0283e, 8);
       const def = view.data.bosses.get(w.boss.bossId);
       if (def) {
         for (const ph of def.phases) {
           if (ph.untilHpFrac <= 0 || ph.untilHpFrac >= 1) continue;
           const tx = wb.x + wb.w * ph.untilHpFrac;
           go.fillStyle(0xffffff, 0.95);
-          go.fillRect(tx - 1.5, wb.y - 3, 3, wb.h + 6);
-          go.fillStyle(C.inkN, 1);
+          go.fillRect(tx - 1.5, wb.y - 4, 3, wb.h + 8);
+          go.fillStyle(0x140c08, 1);
           go.fillRect(tx - 0.5, wb.y, 1, wb.h);
         }
       }
+      go.lineStyle(2, 0xff6a7a, 0.35 + 0.25 * Math.sin(this.clock * 5));
+      go.strokeRoundedRect(wb.x - 3, wb.y - 3, wb.w + 6, wb.h + 6, 10);
     } else {
       this.waveText.setVisible(true);
       this.bossText.setVisible(false);
@@ -446,12 +555,32 @@ export class HudRenderer implements BattleRenderer {
       this.remainNum.setVisible(true);
       const tot = Math.max(1, w.wave.enemiesTotal);
       const frac = clamp01(w.wave.enemiesKilled / tot);
-      gu.fillStyle(0x7d6aa8, 1);
-      gu.fillRoundedRect(wb.x, wb.y, Math.max(0, wb.w * frac), wb.h, 6);
+      const spawned = clamp01(w.wave.enemiesSpawned / tot);
+      // spawned (dim) then killed (bright)
+      barFill(gu, wb, spawned, 0x4a3060, 8);
+      barFill(gu, wb, frac, 0x9a3ad0, 8);
       const remain = Math.max(0, w.wave.enemiesTotal - w.wave.enemiesKilled);
       if (remain !== this.last.remain) {
         this.last.remain = remain;
         this.remainNum.setText(numStr(remain));
+      }
+      // skull markers where each sub-wave starts; lit once that sub-wave has begun
+      const mk = w.wave.markers;
+      for (let i = 0; i < this.markers.length; i++) {
+        const img = this.markers[i];
+        const p = i < mk.length ? mk[i] : -1;
+        if (p <= 0.001 || p >= 0.999) {
+          img.setVisible(false);
+          continue;
+        }
+        const lit = spawned >= p - 1e-3;
+        const x = wb.x + wb.w * p;
+        img.setVisible(true).setPosition(x, wb.y + 1);
+        img.setScale(this.markerBase * (lit ? 1.05 : 0.9));
+        if (lit) img.setTint(0xffb0a0);
+        else img.setTint(0x8a8090);
+        go.fillStyle(0x140c08, 1);
+        go.fillRect(x - 1, wb.y + 6, 2, wb.h - 6);
       }
     }
 
@@ -465,49 +594,34 @@ export class HudRenderer implements BattleRenderer {
       this.goldNum.setText(numStr(gold));
     }
     if (this.goldBump > 0) this.goldBump = Math.max(0, this.goldBump - dt * 4);
-    const gs = 1 + this.goldBump * 0.25;
-    this.goldIcon.setScale((30 / 48 / this.R) * gs);
+    this.goldIcon.setScale(this.goldBase * (1 + this.goldBump * 0.25));
     this.goldNum.setFontSize(26 * (1 + this.goldBump * 0.12));
+    this.goldNum.setTint(SKIN.gold);
 
     // --- speed / pause
     const sb = L.speedButton;
     if (view.speed === 2) {
-      go.fillStyle(0xffd34d, 0.35);
-      go.fillRoundedRect(sb.x + 3, sb.y + 3, sb.w - 6, sb.h - 6, 11);
+      go.fillStyle(0xffd34d, 0.28);
+      go.fillRoundedRect(sb.x + 3, sb.y + 3, sb.w - 6, sb.h - 6, 10);
     }
     this.speedNum.setText(view.speed === 2 ? 'x2' : 'x1');
     this.speedNum.setTint(view.speed === 2 ? 0xffd34d : 0xc9bfd6);
-    this.pressFx(go, sb, this.pressSpeed, 14);
-    this.pressFx(go, L.pauseButton, this.pressPause, 14);
-    this.speedIcon.setScale((30 / 48 / this.R) * (this.pressSpeed ? 0.88 : 1));
+    this.pressFx(go, sb, this.pressSpeed, 12);
+    this.pressFx(go, L.pauseButton, this.pressPause, 12);
+    this.speedIcon.setScale((28 / 48 / this.R) * (this.pressSpeed ? 0.88 : 1));
     this.pauseIcon.setScale((30 / 48 / this.R) * (this.pressPause ? 0.88 : 1));
 
-    // --- iron
-    const r = w.resources;
-    const iron = Math.floor(r.iron);
-    const ironMax = Math.floor(r.ironMax);
-    if (iron !== this.last.iron) {
-      this.last.iron = iron;
-      this.ironNum.setText(numStr(iron));
-    }
-    if (ironMax !== this.last.ironMax) {
-      this.last.ironMax = ironMax;
-      this.ironMax.setText(`/${numStr(ironMax)}`);
-    }
-    const ip = L.ironPanel;
-    const ironFrac = r.ironMax > 0 ? clamp01(r.iron / r.ironMax) : 0;
-    gu.fillStyle(0xb8c4d0, 1);
-    gu.fillRoundedRect(ip.x + 10, ip.y + ip.h - 20, Math.max(0, (ip.w - 20) * ironFrac), 10, 5);
-    // smithy ring: progress to the next 10 iron [เดา]
-    const ring = r.iron >= r.ironMax ? 1 : (r.iron % 10) / 10;
-    gu.lineStyle(4, 0x3a2f48, 1);
-    gu.strokeCircle(ip.x + 26, ip.y + 30, 21);
-    gu.lineStyle(4, r.iron >= r.ironMax ? 0xffd34d : 0xe0e8f0, 1);
-    gu.beginPath();
-    gu.arc(ip.x + 26, ip.y + 30, 21, -Math.PI / 2, -Math.PI / 2 + TAU * ring, false);
-    gu.strokePath();
+    // --- blacksmith panel
+    this.drawSmith(view, dt);
+
+    // --- rally banner
+    this.drawRally(view, dt);
+
+    // --- combo
+    this.drawCombo(view, dt);
 
     // --- unit slots
+    const r = w.resources;
     for (let i = 0; i < this.units.length; i++) this.drawUnitSlot(i, i < nUnits ? w.summonSlots[i] : null, r.iron, dt);
     // --- spells
     const aimSlot = view.aim.slot;
@@ -518,8 +632,8 @@ export class HudRenderer implements BattleRenderer {
     this.dodgeIcon.setVisible(w.dodge.unlocked);
     this.dodgeHint.setVisible(w.dodge.unlocked && this.showKeys);
     if (w.dodge.unlocked) {
-      this.dodgeIcon.setScale((46 / 48 / this.R) * (this.pressDodge ? 0.88 : 1));
-      if (w.dodge.cooldownLeft > 0 && w.dodge.cooldownTotal > 0) this.sweep(go, d.x + d.w / 2, d.y + d.h / 2, d.w / 2 - 4, w.dodge.cooldownLeft / w.dodge.cooldownTotal);
+      this.dodgeIcon.setScale((44 / 48 / this.R) * (this.pressDodge ? 0.88 : 1));
+      if (w.dodge.cooldownLeft > 0 && w.dodge.cooldownTotal > 0) this.sweep(go, d.x + d.w / 2, d.y + d.h / 2, d.w / 2 - 5, w.dodge.cooldownLeft / w.dodge.cooldownTotal);
       if (this.pressDodge) {
         go.lineStyle(4, 0xffffff, 0.9);
         go.strokeCircle(d.x + d.w / 2, d.y + d.h / 2, d.w / 2 - 2);
@@ -561,13 +675,13 @@ export class HudRenderer implements BattleRenderer {
       this.outcomeShown = true;
       const won = w.outcome.result === 'won';
       const sub = won ? '' : this.view.t(w.outcome.reason === 'book_destroyed' ? 'result.reason.book' : 'result.reason.ash');
-      this.showBanner(this.view.t(won ? 'ui.victory' : 'ui.defeat'), sub, 3, won ? C.gold : '#ff7a6a', 72);
+      this.showBanner(this.view.t(won ? 'ui.victory' : 'ui.defeat'), sub, 3, won ? C.gold : '#ff7a6a', 76);
     }
     if (this.bannerT > 0) {
       this.bannerT -= dt;
       const k = 1 - this.bannerT / this.bannerMax;
       const a = k < 0.12 ? k / 0.12 : this.bannerT < 0.5 ? this.bannerT / 0.5 : 1;
-      this.banner.setAlpha(a).setScale(k < 0.12 ? 0.8 + (k / 0.12) * 0.2 : 1);
+      this.banner.setAlpha(a).setScale(k < 0.12 ? 0.7 + easeOutBack(k / 0.12) * 0.3 : 1);
       this.bannerSub.setAlpha(a);
     } else if (this.banner.alpha > 0) {
       this.banner.setAlpha(0);
@@ -581,22 +695,122 @@ export class HudRenderer implements BattleRenderer {
     this.pause.setVisible(view.paused && !w.outcome);
   }
 
-  private fillBar(r: Rect, frac: number, color: number): void {
-    const g = this.gUnder;
-    const x = r.x + 20;
-    const w = (r.w - 20) * clamp01(frac);
-    if (w <= 0) return;
-    g.fillStyle(color, 1);
-    g.fillRoundedRect(x, r.y, Math.max(w, r.h), r.h, r.h / 2);
-    g.fillStyle(0xffffff, 0.22);
-    g.fillRoundedRect(x + 3, r.y + 2, Math.max(0, w - 6), r.h * 0.3, r.h * 0.15);
+  private drawSmith(view: RenderView, dt: number): void {
+    const w = view.world;
+    const L = this.layout;
+    const ip = L.ironPanel;
+    const gu = this.gUnder;
+    const go = this.gOver;
+    const sm = w.smith;
+    const r = w.resources;
+    if (sm.level !== this.lastLevel) {
+      this.lastLevel = sm.level;
+      this.smithLevel.setText(view.t('ui.smith_level', { n: Math.max(1, sm.level) }));
+    }
+    const iron = Math.floor(r.iron);
+    const ironMax = Math.floor(r.ironMax);
+    if (iron !== this.last.iron) {
+      this.last.iron = iron;
+      this.ironNum.setText(numStr(iron));
+    }
+    if (ironMax !== this.last.ironMax || iron !== this.last.iron || this.ironMax.text === '') {
+      this.last.ironMax = ironMax;
+      this.ironMax.setText(`/${numStr(ironMax)}`);
+    }
+    this.ironMax.setX(this.ironNum.x + this.ironNum.width + 2);
+    const full = r.ironMax > 0 && r.iron >= r.ironMax;
+    this.ironNum.setTint(full ? SKIN.gold : 0xffffff);
+    // blue progress to the next whole iron (systems fills world.smith.progress)
+    const bar = { x: ip.x + 8, y: ip.y + 62, w: ip.w - 16, h: 8 };
+    barFill(gu, bar, full ? 1 : clamp01(sm.progress), full ? 0xd8b048 : 0x3a9cff, 4);
+    // upgrade cost
+    const maxed = sm.level >= sm.maxLevel || sm.upgradeCost <= 0;
+    const cost = maxed ? -1 : sm.upgradeCost;
+    if (cost !== this.lastCost) {
+      this.lastCost = cost;
+      this.smithCost.setText(maxed ? view.t('ui.smith_max') : `${numStr(cost)}`);
+    }
+    const afford = !maxed && r.iron >= sm.upgradeCost;
+    this.smithCost.setTint(maxed ? SKIN.gold : afford ? 0x9fe08a : 0xc0b0a0);
+    this.anvilIcon.setAlpha(maxed ? 0.5 : 1);
+    if (afford) {
+      go.lineStyle(2, 0x9fe08a, 0.45 + 0.3 * Math.sin(this.clock * 5));
+      go.strokeRoundedRect(ip.x - 1, ip.y - 1, ip.w + 2, ip.h + 2, 13);
+    }
+    if (this.smithFlash > 0) {
+      this.smithFlash = Math.max(0, this.smithFlash - dt * 1.6);
+      go.fillStyle(0xffd76a, 0.35 * this.smithFlash);
+      go.fillRoundedRect(ip.x, ip.y, ip.w, ip.h, 12);
+      this.smithLevel.setScale(1 + 0.4 * this.smithFlash);
+    } else this.smithLevel.setScale(1);
+    let shake = 0;
+    if (this.smithDeny > 0) {
+      this.smithDeny -= dt;
+      shake = Math.sin(this.clock * 70) * 3;
+      go.lineStyle(3, 0xff3b3b, 0.95);
+      go.strokeRoundedRect(ip.x - 1, ip.y - 1, ip.w + 2, ip.h + 2, 13);
+    }
+    this.smithFace.setX(ip.x + 30 + shake);
+    if (this.pressSmith) this.pressFx(go, ip, true, 12);
+  }
+
+  private drawRally(view: RenderView, dt: number): void {
+    const rb = this.layout.rallyButton;
+    const mode = view.world.rally === 'hold' ? 'hold' : 'advance';
+    if (mode !== this.rallyShown) {
+      this.rallyShown = mode;
+      setIcon(this.rallyIcon, mode === 'hold' ? 'ui_banner_hold' : 'ui_banner_advance', 'ui_dodge', rb.w - 16, rb.h - 16);
+    }
+    const base = Math.min((rb.w - 16) / this.rallyIcon.frame.realWidth, (rb.h - 16) / this.rallyIcon.frame.realHeight);
+    if (this.rallyPop > 0) this.rallyPop = Math.max(0, this.rallyPop - dt * 3);
+    const sway = Math.sin(this.clock * 2.2) * 0.04;
+    this.rallyIcon.setScale(base * (1 + this.rallyPop * 0.2) * (this.pressRally ? 0.9 : 1)).setRotation(sway);
+    const go = this.gOver;
+    if (mode === 'hold') {
+      go.lineStyle(3, 0xffc84a, 0.8);
+      go.strokeCircle(rb.x + rb.w / 2, rb.y + rb.h / 2, rb.w / 2 + 1);
+    }
+  }
+
+  private drawCombo(view: RenderView, dt: number): void {
+    const c = view.world.combo;
+    const go = this.gOver;
+    const on = c.count >= 2;
+    if (c.count !== this.lastCombo) {
+      this.lastCombo = c.count;
+      if (on) this.comboNum.setText(`x${c.count}`);
+    }
+    this.comboNum.setVisible(on);
+    this.comboLabel.setVisible(on);
+    if (on) {
+      if (this.comboPop > 0) this.comboPop = Math.max(0, this.comboPop - dt * 4);
+      const s = 1 + 0.45 * this.comboPop;
+      this.comboNum.setScale(s);
+      const hot = c.count >= 20 ? '#ff6a3a' : c.count >= 10 ? '#ffb040' : SKIN.goldText;
+      if (this.comboNum.style.color !== hot) this.comboNum.setColor(hot);
+      // time left of the streak
+      const k = c.window > 0 ? clamp01(c.timeLeft / c.window) : 0;
+      const bw = 90;
+      const x = this.comboLabel.x - bw / 2;
+      const y = this.comboLabel.y + 14;
+      go.fillStyle(0x0c0a10, 0.85);
+      go.fillRoundedRect(x - 2, y - 2, bw + 4, 8, 4);
+      go.fillStyle(k < 0.3 ? 0xff6a3a : 0xffc84a, 1);
+      go.fillRoundedRect(x, y, Math.max(2, bw * k), 4, 2);
+    }
+    if (this.comboBonusT > 0) {
+      this.comboBonusT -= dt;
+      const a = this.comboBonusT < 0.4 ? this.comboBonusT / 0.4 : 1;
+      this.comboBonus.setAlpha(a).setY(this.layout.goldLabel.y + this.layout.goldLabel.h + 100 - (1.6 - this.comboBonusT) * 14);
+      if (this.comboBonusT <= 0) this.comboBonus.setVisible(false);
+    }
   }
 
   private pressFx(g: Phaser.GameObjects.Graphics, r: Rect, down: boolean, rad: number): void {
     if (!down) return;
-    g.fillStyle(0xffffff, 0.18);
+    g.fillStyle(0xffffff, 0.16);
     g.fillRoundedRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, rad);
-    g.lineStyle(3, 0xffffff, 0.85);
+    g.lineStyle(3, 0xffe8b0, 0.85);
     g.strokeRoundedRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2, rad);
   }
 
@@ -614,13 +828,11 @@ export class HudRenderer implements BattleRenderer {
     g.strokePath();
   }
 
-  private setSlotIcon(s: SlotUi, key: string, kind: 'ally' | 'icon', maxW: number, maxH: number): void {
-    if (s.shown === key) return;
-    s.shown = key;
-    const f = spriteFrame(key, kind === 'ally' ? 'ally' : undefined);
-    const mul = Math.min(1.2, maxW / f.w, maxH / f.h);
-    applyFrame(s.icon, f, mul);
-    s.baseScale = mul / this.R;
+  private setSlotIcon(s: SlotUi, id: string, fallback: string, maxW: number, maxH: number): void {
+    if (s.shown === id) return;
+    s.shown = id;
+    setIcon(s.icon, id, fallback, maxW, maxH);
+    s.baseScale = s.icon.scaleX;
   }
 
   private drawUnitSlot(i: number, slot: RenderView['world']['summonSlots'][number] | null, iron: number, dt: number): void {
@@ -637,11 +849,11 @@ export class HudRenderer implements BattleRenderer {
       return;
     }
     const def = this.view.data.units.get(slot.unitId);
-    this.setSlotIcon(s, def?.sprite ?? slot.unitId, 'ally', r.w - 14, r.h - 34);
+    const sprite = def?.sprite ?? slot.unitId;
+    this.setSlotIcon(s, `portrait_${sprite}`, sprite, r.w - 12, r.h - 30);
     const pressed = this.pressUnit[i];
     const shake = this.denyUnit[i] > 0 ? Math.sin(this.clock * 70) * 3 : 0;
-    s.icon.setVisible(true).setPosition(r.x + r.w / 2 + shake, r.y + r.h - 26).setScale(s.baseScale * (pressed ? 0.9 : 1));
-    if (s.icon.originY !== 1) s.icon.setY(r.y + 4 + (r.h - 30) * s.icon.originY);
+    s.icon.setVisible(true).setPosition(r.x + r.w / 2 + shake, r.y + 4 + (r.h - 30) / 2).setScale(s.baseScale * (pressed ? 0.9 : 1));
     s.costIcon.setVisible(true);
     s.cost.setVisible(true);
     s.key.setVisible(this.showKeys);
@@ -652,11 +864,13 @@ export class HudRenderer implements BattleRenderer {
     const affordable = iron >= slot.ironCost;
     const cooling = slot.cooldownLeft > 0 && slot.cooldownTotal > 0;
     const ok = affordable && slot.available && !cooling;
-    s.icon.setAlpha(affordable && slot.available ? 1 : 0.4);
+    s.icon.setAlpha(affordable && slot.available ? 1 : 0.45);
+    if (affordable && slot.available) s.icon.clearTint();
+    else s.icon.setTint(0x8a8090);
     s.cost.setTint(affordable ? 0xffffff : 0xff6a5a);
     if (!slot.available || !affordable) {
-      go.fillStyle(0x07040b, 0.35);
-      go.fillRoundedRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, 11);
+      go.fillStyle(0x07040b, 0.3);
+      go.fillRoundedRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, 9);
     }
     if (cooling) {
       this.sweep(go, r.x + r.w / 2, r.y + 38, 30, slot.cooldownLeft / slot.cooldownTotal);
@@ -671,13 +885,13 @@ export class HudRenderer implements BattleRenderer {
       s.lastCd = -1;
     }
     if (ok) {
-      go.lineStyle(2, 0x9fe08a, 0.55 + 0.25 * Math.sin(this.clock * 4));
-      go.strokeRoundedRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2, 12);
+      go.lineStyle(2, 0xffd76a, 0.45 + 0.3 * Math.sin(this.clock * 4));
+      go.strokeRoundedRect(r.x - 1, r.y - 1, r.w + 2, r.h + 2, 10);
     }
-    if (pressed) this.pressFx(go, r, true, 12);
+    if (pressed) this.pressFx(go, r, true, 9);
     if (this.denyUnit[i] > 0) {
       go.lineStyle(4, 0xff3b3b, 0.95);
-      go.strokeRoundedRect(r.x, r.y, r.w, r.h, 12);
+      go.strokeRoundedRect(r.x, r.y, r.w, r.h, 10);
     }
   }
 
@@ -696,12 +910,13 @@ export class HudRenderer implements BattleRenderer {
       return;
     }
     const def = this.view.data.spells.get(slot.spellId);
-    this.setSlotIcon(s, def?.icon ?? 'fallback_icon', 'icon', r.w - 18, r.h - 18);
+    const iconId = def?.icon ?? `icon_${slot.spellId}`;
+    this.setSlotIcon(s, iconId, iconId, r.w - 20, r.h - 20);
     const cx = r.x + r.w / 2;
     const cy = r.y + r.h / 2;
     const pressed = this.pressSpell[i];
     const shake = this.denySpell[i] > 0 ? Math.sin(this.clock * 70) * 3 : 0;
-    s.icon.setVisible(true).setPosition(cx + shake, cy).setScale(s.baseScale * (pressed ? 0.9 : 1));
+    s.icon.setVisible(true).setPosition(cx + shake, cy - 2).setScale(s.baseScale * (pressed ? 0.9 : 1));
     s.costIcon.setVisible(true);
     s.cost.setVisible(true);
     s.key.setVisible(this.showKeys);
@@ -711,14 +926,16 @@ export class HudRenderer implements BattleRenderer {
       s.cost.setText(numStr(cost));
     }
     const affordable = mana >= slot.manaCost;
-    s.icon.setAlpha(affordable ? 1 : 0.5);
+    s.icon.setAlpha(affordable ? 1 : 0.55);
+    if (affordable) s.icon.clearTint();
+    else s.icon.setTint(0x8090a8);
     s.cost.setTint(affordable ? 0xbfe6ff : 0xff6a5a);
     // mana ring
-    const rr = r.w / 2 + 5;
+    const rr = r.w / 2 + 6;
     const f = slot.manaCost > 0 ? clamp01(mana / slot.manaCost) : 1;
-    gu.lineStyle(6, C.inkN, 0.9);
+    gu.lineStyle(7, 0x0c0a10, 0.9);
     gu.strokeCircle(cx, cy, rr);
-    gu.lineStyle(4, f >= 1 ? 0x9fe0ff : 0x3f7fd0, 1);
+    gu.lineStyle(4, f >= 1 ? 0x8fdcff : 0x2f6fd0, 1);
     gu.beginPath();
     gu.arc(cx, cy, rr, -Math.PI / 2, -Math.PI / 2 + TAU * f, false);
     gu.strokePath();
@@ -734,6 +951,10 @@ export class HudRenderer implements BattleRenderer {
     } else {
       s.cd.setVisible(false);
       s.lastCd = -1;
+      if (f >= 1) {
+        go.lineStyle(2, 0xbfe6ff, 0.25 + 0.25 * Math.sin(this.clock * 4 + i));
+        go.strokeCircle(cx, cy, r.w / 2 - 3);
+      }
     }
     if (aiming) {
       go.lineStyle(5, 0xffd34d, 0.7 + 0.3 * Math.sin(this.clock * 10));
@@ -756,10 +977,10 @@ export class HudRenderer implements BattleRenderer {
     const ww = view.data.balance.world.width;
     const sx = m.w / ww;
     // camera window
-    g.lineStyle(1.5, 0xffffff, 0.55);
-    g.strokeRect(m.x + view.cameraX * sx, m.y - 1, this.layout.viewW * sx, m.h + 2);
+    g.lineStyle(1.5, 0xffe8c0, 0.6);
+    g.strokeRect(m.x + view.cameraX * sx, m.y - 2, this.layout.viewW * sx, m.h + 4);
     // book
-    g.fillStyle(0xf0b43c, 1);
+    g.fillStyle(0x9a6ad8, 1);
     g.fillRect(m.x + view.data.balance.world.bookX * sx - 2, m.y + 1, 4, m.h - 2);
     const ents = w.entities;
     for (let i = 0; i < ents.length; i++) {
@@ -768,16 +989,16 @@ export class HudRenderer implements BattleRenderer {
       const x = m.x + e.x * sx;
       switch (e.kind) {
         case 'ally':
-          g.fillStyle(0x7ee07a, 1);
-          g.fillRect(x - 1.5, m.y + 3, 3, 4);
+          g.fillStyle(0x6aa8ff, 1);
+          g.fillRect(x - 1.5, m.y + 2, 3, 4);
           break;
         case 'hero':
           g.fillStyle(0xffd34d, 1);
-          g.fillRect(x - 2, m.y + 2, 4, 6);
+          g.fillRect(x - 2, m.y + 1, 4, 6);
           break;
         case 'enemy':
           g.fillStyle(0xff5a4f, 1);
-          g.fillRect(x - 1.5, e.flying ? m.y + 1 : m.y + 3, 3, 4);
+          g.fillRect(x - 1.5, e.flying ? m.y : m.y + 2, 3, 4);
           break;
         case 'boss':
           g.fillStyle(0xd070ff, 1);
@@ -809,7 +1030,7 @@ export class HudRenderer implements BattleRenderer {
     this.objs = [];
     this.units = [];
     this.spells = [];
+    this.markers = [];
     this.pause.destroy();
   }
 }
-
