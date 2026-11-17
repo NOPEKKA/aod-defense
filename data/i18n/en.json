@@ -167,5 +167,22 @@
   "settings.reset_confirm2_title": "Are you really sure?",
   "settings.reset_confirm2": "This cannot be undone. Export your save first if you want to keep it.",
   "settings.reset_final": "Delete it",
-  "settings.reset_done": "Save deleted"
+  "settings.reset_done": "Save deleted",
+  "ui.loading": "Preparing the battlefield...",
+  "ui.boss_incoming": "A boss approaches!",
+  "ui.combo": "COMBO",
+  "ui.combo_bonus": "Combo bonus +{gold}",
+  "ui.smith_level": "L{n}",
+  "ui.smith_max": "MAX",
+  "ui.smith_upgraded": "Blacksmith level {n}!",
+  "ui.smith_need_iron": "Not enough iron",
+  "ui.rally_advance": "Advance",
+  "ui.rally_hold": "Hold",
+  "ui.tex_quality": "Texture quality",
+  "ui.tex_auto": "Auto",
+  "ui.tex_hd": "High (HD)",
+  "ui.tex_sd": "Normal (SD)",
+  "ui.tex_note": "Applies from the next wave",
+  "ui.music_volume": "Music",
+  "ui.sfx_volume": "Sound effects"
 }
