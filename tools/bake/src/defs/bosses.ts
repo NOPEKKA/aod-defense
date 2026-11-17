@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
 import { at, boomstick, glow } from '../props';
-import { batWing, claws, horn, spikedHelm } from '../props_bosses';
+import { batWing, claws, horn, shovel, spikedHelm } from '../props_bosses';
 import { defineSprite, type AnimDef } from '../sprite';
 
 const ADV = '/kaykit/adventurers';
@@ -178,3 +178,49 @@ const ashAnimsBoss: Record<string, AnimDef> = {
 
 defineSprite({ id: 'boss_evil_ash', facing: -1, build: buildEvilAsh, anims: ashAnimsBoss });
 definePortrait('portrait_boss_evil_ash', 'bosses', async () => buildEvilAsh(), { yaw: -32, span: 2.2, lookAt: [-0.02, 2.8, 0] });
+
+// ---------------------------------------------------------------------------
+// The Gravewright: giant skeleton gravedigger. Warrior skeleton, rogue hood, shovel, lantern, coffin on the back.
+// ---------------------------------------------------------------------------
+const HAL = '/kaykit/halloween';
+async function buildGravewright() {
+  const b = await character({
+    base: `${SKE}/Skeleton_Warrior.glb`,
+    hide: ['Skeleton_Warrior_Cloak', 'Skeleton_Warrior_Helmet'],
+    recolor: { '3,0': ['#8a8f8a', '#3a3f3c'], '1,1': ['#d8ccb0', '#7a7260'], '2,2': ['#4a3a2a', '#1c140e'] },
+    emissive: [{ node: 'Skeleton_Warrior_Eyes', color: 0xb05cff, intensity: 2.2 }],
+    attach: [
+      { to: 'handslot.r', object: shovel(), rot: [0, 0, 0], pos: [0, 0.05, 0], scale: 0.6, as: 'shovel' },
+      { to: 'handslot.l', object: `${HAL}/lantern_hanging.gltf`, pos: [0, 0.05, 0.1], scale: 0.5, rot: [0, 0, 0], as: 'lantern' },
+      { to: 'handslot.l', object: glow('#9dffb0', 0.16, 0.7), pos: [0, -0.3, 0.12] },
+      { to: 'chest', object: `${HAL}/coffin_decorated.gltf`, pos: [0, 0.3, -0.42], rot: [0, 0, 78], scale: 0.6, as: 'coffin' },
+    ],
+    clipsFrom: [`${ADV}/Knight.glb`],
+    scale: 2.4,
+  });
+  return b;
+}
+const gw = (d: AnimDef, coffin = true, extra?: (b: Built, u: number) => void): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    b.parts.coffin.visible = coffin;
+    extra?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+const gwAnims: Record<string, AnimDef> = {
+  idle: gw({ clip: '2H_Melee_Idle', frames: 6, loop: true }),
+  walk: gw({ clip: 'Walking_D_Skeletons', frames: 8, loop: true }),
+  hurt: gw({ clip: 'Hit_B', frames: 3, duration: 0.35 }),
+  die: gw({ clip: 'Death_C_Skeletons', frames: 8, duration: 1.0, to: 1.0 }),
+  'telegraph:shovel_slam': gw({ clip: '2H_Melee_Attack_Chop', frames: 4, duration: 0.8, from: 0, to: 0.6 }),
+  'attack:shovel_slam': gw({ clip: '2H_Melee_Attack_Chop', frames: 6, duration: 0.5, from: 0.6, to: 1.3, hitAt: 0.5 }),
+  'telegraph:grave_hands': gw({ clip: 'PickUp', frames: 4, duration: 0.8, from: 0, to: 0.7 }),
+  'attack:grave_hands': gw({ clip: 'Interact', frames: 6, duration: 0.7, hitAt: 0.5 }),
+  'telegraph:burrow': gw({ clip: '2H_Melee_Attack_Stab', frames: 4, duration: 0.8, from: 0, to: 0.55 }),
+  'attack:burrow': gw({ clip: '2H_Melee_Idle', frames: 6, duration: 0.8, hitAt: 0.6, clipGround: true }, true, (b, u) => { b.root.position.y = -3.4 * u * u; }),
+  'telegraph:coffin_toss': gw({ clip: 'Throw', frames: 4, duration: 0.8, from: 0, to: 0.55 }),
+  'attack:coffin_toss': gw({ clip: 'Throw', frames: 6, duration: 0.5, from: 0.55, to: 1.37, hitAt: 0.45 }, true, (b, u) => { b.parts.coffin.visible = u < 0.45; }),
+};
+defineSprite({ id: 'boss_gravewright', facing: -1, build: buildGravewright, anims: gwAnims });
+definePortrait('portrait_boss_gravewright', 'bosses', async () => buildGravewright(), { yaw: -32, span: 1.9, lookAt: [-0.02, 2.7, 0], clip: 'Idle' });

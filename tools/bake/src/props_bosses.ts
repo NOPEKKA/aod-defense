@@ -59,4 +59,15 @@ export function spikedHelm(): THREE.Group {
   return g;
 }
 
+/** Gravedigger shovel. Grip at the origin, shaft along +Y (about 2.3 long), blade at the top end (+Y), face toward +Z. */
+export function shovel(): THREE.Group {
+  const g = new THREE.Group();
+  g.add(at(cyl(0.05, 0.05, 2.1, PAL.wood, 7), 0, 0.6, 0));
+  g.add(at(box(0.3, 0.07, 0.07, PAL.woodDark), 0, -0.42, 0)); // T grip
+  const steel = mat(0x7d8790, { rough: 0.45, metal: 0.55 });
+  g.add(at(extrude([[-0.24, 0], [0.24, 0], [0.26, 0.5], [0.12, 0.78], [0, 0.88], [-0.12, 0.78], [-0.26, 0.5]], 0.06, steel), 0, 1.6, 0));
+  g.add(at(box(0.18, 0.12, 0.1, PAL.iron), 0, 1.62, 0));
+  return g;
+}
+
 export { PAL, group };
