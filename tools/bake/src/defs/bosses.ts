@@ -5,7 +5,9 @@
 import * as THREE from 'three';
 import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
-import { at, boomstick, glow } from '../props';
+import { loadProp } from '../assets';
+import { at, boomstick, cyl, glow } from '../props';
+import { ghostHorse, type Leg } from '../props_bosses_horse';
 import { batWing, cauldron, claws, horn, shovel, spikedHelm } from '../props_bosses';
 import { defineSprite, type AnimDef } from '../sprite';
 
@@ -299,3 +301,88 @@ const mireAnims: Record<string, AnimDef> = {
 };
 defineSprite({ id: 'boss_mother_mire', facing: -1, build: buildMire, anims: mireAnims });
 definePortrait('portrait_boss_mother_mire', 'bosses', async () => buildMire(), { yaw: -32, span: 2.0, lookAt: [-0.02, 3.5, 0], clip: 'Idle' });
+
+// ---------------------------------------------------------------------------
+// Sir Hollow: headless knight on a ghost horse, carrying his glowing jack-o-lantern head.
+// The rider is a Knight torso (legs hidden) sitting on the horse; the horse is animated procedurally.
+// ---------------------------------------------------------------------------
+async function headProp(): Promise<THREE.Object3D> {
+  return loadProp(`${HAL}/pumpkin_orange_jackolantern.gltf`);
+}
+async function buildHollow() {
+  const rider = await character({
+    base: `${ADV}/Knight.glb`,
+    hide: ['Knight_Head', 'Knight_Helmet', 'Knight_Cape', 'Knight_LegLeft', 'Knight_LegRight'],
+    hands: ['1H_Sword_Offhand'],
+    recolor: {
+      '3,0': ['#4a4a58', '#15151c'],
+      '7,0': ['#5a5a6a', '#22222c'],
+      '6,0': ['#3a2a30', '#14101a'],
+      '4,0': ['#2a2a34', '#0e0e14'],
+      '7,1': ['#6a2a2a', '#2a0e12'],
+      '0,1': ['#3a2a6a', '#120a2a'],
+      '3,1': ['#8a90a0', '#2a2e3a'],
+    },
+    attach: [
+      { to: 'head', object: at(cyl(0.2, 0.26, 0.14, 0x14101a, 8), 0, -0.1, 0) },
+      { to: 'handslot.r', object: await headProp(), pos: [0, 0.15, 0], scale: 0.14, as: 'head' },
+      { to: 'handslot.r', object: glow('#ff9a2a', 0.35, 0.85), pos: [0, 0.2, 0], as: 'headglow' },
+    ],
+    clipsFrom: [`${SKE}/Skeleton_Warrior.glb`],
+    scale: 1.5,
+    mirror: true,
+  });
+  rider.root.position.set(0, 2.25, -0.1);
+  const h = ghostHorse();
+  const w = new THREE.Group();
+  w.add(h.root, rider.root);
+  const parts: Record<string, THREE.Object3D> = { ...rider.parts, horse: h.root, hbody: h.body, neck: h.neck, tail: h.tail, rider: rider.root };
+  h.legs.forEach((l, i) => (parts['leg' + i] = l));
+  return { root: w, inst: rider.inst, parts } as Built;
+}
+/** gallop: leg phases, body bob, tail and neck sway */
+function gallop(b: Built, ph: number, amp = 0.8, bob = 0.08): void {
+  const off = [0, 0.18, 0.5, 0.68];
+  for (let i = 0; i < 4; i++) {
+    const hip = b.parts['leg' + i] as Leg;
+    const a = Math.sin(ph + off[i] * Math.PI * 2);
+    hip.rotation.x = amp * a;
+    hip.knee.rotation.x = amp * 0.9 * Math.max(0, -a);
+  }
+  const y = bob * Math.abs(Math.sin(ph));
+  b.parts.hbody.position.y = y;
+  b.parts.rider.position.y = 2.25 + y;
+  b.parts.neck.rotation.x = 0.08 * Math.sin(ph * 2);
+  b.parts.tail.rotation.x = 0.3 * Math.sin(ph);
+}
+const TAU2 = Math.PI * 2;
+const hol = (d: AnimDef, o: { head?: boolean; fx?: (b: Built, u: number) => void } = {}): AnimDef => ({
+  ...d,
+  apply: (b, u, f) => {
+    b.root.rotation.set(0, 0, 0);
+    b.root.position.set(0, 0, 0);
+    b.parts.horse.rotation.set(0, 0, 0);
+    b.parts.horse.position.set(0, 0, 0);
+    b.parts.rider.rotation.set(0, 0, 0);
+    b.parts.head.visible = o.head !== false;
+    b.parts.headglow.visible = o.head !== false;
+    b.parts.headglow.scale.setScalar(1);
+    gallop(b, 0, 0, 0);
+    o.fx?.(b, u);
+    d.apply?.(b, u, f);
+  },
+});
+const hollowAnims: Record<string, AnimDef> = {
+  idle: hol({ clip: 'Idle', frames: 6, loop: true }, { fx: (b, u) => { b.parts.hbody.position.y = 0.03 * Math.sin(u * TAU2); b.parts.tail.rotation.x = 0.2 * Math.sin(u * TAU2); b.parts.neck.rotation.x = 0.08 * Math.sin(u * TAU2); } }),
+  walk: hol({ clip: 'Idle', frames: 8, loop: true, stride: 150 }, { fx: (b, u) => gallop(b, u * TAU2, 0.6, 0.05) }),
+  hurt: hol({ clip: 'Hit_A', frames: 3, duration: 0.3 }, { fx: (b, u) => { b.parts.horse.rotation.x = -0.25 * Math.sin(u * Math.PI); } }),
+  die: hol({ clip: 'Death_A', frames: 9, duration: 1.1 }, { fx: (b, u) => { const k = Math.min(1, u * 1.3); b.root.rotation.z = 1.5 * k * k; } }),
+  'telegraph:charge': hol({ clip: '1H_Melee_Attack_Chop', frames: 4, duration: 0.8, from: 0, to: 0.4 }, { fx: (b, u) => { b.parts.horse.rotation.x = -0.45 * u; b.parts.leg0.rotation.x = -1.0 * u; b.parts.leg1.rotation.x = -1.1 * u; } }),
+  'attack:charge': hol({ clip: 'Running_A', frames: 6, duration: 0.6, hitAt: 0.5 }, { fx: (b, u) => { gallop(b, u * TAU2 * 1.5, 1.0, 0.12); b.parts.horse.rotation.x = 0.1; } }),
+  'telegraph:throw_head': hol({ clip: 'Throw', frames: 4, duration: 0.8, from: 0, to: 0.5 }, { fx: (b, u) => { b.parts.headglow.scale.setScalar(1 + u); } }),
+  'attack:throw_head': hol({ clip: 'Throw', frames: 6, duration: 0.5, from: 0.5, to: 1.37, hitAt: 0.4 }, { fx: (b, u) => { b.parts.head.visible = u < 0.4; b.parts.headglow.visible = u < 0.4; } }),
+  'telegraph:double_charge': hol({ clip: '2H_Melee_Idle', frames: 4, duration: 0.8 }, { fx: (b, u) => { b.parts.neck.rotation.x = 0.5 * u; b.parts.leg0.rotation.x = -0.7 * Math.abs(Math.sin(u * Math.PI * 2)); b.parts.horse.rotation.x = 0.12 * u; b.parts.rider.rotation.x = 0.15 * u; } }),
+  'attack:double_charge': hol({ clip: 'Running_B', frames: 8, duration: 0.8, hitAt: 0.35 }, { fx: (b, u) => { gallop(b, u * TAU2 * 2.5, 1.0, 0.14); b.parts.horse.rotation.x = 0.1; } }),
+};
+defineSprite({ id: 'boss_sir_hollow', facing: -1, build: buildHollow, anims: hollowAnims });
+definePortrait('portrait_boss_sir_hollow', 'bosses', async () => buildHollow(), { yaw: -32, span: 2.8, lookAt: [-0.05, 3.4, 0], clip: 'Idle' });
