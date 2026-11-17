@@ -159,9 +159,11 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
     const rt = st.rts[s];
     rt.settled = true;
     if (player ? e.x > frontmost : e.x < frontmost) frontmost = e.x;
+    // close ranks around the book so every enemy in siege range can hit it
+    const gap = !player && e.x - w.bookX <= T.bookSiegeRange ? Math.min(spacing, T.bookSpacing) : spacing;
     if (immobile(e, rt) || rt.wState === W_WINDUP) {
       if (statusOf(e, 'stun')) setAnim(e, 'stunned');
-      chain = e.x - dir * spacing;
+      chain = e.x - dir * gap;
       continue;
     }
     const hitsFlying = !!rt.attack && rt.attack.hitsFlying;
@@ -280,11 +282,7 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
     if (moved !== 0) setAnim(e, 'walk');
     else if (rt.animHold <= 0) setAnim(e, 'idle');
     if (retreat) chain = Math.min(e.x, target) - dir * spacing;
-    else if (!advancing && moveDir === dir) {
-      // close ranks around the book so every enemy in siege range can hit it
-      const sp = !player && e.x - w.bookX <= T.bookSiegeRange ? Math.min(spacing, T.bookSpacing) : spacing;
-      chain = e.x - dir * sp;
-    }
+    else if (!advancing && moveDir === dir) chain = e.x - dir * gap;
   }
   return frontmost;
 }
