@@ -594,7 +594,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
       h.hop = -Math.abs(num(s, 'hop', 220));
       h.bounceWarn = Math.max(0.6, num(s, 'bounceWarn', 0.7));
       h.dkind = 'fire';
-      fallingFx(st, h, 'boss_pumpkin_head');
+      fallingFx(st, h, 'fireball');
       break;
     }
     case 'toss_poison': {
@@ -606,7 +606,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
         const h = strike(st, slot, s.attack, 'shadow', clampField(st, cx + off), num(s, 'radius', 55), tel, num(s, 'damage', 0));
         h.poolLife = num(s, 'poolLife', 6);
         h.poolDps = num(s, 'poolDps', 8);
-        fallingFx(st, h, 'boss_poison_flask');
+        fallingFx(st, h, 'mana_orb');
       }
       break;
     }
@@ -622,7 +622,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
       h.passes = Math.max(1, Math.round(num(s, 'passes', 3)));
       h.warn = h.warnTotal = Math.max(SIM_DT, tel);
       h.teleId = addTelegraph(st, e.id, 'line', (h.x0 + h.x1) / 2, Math.abs(h.x1 - h.x0), h.warnTotal);
-      const fx = spawnEffect(st, s.attack, 'fx_steam_beam', h.x, middleRowY(st), 0, 30);
+      const fx = spawnEffect(st, s.attack, 'fx_holy_beam', h.x, middleRowY(st), 0, 30);
       h.fx = st.world.entities[fx].id;
       break;
     }
@@ -692,13 +692,13 @@ function armSequential(st: GState, ctx: SimContext, slot: number, s: BossStep, t
     case 'coffin_toss': {
       const h = strike(st, slot, s.attack, 'shadow', clampField(st, ashX(st)), r, warn, dmg);
       h.kb = num(s, 'knockback', 40);
-      fallingFx(st, h, 'boss_coffin');
+      fallingFx(st, h, 'rock');
       break;
     }
     case 'grave_hands': {
       const h = strike(st, slot, s.attack, 'circle', clampField(st, ashX(st)), r, warn, dmg);
       h.root = num(s, 'root', 1);
-      const fx = spawnEffect(st, s.attack, 'fx_grave_hands', h.x, middleRowY(st), 0, warn + 0.6);
+      const fx = spawnEffect(st, s.attack, 'fx_bone_burst', h.x, middleRowY(st), 0, warn + 0.6);
       h.fx = st.world.entities[fx].id;
       break;
     }
@@ -936,7 +936,7 @@ function hazardsTick(st: GState, ctx: SimContext): void {
             brt.bTelegraph = NONE;
           }
           if (h.fx === NONE && !h.carry) {
-            const fx = spawnEffect(st, h.attack, h.attack === 'mud_wave' ? 'fx_mud_wave' : 'fx_shockwave', h.x, middleRowY(st), 0, 30);
+            const fx = spawnEffect(st, h.attack, h.attack === 'mud_wave' ? 'fx_smoke_puff' : 'fx_shockwave', h.x, middleRowY(st), 0, 30);
             h.fx = ents[fx].id;
           }
           h.moving = true;

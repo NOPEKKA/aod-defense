@@ -110,4 +110,4 @@ HP 2200, armor 2, flying, speed 70; hovers ~260 px ahead of the front line. Drop
 ## What render / art needs
 
 - Anims per boss: `idle`, `walk`, `hurt`, `die`, `stunned`, `cast:phase`, and `telegraph:<id>` + `attack:<id>` for every step above.
-- Effect entities (`kind: 'effect'`, sprite key = this name; `alt` animates falling objects): `boss_coffin`, `boss_pumpkin_head`, `boss_poison_flask`, `fireball`, `fx_poison_pool` (`value` = radius), `fx_grave_hands`, `fx_dust_puff` (burrow tracker), `fx_mud_wave`, `fx_shockwave` (ground wave front; black bell ring with `value` = current radius), `fx_steam_beam`.
+- Effect entities (`kind: 'effect'`; `defId` = the attack id, sprite key below, `alt` animates falling objects): coffin_toss `rock`, throw_head `fireball`, toss_poison `mana_orb` (tint green) then `fx_poison_pool` (`value` = radius), fire_storm / float_fireballs `fireball`, grave_hands `fx_bone_burst`, burrow tracker `fx_dust_puff`, mud_wave front `fx_smoke_puff`, ground_wave front and black_bell ring `fx_shockwave` (ring: `value` = current radius), steam_beam `fx_holy_beam`. Dedicated art can replace these keys later.
