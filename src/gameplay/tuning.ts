@@ -137,6 +137,15 @@ export const TUNING_DEFAULTS = {
   'spell.portalMaxHpFrac': 0.9,
   /** bear traps stay armed this long */
   'spell.trapLifetime': 25,
+  /** silver coins: seconds on the ground before they fly to the smith panel, max coins per kill */
+  'combat.silver.collectDelay': 0.7,
+  'combat.silver.maxCount': 3,
+  /** per-body walk speed spread (+-fraction) */
+  'ai.speedJitter': 0.07,
+  /** ranged/healer units stand this far behind the melee line (when no keepBack param) */
+  'ai.backKeepBack': 120,
+  /** with no melee line, ranged units stay behind Ash and never pass this x unless shooting */
+  'ai.backSoloLine': 900,
   /** dawn lance flies this far */
   'spell.lanceRange': 1400,
 } as const;
@@ -157,6 +166,8 @@ export interface Tuning {
   bookSiegeRange: number;
   coinMaxValue: number;
   coinMaxCount: number;
+  silverCollectDelay: number;
+  silverMaxCount: number;
   dropScatter: number;
   shredDuration: number;
   chargeBonus: number;
@@ -175,6 +186,9 @@ export interface Tuning {
   flyerDiveAlt: number;
   flyerAltSpeed: number;
   knockbackHop: number;
+  speedJitter: number;
+  backKeepBack: number;
+  backSoloLine: number;
   projectileSpeed(sprite: string): number;
   projectileArc(sprite: string): number;
   arcMax: number;
@@ -257,6 +271,8 @@ export function tuningOf(data: GameData): Tuning {
     bookSiegeRange: get('combat.bookSiegeRange'),
     coinMaxValue: Math.max(1, get('combat.coin.maxValue')),
     coinMaxCount: Math.max(1, get('combat.coin.maxCount')),
+    silverCollectDelay: Math.max(0, get('combat.silver.collectDelay')),
+    silverMaxCount: Math.max(1, get('combat.silver.maxCount')),
     dropScatter: get('combat.dropScatter'),
     shredDuration: get('combat.shredDuration'),
     chargeBonus: get('combat.relic.chargeBonus'),
@@ -275,6 +291,9 @@ export function tuningOf(data: GameData): Tuning {
     flyerDiveAlt: get('ai.flyerDiveAlt'),
     flyerAltSpeed: get('ai.flyerAltSpeed'),
     knockbackHop: get('ai.knockbackHop'),
+    speedJitter: Math.max(0, Math.min(0.3, get('ai.speedJitter'))),
+    backKeepBack: get('ai.backKeepBack'),
+    backSoloLine: get('ai.backSoloLine'),
     projectileSpeed: (sprite) => speeds.get(sprite) ?? speedDefault,
     projectileArc: (sprite) => arcs.get(sprite) ?? arcDefault,
     arcMax: get('projectile.arcMax'),

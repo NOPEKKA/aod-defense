@@ -34,6 +34,25 @@ const ASCII = (() => {
 
 const human = (spec: CharSpec) => (ctx: Ctx, w: number, h: number) => fitHumanoid(ctx, w, h, spec);
 
+/** silver coin (summon currency) for the fly-to-HUD effect; the field pickup is baked art */
+function drawSilverCoin(ctx: Ctx, w: number, h: number): void {
+  const x = w / 2;
+  const y = h / 2;
+  const r = Math.min(w, h) / 2 - 2;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = radial(ctx, x - r * 0.3, y - r * 0.3, r * 1.4, [[0, '#ffffff'], [0.45, '#c9d2dc'], [1, '#6c7684']]);
+  ctx.fill();
+  ctx.lineWidth = Math.max(1.5, r * 0.2);
+  ctx.strokeStyle = '#1d2128';
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.62, 0, Math.PI * 2);
+  ctx.lineWidth = Math.max(1, r * 0.12);
+  ctx.strokeStyle = '#8b95a3';
+  ctx.stroke();
+}
+
 function fallbackEffect(ctx: Ctx, w: number, h: number): void {
   ctx.beginPath();
   ctx.arc(w / 2, h / 2, w / 2, 0, Math.PI * 2);
@@ -90,6 +109,7 @@ export function buildAllTextures(scene: Phaser.Scene, data: GameData, R: number)
 
   // pickups & projectiles
   add('coin', 22, 22, P.drawCoin, 0.5, 0.5);
+  add('coin_silver', 22, 22, drawSilverCoin, 0.5, 0.5);
   add('mana_orb', 28, 28, P.drawManaOrb, 0.5, 0.5);
   add('food', 28, 20, P.drawFood, 0.5, 0.5);
   add('shot', 30, 10, P.drawShot, 0.7, 0.5);

@@ -75,6 +75,7 @@ export function installQaHooks(): void {
         tryRuntime()?.battle?.runner.inject(frame, ticks);
       },
       currentScene: activeScene,
+      runtime: () => tryRuntime() ?? null,
       frameTimes() {
         const rt = tryRuntime();
         if (!rt) return [];

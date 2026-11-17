@@ -89,10 +89,20 @@ export function createDirector(rt: WaveRuntime): SimSystem {
     tick(ctx) {
       if (rt.allSpawned || ctx.world.phase !== 'running') return;
       const now = ctx.world.time;
-      if (times[next] > now) return;
       const spawn = ctx.services.spawn;
-      const cap = ctx.data.balance.limits.maxEnemies;
       let live = spawn.hostileCount();
+      if (times[next] > now) {
+        // field cleared early: pull the rest of the schedule forward (no long empty waits)
+        const pace = ctx.data.waveFormula.pacing;
+        const maxWait = live === 0 ? pace.emptyGap : live <= pace.lowCount ? pace.lowGap : Infinity;
+        const wait = times[next] - now;
+        if (wait > maxWait) {
+          const shift = wait - maxWait;
+          for (let i = next; i < times.length; i++) times[i] -= shift;
+        }
+        if (times[next] > now) return;
+      }
+      const cap = ctx.data.balance.limits.maxEnemies;
       while (next < times.length && times[next] <= now) {
         const enemy = enemies[next];
         let id: number;

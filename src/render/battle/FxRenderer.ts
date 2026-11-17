@@ -138,7 +138,7 @@ export class FxRenderer implements BattleRenderer {
     this.layout = view.layout;
     this.gy = view.data.balance.world.groundY;
     resetHitStop();
-    for (const k of ['p_dot', 'p_spark', 'p_smoke', 'p_ring', 'p_star', 'p_shard', 'p_bone', 'glow', 'arrow', 'rock', 'px', 'vignette', 'coin', 'mana_orb', 'food']) {
+    for (const k of ['p_dot', 'p_spark', 'p_smoke', 'p_ring', 'p_star', 'p_shard', 'p_bone', 'glow', 'arrow', 'rock', 'px', 'vignette', 'coin', 'coin_silver', 'mana_orb', 'food']) {
       this.fr[k] = frameOf(k) ?? spriteFrame(k);
     }
     const lim = view.data.balance.limits;
@@ -417,9 +417,12 @@ export class FxRenderer implements BattleRenderer {
   }
 
   private onCollected(p: GameEvents['pickup:collected']): void {
-    const tint = p.pickup === 'gold' ? 0xffd34d : p.pickup === 'mana' ? 0x6ac8ff : 0x7ee07a;
-    this.burst('p_star', p.x, p.y - 24, 6, 40, 120, -Math.PI, 0, 0.45, 0.7, 0.15, tint, 60, true);
-    this.number(p.x, p.y - 56, plusStr(Math.round(p.value)), tint, 20);
+    const tint = p.pickup === 'gold' ? 0xffd34d : p.pickup === 'silver' ? 0xdfe8f2 : p.pickup === 'mana' ? 0x6ac8ff : 0x7ee07a;
+    if (p.pickup !== 'silver') {
+      // silver lands every kill: no star burst or number, just the coin flying home
+      this.burst('p_star', p.x, p.y - 24, 6, 40, 120, -Math.PI, 0, 0.45, 0.7, 0.15, tint, 60, true);
+      this.number(p.x, p.y - 56, plusStr(Math.round(p.value)), tint, 20);
+    }
     // fly the pickup to its HUD readout
     const L = this.layout;
     let tx: number;
@@ -429,6 +432,10 @@ export class FxRenderer implements BattleRenderer {
       tx = L.goldLabel.x + 26;
       ty = L.goldLabel.y + L.goldLabel.h / 2;
       key = 'coin';
+    } else if (p.pickup === 'silver') {
+      tx = L.ironPanel.x + L.ironPanel.w * 0.62;
+      ty = L.ironPanel.y + L.ironPanel.h * 0.45;
+      key = 'coin_silver';
     } else if (p.pickup === 'mana') {
       const b = L.spellButtons[0];
       tx = b.x + b.w / 2;

@@ -39,6 +39,18 @@ export function dropsTick(st: GState, ctx: SimContext): void {
         spawnPickup(st, 'gold', e.x + dx, e.y, v, lifetime);
       }
     }
+    // silver (summon currency): a few coins that fly to the smith panel on their own
+    const silver = Math.ceil(rt.enemy.threat * (b.economy.silverPerThreat ?? 0));
+    if (silver > 0) {
+      const coins = Math.max(1, Math.min(T.silverMaxCount, Math.ceil(silver / T.coinMaxValue)));
+      const base = Math.floor(silver / coins);
+      let extra = silver - base * coins;
+      for (let c = 0; c < coins; c++) {
+        const v = base + (extra > 0 ? 1 : 0);
+        if (extra > 0) extra--;
+        spawnPickup(st, 'silver', e.x + ctx.rng.range(-T.dropScatter, T.dropScatter), e.y, v, lifetime);
+      }
+    }
     if (ctx.rng.chance(b.drops.manaOrb.chance)) {
       spawnPickup(st, 'mana', e.x + ctx.rng.range(-T.dropScatter, T.dropScatter), e.y, b.drops.manaOrb.amount, lifetime);
     }
@@ -57,9 +69,12 @@ export function dropsTick(st: GState, ctx: SimContext): void {
   for (let s = 0; s < ents.length; s++) {
     const p = ents[s];
     if (!p.alive || p.kind !== 'pickup') continue;
-    if (canCollect && Math.abs(p.x - ash!.x) <= radius) {
-      const type = p.defId as PickupType;
+    const type = p.defId as PickupType;
+    // silver needs no walking: it is banked a moment after it lands
+    const autoSilver = type === 'silver' && lifetime - p.ttl >= T.silverCollectDelay;
+    if (autoSilver || (canCollect && type !== 'silver' && Math.abs(p.x - ash!.x) <= radius)) {
       if (type === 'gold') ctx.services.economy.collectGold(p.value);
+      else if (type === 'silver') ctx.services.economy.gain('iron', p.value);
       else if (type === 'mana') ctx.services.economy.gain('mana', p.value);
       else if (type === 'food') heal(st, ash!, p.value);
       st.bus.emit('pickup:collected', { id: p.id, pickup: type, x: p.x, y: p.y, value: p.value });

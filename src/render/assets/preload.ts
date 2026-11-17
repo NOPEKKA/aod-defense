@@ -18,7 +18,7 @@ import {
 import { clearSpriteInfo } from './sprites';
 
 /** sprites every battle uses besides the loadout and the wave's enemies */
-const ALWAYS = ['ash', 'ash_left', 'npc_blacksmith', 'book', 'coin', 'mana_orb', 'food', 'shot', 'arrow', 'rock', 'gib_bone_a', 'gib_bone_b', 'gib_bone_c', 'gib_skull', 'unit_archer'];
+const ALWAYS = ['ash', 'ash_left', 'npc_blacksmith', 'book', 'coin', 'coin_silver', 'mana_orb', 'food', 'shot', 'arrow', 'rock', 'gib_bone_a', 'gib_bone_b', 'gib_bone_c', 'gib_skull', 'unit_archer'];
 
 /** chapter (1-based) of a wave, matching core/world.ts */
 export function chapterOf(wave: number): number {

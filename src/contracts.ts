@@ -286,6 +286,13 @@ export const WaveFormulaSchema = z.object({
   maxSpawnTime: z.number().positive(),
   /** enemy pick weight is divided by threat^this (0 = uniform) */
   threatWeightExponent: z.number().min(0),
+  /**
+   * Live pacing: when the field is cleared early the schedule is pulled forward, so the next
+   * sub-wave arrives within emptyGap s (field empty) or lowGap s (at most lowCount hostiles left).
+   */
+  pacing: z
+    .object({ emptyGap: z.number().min(0), lowCount: z.number().int().min(0), lowGap: z.number().min(0) })
+    .default({ emptyGap: 2.5, lowCount: 3, lowGap: 6 }),
   boss: z.object({
     /** escort budget on a boss wave = B(n) * this */
     escortBudgetFactor: z.number().positive(),
@@ -347,6 +354,8 @@ export const BalanceSchema = z.object({
     manaMax: z.number().positive(),
     manaRegen: z.number().min(0),
     goldPerThreat: z.number().positive(),
+    /** silver coins (= iron, the summon currency) dropped per threat point; auto-collected */
+    silverPerThreat: z.number().min(0).default(0),
     goldLifetime: z.number().positive(),
     waveBonus: z.object({ base: z.number(), perWave: z.number() }),
     firstClearMultiplier: z.number().positive(),
@@ -485,6 +494,9 @@ export interface ProfileState {
 // ---------------------------------------------------------------------------
 // 3. World state (simulation snapshot). Sim writes, render/controls read.
 // ---------------------------------------------------------------------------
+
+/** gold: kept after the wave (Shop upgrades). silver: in-battle summon / smith currency (world.resources.iron). */
+export type PickupKind = 'gold' | 'silver' | 'mana' | 'food';
 
 export type EntityKind = 'ash' | 'ally' | 'hero' | 'enemy' | 'boss' | 'projectile' | 'pickup' | 'effect';
 export type Team = 'player' | 'enemy' | 'neutral';
@@ -742,8 +754,8 @@ export interface GameEvents {
   'spell:impact': { spellId: string; effect: string; x: number; y: number; radius: number };
   'ash:dodged': { fromX: number; toX: number };
   // economy
-  'pickup:dropped': { id: number; pickup: 'gold' | 'mana' | 'food'; x: number; y: number; value: number };
-  'pickup:collected': { id: number; pickup: 'gold' | 'mana' | 'food'; x: number; y: number; value: number };
+  'pickup:dropped': { id: number; pickup: PickupKind; x: number; y: number; value: number };
+  'pickup:collected': { id: number; pickup: PickupKind; x: number; y: number; value: number };
   'resource:changed': { iron: number; mana: number; goldCollected: number };
   'smith:upgraded': { level: number };
   'smith:denied': { reason: 'iron' | 'max' };
@@ -1100,6 +1112,8 @@ export interface QaHooks {
     /** queue input for the next tick(s), bypassing devices */
     input(frame: Partial<InputFrame>, ticks?: number): void;
     currentScene(): string;
+    /** the core runtime (battle runner, world, services) for QA scripts and bots; null before boot */
+    runtime(): unknown;
     /** frame-time samples (ms) since the last call */
     frameTimes(): number[];
   };

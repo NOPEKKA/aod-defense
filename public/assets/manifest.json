@@ -715,6 +715,27 @@
     }
    }
   },
+  "coin_silver": {
+   "id": "coin_silver",
+   "frameW": 48,
+   "frameH": 55,
+   "anchorX": 24,
+   "anchorY": 47,
+   "height": 39,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": true
+    }
+   }
+  },
   "enemy_battering_ram": {
    "id": "enemy_battering_ram",
    "frameW": 487,
@@ -1187,15 +1208,15 @@
   },
   "enemy_winged_deadite": {
    "id": "enemy_winged_deadite",
-   "frameW": 406,
-   "frameH": 223,
-   "anchorX": 148,
-   "anchorY": 194,
-   "height": 179,
+   "frameW": 424,
+   "frameH": 247,
+   "anchorX": 157,
+   "anchorY": 213,
+   "height": 182,
    "facing": -1,
    "shadow": true,
    "pages": {
-    "hd": 1,
+    "hd": 2,
     "sd": 1
    },
    "anims": {

@@ -1,8 +1,23 @@
 import { VIEW_H, VIEW_W_MAX, VIEW_W_MIN } from '../contracts';
 
-/** logical -> canvas pixel scale. Capped at 2 to keep fill-rate sane on phones. */
+/**
+ * logical -> canvas pixel scale, matched to the physical pixels the canvas actually covers.
+ * Using devicePixelRatio alone gave a 720-px-tall canvas on 1080p/1440p desktops, which the
+ * browser then stretched (the "looks like 480p" blur). We take the larger of the current
+ * displayed height and the screen's short side (so going fullscreen later stays sharp),
+ * times devicePixelRatio, over the logical 720. Capped at 3 on desktop, 2.25 on touch devices
+ * to keep fill-rate sane.
+ */
 export function computeRenderScale(): number {
-  return Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+  const dpr = Math.max(window.devicePixelRatio || 1, 1);
+  const viewW = computeViewWidth();
+  const shownH = Math.min(window.innerHeight, (window.innerWidth / viewW) * VIEW_H);
+  const screenH = Math.min(window.screen?.width || shownH, window.screen?.height || shownH);
+  const px = Math.max(shownH, screenH) * dpr;
+  const coarse = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+  const cap = coarse ? 2.25 : 3;
+  const s = Math.min(cap, Math.max(1, px / VIEW_H));
+  return Math.round(s * 20) / 20;
 }
 
 /** Logical view width for the current window: wider phones see more field instead of black bars. */

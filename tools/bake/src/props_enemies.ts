@@ -265,16 +265,37 @@ export function wingPair(span = 1): { left: THREE.Group; right: THREE.Group } {
     // swept back and slightly up so the near wing shows broad in the 3/4 side view
     sweep.rotation.set(0, side * -28 * RAD, 0);
     pivot.add(sweep);
-    pivot.position.set(side * 0.2, 0.22, -0.3);
+    // hinge on the upper back, between the shoulder blades (model space after alignWings)
+    pivot.position.set(side * 0.12, 0.12, -0.2);
     return pivot;
   };
   return { left: mk(1), right: mk(-1) };
 }
 
-/** set the flap angle in degrees (positive = wings up) */
+/**
+ * Wings are attached to a bone whose local axes are not the model's (KayKit chest bones are
+ * tilted). Re-orient each wing holder so its frame matches the character root (x = side,
+ * y = up, z = forward); then the hinge offset and the flap axis mean what they say.
+ * Call once right after character() builds, in the rest pose.
+ */
+export function alignWings(b: Built): void {
+  b.root.updateMatrixWorld(true);
+  const rootQ = b.root.getWorldQuaternion(new THREE.Quaternion());
+  const rootS = b.root.getWorldScale(new THREE.Vector3());
+  for (const k of ['wingL', 'wingR']) {
+    const h = b.parts[k];
+    if (!h || !h.parent) continue;
+    const boneQ = h.parent.getWorldQuaternion(new THREE.Quaternion());
+    const boneS = h.parent.getWorldScale(new THREE.Vector3());
+    h.quaternion.copy(boneQ.invert().multiply(rootQ));
+    h.scale.setScalar(Math.abs(rootS.x) / Math.max(1e-6, Math.abs(boneS.x)));
+  }
+}
+
+/** set the flap angle in degrees (positive = wings up); rotates each wing about its own hinge */
 export function flap(b: Built, deg: number, fold = 0): void {
-  const l = b.parts.wingL;
-  const r = b.parts.wingR;
+  const l = b.parts.wingL?.children[0];
+  const r = b.parts.wingR?.children[0];
   if (!l || !r) return;
   l.rotation.z = deg * RAD;
   r.rotation.z = -deg * RAD;

@@ -42,8 +42,9 @@ test('Ash walks right at his data speed when input says move=1', async ({ page }
   await page.evaluate(() => (window as any).__aodd.input({ move: 1 }, 60)); // eslint-disable-line @typescript-eslint/no-explicit-any
   await advance(page, 1000);
   const s = await snapshot(page);
-  expect(s.ash.x - x0).toBeGreaterThan(200);
-  expect(s.ash.x - x0).toBeLessThan(240);
+  const speed = await page.evaluate(() => (window as any).__aodd.app().data.balance.ash.stats.speed as number); // eslint-disable-line @typescript-eslint/no-explicit-any
+  expect(s.ash.x - x0).toBeGreaterThan(speed * 0.9);
+  expect(s.ash.x - x0).toBeLessThan(speed * 1.1);
   expect(s.ash.facing).toBe(1);
 });
 

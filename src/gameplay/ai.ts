@@ -214,9 +214,16 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
           }
           if (role === 'second' && ref1 > -INF) soft = Math.min(soft, ref1 - spacing);
           if (role === 'back') {
+            // ranged and healers stay well behind the melee line; with no melee line they
+            // hang back behind Ash (never past backSoloLine) instead of marching to the front
+            const keep = rt.keepBack > 0 ? rt.keepBack : T.backKeepBack;
             const ref = ref2 > -INF ? ref2 : ref1;
-            if (ref > -INF) soft = Math.min(soft, ref - (rt.keepBack > 0 ? rt.keepBack : spacing));
-            else if (rt.keepBack > 0) soft = Math.min(soft, w.allyHoldX - rt.keepBack);
+            if (ref > -INF) soft = Math.min(soft, ref - keep);
+            else {
+              const ash = byId(st, st.world.ashId);
+              const ashLine = ash && ash.hp > 0 ? ash.x - keep : -INF;
+              soft = Math.min(soft, Math.max(T.backSoloLine, ashLine));
+            }
           }
           if (inReach) soft = Math.min(soft, e.x);
         }

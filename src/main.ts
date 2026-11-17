@@ -35,7 +35,7 @@ async function start(): Promise<void> {
       smoothStep: true,
     },
     input: { activePointers: 4 },
-    render: { antialias: true, roundPixels: false, powerPreference: 'high-performance' },
+    render: { antialias: true, roundPixels: false, powerPreference: 'high-performance', mipmapFilter: 'LINEAR_MIPMAP_LINEAR' },
     disableContextMenu: true,
     scene: [Boot, Preloader, Battle, ...render.menuScenes],
   });

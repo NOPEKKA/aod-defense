@@ -212,7 +212,8 @@ export function spawnEnemyAt(st: GState, def: EnemyDef, x: number, scheduled: bo
   e.size = def.size;
   rt.enemy = def;
   setAttack(rt, def.stats.attack, def.stats.attack.damage);
-  rt.speed = def.stats.speed;
+  // small per-body speed spread so a group never marches in lockstep
+  rt.speed = def.stats.speed * st.jitter.range(1 - st.T.speedJitter, 1 + st.T.speedJitter);
   rt.scheduled = scheduled;
   setBody(st, rt, e);
   applyBehaviors(rt, def.behaviors, def.stats.attack);
@@ -260,7 +261,7 @@ export function spawnUnitAt(st: GState, def: UnitDef, x: number): number {
   e.size = def.size;
   rt.unit = def;
   setAttack(rt, def.stats.attack, mods.apply(def.stats.attack.damage, `unit.${def.id}.damage`));
-  rt.speed = def.stats.speed;
+  rt.speed = def.stats.speed * st.jitter.range(1 - st.T.speedJitter, 1 + st.T.speedJitter);
   setBody(st, rt, e);
   applyBehaviors(rt, def.behaviors, def.stats.attack);
   if (def.stats.attack.kind === 'none' && rt.role !== 'back') rt.role = 'back';
@@ -456,8 +457,8 @@ export function projectilePlace(e: EntityState, rt: Rt): void {
   }
 }
 
-export type PickupType = 'gold' | 'mana' | 'food';
-const PICKUP_SPRITE: Readonly<Record<PickupType, string>> = { gold: 'coin', mana: 'mana_orb', food: 'food' };
+export type PickupType = 'gold' | 'silver' | 'mana' | 'food';
+const PICKUP_SPRITE: Readonly<Record<PickupType, string>> = { gold: 'coin', silver: 'coin_silver', mana: 'mana_orb', food: 'food' };
 
 export function spawnPickup(st: GState, type: PickupType, x: number, y: number, value: number, ttl: number): number {
   const w = st.data.balance.world;

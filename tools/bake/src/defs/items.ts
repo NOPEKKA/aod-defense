@@ -71,6 +71,33 @@ defineSprite({
   },
 });
 
+// silver coin: the in-battle summon currency (same coin model, silver metal)
+defineSprite({
+  id: 'coin_silver',
+  facing: 1,
+  yaw: 0,
+  outline: 1.2,
+  margin: 0.1,
+  build: async () => {
+    const c = await buildCoin();
+    const silver = new THREE.MeshStandardMaterial({ color: 0xd4dbe4, metalness: 0.55, roughness: 0.35, emissive: 0x161a20 });
+    c.root.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) (o as THREE.Mesh).material = silver;
+    });
+    return staticBuilt(c.root, { spin: c.spin });
+  },
+  anims: {
+    idle: {
+      frames: 8,
+      loop: true,
+      duration: 0.8,
+      apply: (b, u) => {
+        b.parts.spin.rotation.y = u * TAU;
+      },
+    },
+  },
+});
+
 defineSprite({
   id: 'mana_orb',
   facing: 1,

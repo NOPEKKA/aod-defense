@@ -1,14 +1,14 @@
 {
  "id": "enemy_winged_deadite",
- "frameW": 406,
- "frameH": 223,
- "anchorX": 148,
- "anchorY": 194,
- "height": 179,
+ "frameW": 424,
+ "frameH": 247,
+ "anchorX": 157,
+ "anchorY": 213,
+ "height": 182,
  "facing": -1,
  "shadow": true,
  "pages": {
-  "hd": 1,
+  "hd": 2,
   "sd": 1
  },
  "anims": {
