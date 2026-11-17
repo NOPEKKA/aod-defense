@@ -20,6 +20,23 @@ import { clearSpriteInfo } from './sprites';
 /** sprites every battle uses besides the loadout and the wave's enemies */
 const ALWAYS = ['ash', 'ash_left', 'npc_blacksmith', 'book', 'coin', 'coin_silver', 'mana_orb', 'food', 'shot', 'arrow', 'rock', 'gib_bone_a', 'gib_bone_b', 'gib_bone_c', 'gib_skull', 'unit_archer'];
 
+/**
+ * Effect sheets every fight shows from the first second (hits, deaths, shots). The bigger,
+ * rarer ones (explosions, spell circles, portals, beams ...) stream in after the wave starts
+ * (lazyFx); until then FxRenderer falls back to procedural particles.
+ */
+const FX_CORE = new Set(['fx_bone_burst', 'fx_dust_puff', 'fx_slash', 'fx_smoke_puff', 'fx_spark_burst', 'fx_muzzle_flash', 'fx_ember', 'fx_glow', 'fx_soul', 'fx_fire']);
+
+/** Queue every baked fx sheet not loaded up-front; `onDone` runs when the loader goes idle. */
+export function lazyFx(scene: Phaser.Scene, onDone: () => void): void {
+  let any = false;
+  for (const key of Object.keys(getManifest().sprites)) {
+    if (!key.startsWith('fx_') || FX_CORE.has(key)) continue;
+    if (!requestSprite(scene, key)) any = true;
+  }
+  if (any) scene.load.once('complete', onDone);
+}
+
 /** chapter (1-based) of a wave, matching core/world.ts */
 export function chapterOf(wave: number): number {
   return (Math.floor((Math.max(1, wave) - 1) / 10) % 5) + 1;
@@ -60,8 +77,8 @@ export function spritesForWave(app: AppContext, params: WaveStartParams): Set<st
       }
     }
   }
-  // baked effects are small and shared by everything
-  for (const key of Object.keys(getManifest().sprites)) if (key.startsWith('fx_')) out.add(key);
+  // the common effect sheets; the rest stream in during the wave (lazyFx)
+  for (const key of FX_CORE) if (getManifest().sprites[key]) out.add(key);
   return out;
 }
 
