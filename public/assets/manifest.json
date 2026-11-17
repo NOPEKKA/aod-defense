@@ -28,10 +28,10 @@
   },
   "ash": {
    "id": "ash",
-   "frameW": 345,
-   "frameH": 232,
+   "frameW": 344,
+   "frameH": 287,
    "anchorX": 178,
-   "anchorY": 192,
+   "anchorY": 220,
    "height": 169,
    "facing": 1,
    "shadow": true,
@@ -55,7 +55,7 @@
      "frames": 10,
      "duration": 0.5,
      "loop": false,
-     "hitAt": 0.4
+     "hitAt": 0.52
     },
     "attack:shoot": {
      "frames": 8,
@@ -74,6 +74,11 @@
      "duration": 0.3,
      "loop": false
     },
+    "stunned": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": true
+    },
     "dodge": {
      "frames": 6,
      "duration": 0.35,
@@ -86,17 +91,17 @@
     },
     "cheer": {
      "frames": 10,
-     "duration": 1.667,
+     "duration": 1.15,
      "loop": true
     }
    }
   },
   "ash_left": {
    "id": "ash_left",
-   "frameW": 354,
-   "frameH": 247,
-   "anchorX": 149,
-   "anchorY": 191,
+   "frameW": 365,
+   "frameH": 289,
+   "anchorX": 160,
+   "anchorY": 220,
    "height": 167,
    "facing": -1,
    "shadow": true,
@@ -120,7 +125,7 @@
      "frames": 10,
      "duration": 0.5,
      "loop": false,
-     "hitAt": 0.4
+     "hitAt": 0.52
     },
     "attack:shoot": {
      "frames": 8,
@@ -139,6 +144,11 @@
      "duration": 0.3,
      "loop": false
     },
+    "stunned": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": true
+    },
     "dodge": {
      "frames": 6,
      "duration": 0.35,
@@ -151,7 +161,7 @@
     },
     "cheer": {
      "frames": 10,
-     "duration": 1.667,
+     "duration": 1.15,
      "loop": true
     }
    }
@@ -752,6 +762,365 @@
    "blend": "add",
    "ground": false
   },
+  "hero_arthur": {
+   "id": "hero_arthur",
+   "frameW": 474,
+   "frameH": 293,
+   "anchorX": 285,
+   "anchorY": 252,
+   "height": 228,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 60
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_evil_ash": {
+   "id": "hero_evil_ash",
+   "frameW": 353,
+   "frameH": 270,
+   "anchorX": 188,
+   "anchorY": 233,
+   "height": 179,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 83
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.52
+    },
+    "attack:shoot": {
+     "frames": 8,
+     "duration": 0.45,
+     "loop": false,
+     "hitAt": 0.2
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "stunned": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": true
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_garrick": {
+   "id": "hero_garrick",
+   "frameW": 326,
+   "frameH": 300,
+   "anchorX": 224,
+   "anchorY": 237,
+   "height": 214,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 56
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.35
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_henry": {
+   "id": "hero_henry",
+   "frameW": 420,
+   "frameH": 286,
+   "anchorX": 268,
+   "anchorY": 214,
+   "height": 188,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 61
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_morwen": {
+   "id": "hero_morwen",
+   "frameW": 460,
+   "frameH": 270,
+   "anchorX": 268,
+   "anchorY": 215,
+   "height": 191,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 3,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 56
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "cast": {
+     "frames": 8,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_sheila": {
+   "id": "hero_sheila",
+   "frameW": 332,
+   "frameH": 211,
+   "anchorX": 181,
+   "anchorY": 179,
+   "height": 157,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 76
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
+  "hero_wiseman": {
+   "id": "hero_wiseman",
+   "frameW": 360,
+   "frameH": 232,
+   "anchorX": 222,
+   "anchorY": 195,
+   "height": 172,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 56
+    },
+    "attack": {
+     "frames": 8,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "cast": {
+     "frames": 8,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
+     "loop": true
+    }
+   }
+  },
   "mana_orb": {
    "id": "mana_orb",
    "frameW": 66,
@@ -769,6 +1138,38 @@
     "idle": {
      "frames": 6,
      "duration": 0.9,
+     "loop": true
+    }
+   }
+  },
+  "npc_blacksmith": {
+   "id": "npc_blacksmith",
+   "frameW": 220,
+   "frameH": 240,
+   "anchorX": 90,
+   "anchorY": 194,
+   "height": 172,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.8,
+     "loop": true,
+     "hitAt": 0.5
+    },
+    "cheer": {
+     "frames": 10,
+     "duration": 1.15,
      "loop": true
     }
    }
@@ -820,10 +1221,268 @@
     }
    }
   },
+  "unit_archer": {
+   "id": "unit_archer",
+   "frameW": 294,
+   "frameH": 222,
+   "anchorX": 188,
+   "anchorY": 181,
+   "height": 160,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 51
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.4
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_armored_guard": {
+   "id": "unit_armored_guard",
+   "frameW": 413,
+   "frameH": 292,
+   "anchorX": 248,
+   "anchorY": 261,
+   "height": 234,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 58
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_crossbowman": {
+   "id": "unit_crossbowman",
+   "frameW": 299,
+   "frameH": 240,
+   "anchorX": 205,
+   "anchorY": 181,
+   "height": 160,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 51
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.35
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_horseman": {
+   "id": "unit_horseman",
+   "frameW": 413,
+   "frameH": 407,
+   "anchorX": 160,
+   "anchorY": 353,
+   "height": 266,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 3,
+    "sd": 2
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.7,
+     "loop": true,
+     "stride": 150
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.35,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 1,
+     "loop": false
+    }
+   }
+  },
+  "unit_peasant": {
+   "id": "unit_peasant",
+   "frameW": 424,
+   "frameH": 229,
+   "anchorX": 241,
+   "anchorY": 193,
+   "height": 162,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 46
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
+  "unit_spearman": {
+   "id": "unit_spearman",
+   "frameW": 520,
+   "frameH": 290,
+   "anchorX": 287,
+   "anchorY": 237,
+   "height": 180,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 2,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 51
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
+  },
   "unit_swordsman": {
    "id": "unit_swordsman",
    "frameW": 344,
-   "frameH": 237,
+   "frameH": 243,
    "anchorX": 184,
    "anchorY": 205,
    "height": 175,
@@ -862,6 +1521,49 @@
      "loop": false
     }
    }
+  },
+  "unit_torch_boy": {
+   "id": "unit_torch_boy",
+   "frameW": 280,
+   "frameH": 176,
+   "anchorX": 169,
+   "anchorY": 153,
+   "height": 132,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 12,
+     "duration": 0.8,
+     "loop": true,
+     "stride": 65
+    },
+    "attack": {
+     "frames": 10,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "hurt": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 10,
+     "duration": 0.9,
+     "loop": false
+    }
+   }
   }
  },
  "backgrounds": {},
@@ -879,6 +1581,66 @@
      "h": 112
     },
     "portrait_unit_swordsman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_arthur": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_wiseman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_henry": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_morwen": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_garrick": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_sheila": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_hero_evil_ash": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_npc_blacksmith": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_peasant": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_archer": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_spearman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_torch_boy": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_armored_guard": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_crossbowman": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_unit_horseman": {
      "w": 112,
      "h": 112
     }
