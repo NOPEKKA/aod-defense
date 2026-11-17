@@ -1147,7 +1147,7 @@ test.describe('phase 3 / known bugs (test.fail until fixed)', () => {
       }
     });
     const s = await snap(page);
-    expect(s.ash.x).toBe(200);
+    expect(s.ash.x).toBe(230); // balance.world.ashMinX (SPEC v2.2)
     // After the fix Ash, still holding left against the wall, turns and shoots the skeletons
     // as soon as they enter gun range, so they usually never reach him at all.
     expect((await events(page, 'entity:attack')).some((e) => e.p.id === ashId)).toBe(true);
