@@ -118,7 +118,7 @@ test.describe('phase 3 / 1. controls', () => {
     await page.keyboard.press('Digit1');
     await expect.poll(async () => (await events(page, 'unit:summoned')).length).toBe(1);
     s = await snap(page);
-    expect(s.res.iron).toBeLessThanOrEqual(iron0 - 9);
+    expect(s.res.iron).toBeLessThanOrEqual(iron0 - 4); // peasant costs 5 iron (SPEC v2.4)
     expect(s.counts.ally).toBe(1);
     const iron1 = s.res.iron as number;
     await page.keyboard.press('Digit2');
@@ -126,7 +126,7 @@ test.describe('phase 3 / 1. controls', () => {
     const sum = await events(page, 'unit:summoned');
     expect(sum.map((e) => [e.p.slot, e.p.unitId])).toEqual([[0, 'peasant'], [1, 'swordsman']]);
     s = await snap(page);
-    expect(s.res.iron).toBeLessThanOrEqual(iron1 - 19);
+    expect(s.res.iron).toBeLessThanOrEqual(iron1 - 9); // swordsman costs 10 iron (SPEC v2.4)
     expect(s.counts.ally).toBe(2);
     // the allies walk right from the stairs
     const allyX0 = (await worldEntities(page)).filter((e) => e.kind === 'ally').map((e) => e.x);
@@ -555,7 +555,7 @@ test.describe('phase 3 / 4. win -> next wave', () => {
     await waitScene(page, 'PreWave');
     const archerName = await tr(page, 'unit.archer');
     const card = await findUi(page, archerName);
-    expect(card.texts).toContain('30'); // iron cost shown instead of the lock label
+    expect(card.texts).toContain('10'); // iron cost shown instead of the lock label (archer: 10 iron, SPEC v2.4)
     await page.mouse.click(card.x, card.y);
     await expect.poll(async () => page.evaluate(() => (window as any).__aodd.app().profile.loadout.units)).toEqual(['peasant', 'swordsman', 'archer']);
     await page.screenshot({ path: 'output/qa3/4-prewave-wave3.png' });

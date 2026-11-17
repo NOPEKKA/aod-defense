@@ -3,17 +3,18 @@
  * Owner: gameplay agent.
  *
  * Sim systems (docs/ARCHITECTURE.md §5):
- *   100 gp-input    Ash walk/facing/dodge, summon slots + commands, spell slots + cast commands
- *   300 gp-ai       knockback/leaps, targeting, movement, formation, boss movement
- *   400 gp-combat   statuses (burn), projectiles, Ash/unit/enemy attacks, healers, book damage
- *   500 gp-effects  spell effects, boss attack loops + minions, castle defenses, iron_boost
+ *   100 gp-input    Ash walk/facing/dodge, summon slots + commands, spell slots + cast commands, rally
+ *   300 gp-ai       knockback/leaps/flyer height, targeting, movement, formation, rally hold, boss movement
+ *   400 gp-combat   statuses, projectiles, hero abilities, Ash/unit/enemy attacks (windup), healers, book siege
+ *   500 gp-effects  spell effects, army buff, boss loops + hazards + minions, castle defenses, iron_boost
  *   550 gp-drops    drops for this tick's deaths, pickup expiry, Ash collects pickups
  *   900 gp-cleanup  corpses (corpseTime) and effects -> alive=false
  *
  * Files: state.ts (per-wave state, Rt), pool.ts (entity pool + spawners),
  * registry.ts (registered ids + validateData), tuning.ts ([เดา] numbers with
  * no schema field yet), damage.ts, targeting.ts, ash.ts, summon.ts, ai.ts,
- * combat.ts, spells.ts, bosses.ts, castle.ts, drops.ts.
+ * combat.ts, heroes.ts, spells.ts, spells_new.ts, bosses.ts, castle.ts, drops.ts.
+ * Boss pattern sheets: docs/BOSSES.md.
  */
 import { SIM_DT, type GameplayModule, type SimContext, type SimSystem, type SpawnApi } from '../contracts';
 import { aiTick } from './ai';

@@ -91,7 +91,7 @@ export function ashInput(st: GState, ctx: SimContext, input: InputFrame): void {
     ash.x = Math.max(w.ashMinX, Math.min(w.ashMaxX, ash.x + a.dodgeV * SIM_DT));
     a.dodgeLeft -= SIM_DT;
     setAnim(ash, 'dodge');
-    if (a.dodgeLeft > 0) return;
+    if (a.dodgeLeft > 1e-9) return;
     a.dodgeLeft = 0;
   }
   if (statusOf(ash, 'stun')) {
@@ -123,7 +123,8 @@ export function dodgeCommand(st: GState, ctx: SimContext): void {
   const ash = byId(st, ctx.world.ashId);
   if (!ash || ash.hp <= 0 || statusOf(ash, 'stun') || st.ash.dodgeLeft > 0) return;
   const b = ctx.data.balance;
-  const dur = Math.max(SIM_DT, b.ash.dodge.invuln);
+  // a whole number of ticks, so the roll covers exactly `distance`
+  const dur = Math.max(1, Math.round(b.ash.dodge.invuln / SIM_DT)) * SIM_DT;
   st.ash.dodgeLeft = dur;
   st.ash.dodgeV = (ash.facing * b.ash.dodge.distance) / dur;
   st.ash.wKind = 0; // rolling cancels a swing
