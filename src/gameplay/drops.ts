@@ -3,7 +3,7 @@
  * collecting pickups. Coins must exist before systems' outcome check (800)
  * runs on the same tick, so drops never wait for cleanup.
  *
- *   gold  value = ceil(threat * economy.goldPerThreat), split into coins of at most COIN_MAX_VALUE
+ *   gold  value = ceil(threat * economy.goldPerThreat), split into coins of at most T.coinMaxValue
  *         (bosses drop no coins: systems pays boss drop.gold in the outcome bonus)
  *   mana  balance.drops.manaOrb.chance -> economy.gain('mana', amount)
  *   food  balance.drops.food.chance    -> heals Ash by healFrac * Ash max hp
@@ -14,12 +14,12 @@ import { SIM_DT, type SimContext } from '../contracts';
 import { heal } from './damage';
 import { release, spawnPickup, type PickupType } from './pool';
 import { byId, setAnim, type GState } from './state';
-import { COIN_MAX_COUNT, COIN_MAX_VALUE, DROP_SCATTER } from './tuning';
 
 export function dropsTick(st: GState, ctx: SimContext): void {
   const ents = st.world.entities;
   const b = ctx.data.balance;
   const lifetime = ctx.services.mods.apply(b.economy.goldLifetime, 'economy.gold.lifetime');
+  const T = st.T;
 
   // 1. drops from this tick's deaths (slot order of death = deterministic)
   for (let i = 0; i < st.died.length; i++) {
@@ -29,23 +29,23 @@ export function dropsTick(st: GState, ctx: SimContext): void {
     if (e.kind !== 'enemy' || !rt.enemy) continue;
     const gold = Math.ceil(rt.enemy.threat * b.economy.goldPerThreat);
     if (gold > 0) {
-      const coins = Math.max(1, Math.min(COIN_MAX_COUNT, Math.ceil(gold / COIN_MAX_VALUE)));
+      const coins = Math.max(1, Math.min(T.coinMaxCount, Math.ceil(gold / T.coinMaxValue)));
       const base = Math.floor(gold / coins);
       let extra = gold - base * coins;
       for (let c = 0; c < coins; c++) {
         const v = base + (extra > 0 ? 1 : 0);
         if (extra > 0) extra--;
-        const dx = coins === 1 ? 0 : ctx.rng.range(-DROP_SCATTER, DROP_SCATTER);
-        spawnPickup(st, 'gold', e.x + dx, v, lifetime);
+        const dx = coins === 1 ? 0 : ctx.rng.range(-T.dropScatter, T.dropScatter);
+        spawnPickup(st, 'gold', e.x + dx, e.y, v, lifetime);
       }
     }
     if (ctx.rng.chance(b.drops.manaOrb.chance)) {
-      spawnPickup(st, 'mana', e.x + ctx.rng.range(-DROP_SCATTER, DROP_SCATTER), b.drops.manaOrb.amount, lifetime);
+      spawnPickup(st, 'mana', e.x + ctx.rng.range(-T.dropScatter, T.dropScatter), e.y, b.drops.manaOrb.amount, lifetime);
     }
     if (ctx.rng.chance(b.drops.food.chance)) {
       const ash = byId(st, ctx.world.ashId);
       const amount = Math.round(b.drops.food.healFrac * (ash ? ash.maxHp : b.ash.stats.hp));
-      spawnPickup(st, 'food', e.x + ctx.rng.range(-DROP_SCATTER, DROP_SCATTER), amount, lifetime);
+      spawnPickup(st, 'food', e.x + ctx.rng.range(-T.dropScatter, T.dropScatter), e.y, amount, lifetime);
     }
   }
   st.died.length = 0;

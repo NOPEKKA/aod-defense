@@ -13,7 +13,6 @@ import { applyStatus, dealDamage, statusOf } from './damage';
 import { spawnBossAt, spawnEnemyAt } from './pool';
 import { NONE, setAnim, type GState, type Rt } from './state';
 import { nearestPlayer } from './targeting';
-import { BOSS_COMBO_GAP, BOSS_HOVER_AHEAD, BOSS_MINION_SPREAD, BOSS_SPEED, BOSS_SWOOP_TIME, REACH_MARGIN } from './tuning';
 
 const APPROACH = 0;
 const TELEGRAPH = 1;
@@ -69,7 +68,7 @@ function playerFront(st: GState): number {
 
 function hoverX(st: GState): number {
   const w = st.data.balance.world;
-  return Math.max(w.bookX + BOSS_HOVER_AHEAD, Math.min(w.fieldRight, playerFront(st) + BOSS_HOVER_AHEAD));
+  return Math.max(w.bookX + st.T.bossHoverAhead, Math.min(w.fieldRight, playerFront(st) + st.T.bossHoverAhead));
 }
 
 /** Order 300 (from ai.ts): move toward the fight while approaching / recovering. */
@@ -83,16 +82,16 @@ export function bossMove(st: GState, slot: number): void {
   }
   if (rt.bState !== APPROACH && rt.bState !== RECOVER) return;
   const w = st.data.balance.world;
-  const speed = BOSS_SPEED * SIM_DT;
+  const speed = rt.speed * SIM_DT;
   let target: number;
   if (e.flying) {
     target = hoverX(st);
     // drift back up after a swoop
-    e.y += Math.sign(rt.laneY - e.y) * Math.min(Math.abs(rt.laneY - e.y), speed * 3);
+    e.alt += Math.sign(rt.baseAlt - e.alt) * Math.min(Math.abs(rt.baseAlt - e.alt), speed * 3);
   } else {
     const reach = step(rt).attack === 'melee_combo' ? num(step(rt), 'reach', 60) : 60;
     // blocked by the first player body; stops at the book
-    let lim = w.bookX + Math.max(0, reach - REACH_MARGIN);
+    let lim = w.bookX + Math.max(0, reach - st.T.reachMargin);
     const ents = st.world.entities;
     for (let i = 0; i < st.players.length; i++) {
       const s = st.players[i];
@@ -101,7 +100,7 @@ export function bossMove(st: GState, slot: number): void {
       lim = Math.max(lim, p.x + st.rts[s].radius + rt.radius);
     }
     // stop once something is in reach
-    if (nearestPlayer(st, e.x, Math.max(0, reach - REACH_MARGIN), -1) >= 0) lim = Math.max(lim, e.x);
+    if (nearestPlayer(st, e.x, Math.max(0, reach - st.T.reachMargin), -1) >= 0) lim = Math.max(lim, e.x);
     target = lim;
   }
   const dx = target - e.x;
@@ -153,7 +152,7 @@ export function bossesTick(st: GState, ctx: SimContext): void {
       const m = st.minions[k];
       if (m.at <= ctx.world.time + 1e-9) {
         const def = ctx.data.enemies.get(m.enemy);
-        if (def) spawnEnemyAt(st, def, m.x + ctx.rng.range(-BOSS_MINION_SPREAD, BOSS_MINION_SPREAD), false);
+        if (def) spawnEnemyAt(st, def, m.x + ctx.rng.range(-st.T.bossMinionSpread, st.T.bossMinionSpread), false);
         st.minions.splice(k, 1);
       } else k++;
     }
@@ -217,7 +216,7 @@ function runBoss(st: GState, ctx: SimContext, slot: number): void {
       rt.bState = ACT;
       rt.bTimer = 0;
       rt.bHits = 0;
-      rt.bSwoopFrom = e.x;
+      rt.bX0 = e.x;
       return;
     }
     case ACT:
@@ -294,7 +293,7 @@ function startStep(st: GState, slot: number, s: BossStep): void {
     rt.bState = ACT;
     rt.bTimer = 0;
     rt.bHits = 0;
-    rt.bSwoopFrom = e.x;
+    rt.bX0 = e.x;
   }
 }
 
@@ -313,9 +312,9 @@ function act(st: GState, ctx: SimContext, slot: number, s: BossStep): void {
   switch (s.attack) {
     case 'swoop': {
       rt.bTimer += SIM_DT;
-      const prog = Math.min(1, rt.bTimer / BOSS_SWOOP_TIME);
-      e.x = rt.bSwoopFrom + (rt.bX - rt.bSwoopFrom) * prog;
-      if (e.flying) e.y = rt.laneY + (w.groundY - 70 - rt.laneY) * Math.sin(prog * Math.PI * 0.5);
+      const prog = Math.min(1, rt.bTimer / st.T.bossSwoopTime);
+      e.x = rt.bX0 + (rt.bX - rt.bX0) * prog;
+      if (e.flying) e.alt = rt.baseAlt + (st.T.flyerDiveAlt - rt.baseAlt) * Math.sin(prog * Math.PI * 0.5);
       setAnim(e, 'attack');
       if (prog < 1) return;
       const half = num(s, 'width', 200) / 2;
@@ -332,7 +331,7 @@ function act(st: GState, ctx: SimContext, slot: number, s: BossStep): void {
     case 'summon': {
       const def = ctx.data.enemies.get(String(s.params.enemy));
       const count = Math.round(num(s, 'count', 1));
-      if (def) for (let i = 0; i < count; i++) spawnEnemyAt(st, def, Math.min(w.enemySpawnX, e.x + ctx.rng.range(-BOSS_MINION_SPREAD, BOSS_MINION_SPREAD)), false);
+      if (def) for (let i = 0; i < count; i++) spawnEnemyAt(st, def, Math.min(w.enemySpawnX, e.x + ctx.rng.range(-st.T.bossMinionSpread, st.T.bossMinionSpread)), false);
       st.bus.emit('entity:attack', { id: e.id, targetId: null, x: e.x, y: e.y, ranged: true });
       toRecover(st, slot, s);
       setAnim(e, 'cast');
@@ -368,7 +367,7 @@ function act(st: GState, ctx: SimContext, slot: number, s: BossStep): void {
       }
       if (e.x - w.bookX <= reach) damageBook(st, dmg);
       rt.bHits++;
-      rt.bTimer = BOSS_COMBO_GAP;
+      rt.bTimer = st.T.bossComboGap;
       if (rt.bHits >= Math.round(num(s, 'hits', 1))) toRecover(st, slot, s);
       return;
     }
