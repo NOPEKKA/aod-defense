@@ -600,17 +600,11 @@ async function buildMain(v: Variant) {
 async function buildFront(v: Variant) {
   const root = sceneRoot();
   const R = rng(5);
-  // dark posts with banner staves near the camera (z = +7.5 => screen y ~ 712)
-  for (const x of [0.2, 17.0, 34.5]) {
-    const post = cyl(0.12, 0.14, 7, 0x1a1418, 6);
-    post.position.set(x, 3.5, 8.2);
-    root.add(post);
-  }
-  // low parapet and barrels along the bottom edge
+  // low parapet along the bottom edge only (posts and barrels read as black blobs over the field and HUD)
   const wall = box(WORLD_UNITS * 1.15, 0.9, 0.5, 0x211a22);
   wall.position.set(WORLD_UNITS / 2, 0.45, 10.6);
   root.add(wall);
-  for (let x = 2; x < 42; x += 5 + R() * 5) await put(root, `${DUN}barrel_large.gltf.glb`, x, 9.2, { s: 0.7, color: 0x3a2c30 });
+  void R;
   return {
     root,
     light: { sun: undefined, sky: { color: 0x655070, intensity: 0.8 }, ambient: { color: 0x302838, intensity: 0.5 } } as LightingSpec,
