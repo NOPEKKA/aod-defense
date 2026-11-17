@@ -1,10 +1,10 @@
 {
  "id": "enemy_battering_ram",
  "frameW": 487,
- "frameH": 299,
+ "frameH": 300,
  "anchorX": 255,
  "anchorY": 245,
- "height": 177,
+ "height": 224,
  "facing": -1,
  "shadow": true,
  "pages": {

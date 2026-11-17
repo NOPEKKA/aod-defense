@@ -32,6 +32,9 @@ defineSprite({
       duration: 1.07,
       apply: (b, u) => {
         const r = R(b);
+        deathCollapse(r, 0);
+        r.body.position.set(0, 0, 0);
+        r.log.rotation.z = 0;
         pushPose(r, 0.2, 0.6);
         r.log.position.x = 0.03 * Math.sin(u * TAU);
         r.body.position.y = 0.01 * Math.sin(u * TAU * 2);
@@ -44,6 +47,9 @@ defineSprite({
       stride: 106,
       apply: (b, u) => {
         const r = R(b);
+        deathCollapse(r, 0);
+        r.body.position.set(0, 0, 0);
+        r.log.rotation.z = 0;
         pushPose(r, ((u * 2) % 1) * walkLen);
         r.wheels.forEach((w) => (w.rotation.z = -u * Math.PI));
         r.body.position.y = 0.03 * Math.abs(Math.sin(u * TAU * 2));
@@ -57,6 +63,9 @@ defineSprite({
       hitAt: 0.5,
       apply: (b, u) => {
         const r = R(b);
+        deathCollapse(r, 0);
+        r.body.position.set(0, 0, 0);
+        r.log.rotation.z = 0;
         const back = smooth(u / 0.38);
         const slam = smooth((u - 0.38) / 0.12);
         const ret = smooth((u - 0.58) / 0.42);
@@ -71,6 +80,9 @@ defineSprite({
       duration: 0.3,
       apply: (b, u) => {
         const r = R(b);
+        deathCollapse(r, 0);
+        r.body.position.set(0, 0, 0);
+        r.log.rotation.z = 0;
         pushPose(r, 0.2, 0.6);
         r.body.position.x = -0.06 * Math.sin(u * Math.PI);
         r.frame.rotation.z = 0.03 * Math.sin(u * Math.PI);
@@ -81,6 +93,9 @@ defineSprite({
       duration: 1.2,
       apply: (b, u) => {
         const r = R(b);
+        deathCollapse(r, 0);
+        r.body.position.set(0, 0, 0);
+        r.log.rotation.z = 0;
         pushPose(r, 0.2, 0.6 * (1 - u));
         deathCollapse(r, u);
       },
@@ -130,17 +145,19 @@ defineSprite({
       duration: 1.07,
       apply: (b, u) => {
         const c = C(b);
+        resetCat(c);
         setArm(c, 200 + 1.5 * Math.sin(u * TAU));
         pose(c.crew.inst!, 'Idle', u * 1.0);
       },
     },
     walk: {
-      frames: 12,
+      frames: 10,
       loop: true,
       duration: 1.2,
       stride: 118,
       apply: (b, u) => {
         const c = C(b);
+        resetCat(c);
         c.wheels.forEach((w) => (w.rotation.z = -u * Math.PI));
         crewWalk(c, ((u * 2) % 1) * 1.1);
         c.body.position.y = 0.03 * Math.abs(Math.sin(u * TAU * 2));
@@ -148,11 +165,12 @@ defineSprite({
       },
     },
     attack: {
-      frames: 12,
+      frames: 10,
       duration: 1.0,
       hitAt: 0.45,
       apply: (b, u) => {
         const c = C(b);
+        resetCat(c);
         const wind = smooth(u / 0.2); // pull back a little
         const swing = smooth((u - 0.22) / 0.26); // fast throw
         const ret = smooth((u - 0.62) / 0.38);
@@ -169,6 +187,7 @@ defineSprite({
       duration: 0.3,
       apply: (b, u) => {
         const c = C(b);
+        resetCat(c);
         setArm(c, 200);
         pose(c.crew.inst!, 'Hit_A', u * 0.25);
         c.body.position.x = -0.05 * Math.sin(u * Math.PI);
@@ -179,6 +198,7 @@ defineSprite({
       duration: 1.2,
       apply: (b, u) => {
         const c = C(b);
+        resetCat(c);
         const e = u * u;
         setArm(c, 200 - 150 * smooth(u * 1.4), u < 0.3);
         pose(c.crew.inst!, 'Death_C_Skeletons', u * 0.95);
@@ -192,3 +212,12 @@ defineSprite({
   },
 });
 definePortrait('portrait_enemy_skeleton_catapult', 'enemies', catBuilt, { yaw: -32 });
+
+function resetCat(c: CatBuilt): void {
+  c.body.position.set(0, 0, 0);
+  c.body.rotation.z = 0;
+  c.wheels.forEach((w) => {
+    w.parent!.rotation.z = 0;
+    w.parent!.position.y = 0.5;
+  });
+}

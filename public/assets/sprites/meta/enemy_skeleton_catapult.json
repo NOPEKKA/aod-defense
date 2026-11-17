@@ -1,10 +1,10 @@
 {
  "id": "enemy_skeleton_catapult",
  "frameW": 553,
- "frameH": 369,
+ "frameH": 367,
  "anchorX": 165,
- "anchorY": 318,
- "height": 216,
+ "anchorY": 316,
+ "height": 200,
  "facing": -1,
  "shadow": true,
  "pages": {
@@ -18,13 +18,13 @@
    "loop": true
   },
   "walk": {
-   "frames": 12,
+   "frames": 10,
    "duration": 1.2,
    "loop": true,
    "stride": 118
   },
   "attack": {
-   "frames": 12,
+   "frames": 10,
    "duration": 1,
    "loop": false,
    "hitAt": 0.45
