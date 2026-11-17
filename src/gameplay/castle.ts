@@ -8,11 +8,10 @@
  * plus book regeneration from castle.book.regen (base 0).
  */
 import { SIM_DT, type SimContext } from '../contracts';
-import { kill } from './damage';
-import { spawnProjectile, shotScratch, aimY } from './pool';
+import { dealDamage, kill } from './damage';
+import { aimAt, blankShot, middleRowY, spawnProjectile } from './pool';
 import { NONE, refreshLists, type GState } from './state';
 import { densestHostiles } from './targeting';
-import { CATAPULT_INTERVAL_STEP, PIT_MAX_LEVEL, PIT_MIN_COOLDOWN, PIT_OPEN_TIME, WALL_SHOOTER_DX, WALL_SHOOTER_HEIGHT } from './tuning';
 
 export function castleInit(st: GState, ctx: SimContext): void {
   const m = ctx.services.mods;
@@ -29,31 +28,60 @@ export function castleInit(st: GState, ctx: SimContext): void {
   c.catapultTimer = catapultInterval(st, ctx) * 0.5;
   c.pitCooldown = 0;
   c.pitOpen = 0;
+  c.censerAcc = 0;
+  syncWorld(st, ctx);
+}
+
+/** world.castle for render (pit lid, cooldown ring, archers on the wall, catapult). */
+function syncWorld(st: GState, ctx: SimContext): void {
+  const c = st.castle;
+  const wc = ctx.world.castle;
+  wc.pitOpen = c.pitOpen > 0;
+  wc.pitCooldownLeft = c.pit > 0 ? c.pitCooldown : 0;
+  wc.pitCooldownTotal = c.pit > 0 ? pitCooldown(st, ctx) : 0;
+  wc.archers = c.archers;
+  wc.catapultLevel = c.catapult;
 }
 
 function catapultInterval(st: GState, ctx: SimContext): number {
   const base = ctx.data.balance.castle.catapult.interval;
-  return base * Math.max(0.2, 1 - CATAPULT_INTERVAL_STEP * Math.max(0, st.castle.catapult - 1));
+  return base * Math.max(0.2, 1 - st.T.catapultIntervalStep * Math.max(0, st.castle.catapult - 1));
 }
 
 function pitCooldown(st: GState, ctx: SimContext): number {
   const base = ctx.data.balance.castle.pit.cooldown;
-  const t = PIT_MAX_LEVEL > 1 ? Math.min(1, (st.castle.pit - 1) / (PIT_MAX_LEVEL - 1)) : 1;
-  return base - (base - Math.min(base, PIT_MIN_COOLDOWN)) * Math.max(0, t);
+  const t = st.T.pitMaxLevel > 1 ? Math.min(1, (st.castle.pit - 1) / (st.T.pitMaxLevel - 1)) : 1;
+  return base - (base - Math.min(base, st.T.pitMinCooldown)) * Math.max(0, t);
 }
 
 export function castleTick(st: GState, ctx: SimContext): void {
-  const lv = st.castle;
+  const c = st.castle;
   const book = ctx.world.book;
-  if (lv.regen > 0 && book.hp > 0 && book.hp < book.maxHp) book.hp = Math.min(book.maxHp, book.hp + lv.regen * SIM_DT);
-  if (lv.archers === 0 && lv.catapult === 0 && lv.pit === 0) return;
+  if (c.regen > 0 && book.hp > 0 && book.hp < book.maxHp) book.hp = Math.min(book.maxHp, book.hp + c.regen * SIM_DT);
   refreshLists(st);
+  const ents = st.world.entities;
+  // relic censer_of_matins: holy damage to every hostile inside the castle zone
+  if (st.relic.censer && st.T.censerDps > 0) {
+    c.censerAcc += SIM_DT;
+    if (c.censerAcc >= st.T.dotTick - 1e-9) {
+      const amount = st.T.censerDps * c.censerAcc;
+      c.censerAcc = 0;
+      for (let k = 0; k < st.hostiles.length; k++) {
+        const s = st.hostiles[k];
+        const o = ents[s];
+        if (o.hp > 0 && o.x <= st.T.censerMaxX) dealDamage(st, s, amount, 'holy', null, true, 1, NaN, false);
+      }
+    }
+  }
+  if (c.archers === 0 && c.catapult === 0 && c.pit === 0) {
+    syncWorld(st, ctx);
+    return;
+  }
   const cfg = ctx.data.balance.castle;
   const w = ctx.data.balance.world;
-  const ents = st.world.entities;
-  const c = st.castle;
-  const wallX = w.castleRight + WALL_SHOOTER_DX;
-  const wallY = w.groundY - WALL_SHOOTER_HEIGHT;
+  const wallX = w.castleRight + st.T.wallShooterDx;
+  const wallY = middleRowY(st);
+  const wallAlt = st.T.wallShooterHeight;
 
   // wall archers: shoot the hostile closest to the castle within maxX (flyers included)
   for (let i = 0; i < c.archerTimers.length; i++) {
@@ -61,86 +89,62 @@ export function castleTick(st: GState, ctx: SimContext): void {
     if (c.archerTimers[i] > 0) continue;
     let best = -1;
     for (let k = 0; k < st.hostiles.length; k++) {
-      const o = ents[st.hostiles[k]];
-      if (o.hp <= 0 || o.x > cfg.archers.maxX) continue;
-      if (best < 0 || o.x < ents[best].x) best = st.hostiles[k];
+      const hs = st.hostiles[k];
+      const o = ents[hs];
+      if (o.hp <= 0 || o.x > cfg.archers.maxX || st.rts[hs].hidden) continue;
+      if (best < 0 || o.x < ents[best].x) best = hs;
     }
     if (best < 0) continue;
     const t = ents[best];
-    const s = shotScratch;
-    s.sprite = 'arrow';
-    s.team = 'player';
-    s.ownerId = NONE;
+    const s = blankShot('arrow', 'player', NONE, cfg.archers.damage);
     s.x = wallX;
     s.y = wallY;
-    s.targetX = t.x;
-    s.targetY = aimY(t);
-    s.damage = cfg.archers.damage;
+    s.alt = wallAlt;
+    aimAt(s, t, st.rts[best], true);
     s.range = cfg.archers.maxX - wallX;
-    s.pierce = 0;
     s.hitsFlying = true;
     s.flyLayer = t.flying;
-    s.splash = 0;
-    s.armorPierce = false;
-    s.bonusVsLarge = 1;
-    s.burnDps = 0;
-    s.burnDur = 0;
     s.kind = 'pierce';
-    s.arc = false;
-    s.toBook = false;
-    s.fromAsh = false;
     spawnProjectile(st, s);
     c.archerTimers[i] = cfg.archers.interval;
     st.bus.emit('castle:shot', { source: 'archer', x: t.x, y: t.y });
   }
 
   // wall catapult
-  if (lv.catapult > 0) {
+  if (c.catapult > 0) {
     c.catapultTimer = Math.max(0, c.catapultTimer - SIM_DT);
     if (c.catapultTimer <= 0) {
       const x = densestHostiles(st, 0, cfg.catapult.maxX, cfg.catapult.radius, cfg.catapult.maxX, false);
       if (x === x) {
-        const s = shotScratch;
-        s.sprite = 'rock';
-        s.team = 'player';
-        s.ownerId = NONE;
+        const s = blankShot('rock', 'player', NONE, cfg.catapult.damage);
         s.x = wallX;
         s.y = wallY;
+        s.alt = wallAlt;
         s.targetX = x;
-        s.targetY = w.groundY - 20;
-        s.damage = cfg.catapult.damage;
+        s.targetY = wallY;
+        s.targetAlt = 0;
         s.range = cfg.catapult.maxX;
-        s.pierce = 0;
-        s.hitsFlying = false;
-        s.flyLayer = false;
         s.splash = cfg.catapult.radius;
-        s.armorPierce = false;
-        s.bonusVsLarge = 1;
-        s.burnDps = 0;
-        s.burnDur = 0;
-        s.kind = 'physical';
-        s.arc = true;
-        s.toBook = false;
-        s.fromAsh = false;
+        s.lob = true;
         spawnProjectile(st, s);
         c.catapultTimer = catapultInterval(st, ctx);
-        st.bus.emit('castle:shot', { source: 'catapult', x, y: w.groundY });
+        st.bus.emit('castle:shot', { source: 'catapult', x, y: wallY });
       }
     }
   }
 
   // pit trap
-  if (lv.pit > 0) {
+  if (c.pit > 0) {
     c.pitCooldown = Math.max(0, c.pitCooldown - SIM_DT);
     c.pitOpen = Math.max(0, c.pitOpen - SIM_DT);
     if (c.pitOpen <= 0 && c.pitCooldown <= 0) {
       let on = 0;
       for (let k = 0; k < st.hostiles.length; k++) {
         const o = ents[st.hostiles[k]];
-        if (o.hp > 0 && o.kind === 'enemy' && !o.flying && o.x >= w.pit.left && o.x <= w.pit.right) on++;
+        if (o.hp > 0 && o.kind === 'enemy' && !o.flying && o.alt <= 1 && o.x >= w.pit.left && o.x <= w.pit.right) on++;
       }
       if (on >= cfg.pit.minEnemies) {
-        c.pitOpen = PIT_OPEN_TIME;
+        c.pitOpen = st.T.pitOpenTime;
         c.pitCooldown = pitCooldown(st, ctx);
       }
     }
@@ -149,7 +153,8 @@ export function castleTick(st: GState, ctx: SimContext): void {
       for (let k = 0; k < st.hostiles.length; k++) {
         const s = st.hostiles[k];
         const o = ents[s];
-        if (o.hp > 0 && o.kind === 'enemy' && !o.flying && o.x >= w.pit.left && o.x <= w.pit.right) {
+        // a leaping hag in the air sails over the open pit
+        if (o.hp > 0 && o.kind === 'enemy' && !o.flying && o.alt <= 1 && o.x >= w.pit.left && o.x <= w.pit.right) {
           kill(st, s, null, 'pit');
           killed++;
         }
@@ -157,4 +162,5 @@ export function castleTick(st: GState, ctx: SimContext): void {
       if (killed > 0) st.bus.emit('castle:pit', { killed });
     }
   }
+  syncWorld(st, ctx);
 }

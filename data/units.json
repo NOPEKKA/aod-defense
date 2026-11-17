@@ -1,70 +1,109 @@
 [
   {
     "id": "peasant", "nameKey": "unit.peasant", "kind": "troop", "sprite": "unit_peasant", "origin": "original",
-    "ironCost": 10, "cooldown": 1.5, "unlockWave": 1, "size": "small",
-    "stats": { "hp": 40, "speed": 70, "attack": { "kind": "melee", "damage": 5, "interval": 1.0, "range": 40 } },
+    "ironCost": 5, "cooldown": 1.5, "unlockWave": 1, "size": "small",
+    "stats": { "hp": 40, "speed": 70, "attack": { "kind": "melee", "damage": 5, "interval": 1.0, "range": 60, "windup": 0.25 } },
     "behaviors": [{ "id": "melee" }]
   },
   {
     "id": "swordsman", "nameKey": "unit.swordsman", "kind": "troop", "sprite": "unit_swordsman", "origin": "original",
-    "ironCost": 20, "cooldown": 3, "unlockWave": 1,
-    "stats": { "hp": 85, "speed": 65, "attack": { "kind": "melee", "damage": 10, "interval": 1.0, "range": 45 } },
+    "ironCost": 10, "cooldown": 3, "unlockWave": 1,
+    "stats": { "hp": 85, "speed": 65, "attack": { "kind": "melee", "damage": 10, "interval": 1.0, "range": 65, "windup": 0.25 } },
     "behaviors": [{ "id": "melee" }]
   },
   {
     "id": "archer", "nameKey": "unit.archer", "kind": "troop", "sprite": "unit_archer", "origin": "original",
-    "ironCost": 30, "cooldown": 4, "unlockWave": 3,
-    "stats": { "hp": 45, "speed": 60, "attack": { "kind": "ranged", "damage": 9, "interval": 1.4, "range": 360, "projectile": "arrow", "hitsFlying": true } },
+    "ironCost": 10, "cooldown": 4, "unlockWave": 3,
+    "stats": { "hp": 45, "speed": 60, "attack": { "kind": "ranged", "damage": 9, "interval": 1.4, "range": 360, "projectile": "arrow", "hitsFlying": true, "windup": 0.35 } },
     "behaviors": [{ "id": "ranged" }]
   },
   {
     "id": "spearman", "nameKey": "unit.spearman", "kind": "troop", "sprite": "unit_spearman", "origin": "original",
-    "ironCost": 30, "cooldown": 4, "unlockWave": 5,
-    "stats": { "hp": 75, "speed": 60, "attack": { "kind": "melee", "damage": 13, "interval": 1.2, "range": 80, "bonusVsLarge": 1.5 } },
+    "ironCost": 15, "cooldown": 4, "unlockWave": 5,
+    "stats": { "hp": 75, "speed": 60, "attack": { "kind": "melee", "damage": 13, "interval": 1.2, "range": 110, "bonusVsLarge": 1.5, "windup": 0.3 } },
     "behaviors": [{ "id": "melee" }, { "id": "second_row" }]
   },
   {
     "id": "torch_boy", "nameKey": "unit.torch_boy", "kind": "troop", "sprite": "unit_torch_boy", "origin": "original",
-    "ironCost": 35, "cooldown": 5, "unlockWave": 8, "size": "small",
-    "stats": { "hp": 60, "speed": 75, "attack": { "kind": "melee", "damage": 8, "interval": 0.9, "range": 45, "damageKind": "fire", "burn": { "dps": 3, "duration": 3 } } },
+    "ironCost": 15, "cooldown": 5, "unlockWave": 8, "size": "small",
+    "stats": { "hp": 60, "speed": 75, "attack": { "kind": "melee", "damage": 8, "interval": 0.9, "range": 60, "damageKind": "fire", "burn": { "dps": 3, "duration": 3, "windup": 0.25 } } },
     "behaviors": [{ "id": "melee" }]
   },
   {
     "id": "armored_guard", "nameKey": "unit.armored_guard", "kind": "troop", "sprite": "unit_armored_guard", "origin": "original",
-    "ironCost": 50, "cooldown": 8, "unlockWave": 11, "size": "large",
-    "stats": { "hp": 260, "armor": 2, "speed": 45, "attack": { "kind": "melee", "damage": 8, "interval": 1.3, "range": 45 } },
+    "ironCost": 25, "cooldown": 8, "unlockWave": 11, "size": "large",
+    "stats": { "hp": 260, "armor": 2, "speed": 45, "attack": { "kind": "melee", "damage": 8, "interval": 1.3, "range": 65, "windup": 0.35 } },
     "behaviors": [{ "id": "melee" }]
   },
   {
     "id": "crossbowman", "nameKey": "unit.crossbowman", "kind": "troop", "sprite": "unit_crossbowman", "origin": "original",
-    "ironCost": 45, "cooldown": 6, "unlockWave": 17,
-    "stats": { "hp": 55, "speed": 55, "attack": { "kind": "ranged", "damage": 22, "interval": 2.2, "range": 420, "projectile": "bolt", "armorPierce": true, "hitsFlying": true } },
+    "ironCost": 20, "cooldown": 6, "unlockWave": 17,
+    "stats": { "hp": 55, "speed": 55, "attack": { "kind": "ranged", "damage": 22, "interval": 2.2, "range": 420, "projectile": "bolt", "armorPierce": true, "hitsFlying": true, "windup": 0.45 } },
     "behaviors": [{ "id": "ranged" }]
   },
   {
     "id": "horseman", "nameKey": "unit.horseman", "kind": "troop", "sprite": "unit_horseman", "origin": "original",
-    "ironCost": 70, "cooldown": 10, "unlockWave": 20, "size": "large",
-    "stats": { "hp": 160, "armor": 1, "speed": 140, "attack": { "kind": "melee", "damage": 20, "interval": 1.0, "range": 55 } },
+    "ironCost": 35, "cooldown": 10, "unlockWave": 20, "size": "large",
+    "stats": { "hp": 160, "armor": 1, "speed": 140, "attack": { "kind": "melee", "damage": 20, "interval": 1.0, "range": 75, "windup": 0.25 } },
     "behaviors": [{ "id": "melee" }, { "id": "charge", "params": { "firstHitMul": 2, "knockback": 80 } }]
   },
   {
     "id": "arthur", "nameKey": "unit.arthur", "kind": "hero", "sprite": "hero_arthur", "origin": "original",
-    "ironCost": 150, "cooldown": 40, "unlockWave": 14, "size": "large",
-    "stats": { "hp": 520, "armor": 3, "speed": 70, "attack": { "kind": "melee", "damage": 30, "interval": 1.0, "range": 55 } },
+    "ironCost": 70, "cooldown": 40, "unlockWave": 14, "size": "large",
+    "stats": { "hp": 520, "armor": 3, "speed": 70, "attack": { "kind": "melee", "damage": 30, "interval": 1.0, "range": 75, "windup": 0.25 } },
     "behaviors": [{ "id": "melee" }, { "id": "aura", "params": { "radius": 250, "stat": "damage", "value": 0.1 } }],
     "escorts": [{ "unitId": "archer", "count": 2 }]
   },
   {
     "id": "wiseman", "nameKey": "unit.wiseman", "kind": "hero", "sprite": "hero_wiseman", "origin": "original",
-    "ironCost": 120, "cooldown": 45, "unlockWave": 24,
+    "ironCost": 55, "cooldown": 45, "unlockWave": 24,
     "stats": { "hp": 220, "speed": 55, "attack": { "kind": "none", "damage": 0, "interval": 1, "range": 0 } },
     "behaviors": [{ "id": "healer", "params": { "interval": 3, "amount": 25, "targets": 3, "radius": 300, "keepBack": 160 } }]
   },
   {
     "id": "henry", "nameKey": "unit.henry", "kind": "hero", "sprite": "hero_henry", "origin": "original",
-    "ironCost": 150, "cooldown": 40, "unlockWave": 28, "size": "large",
-    "stats": { "hp": 460, "armor": 2, "speed": 70, "attack": { "kind": "melee", "damage": 26, "interval": 1.1, "range": 55, "maxTargets": 3 } },
+    "ironCost": 70, "cooldown": 40, "unlockWave": 28, "size": "large",
+    "stats": { "hp": 460, "armor": 2, "speed": 70, "attack": { "kind": "melee", "damage": 26, "interval": 1.1, "range": 75, "maxTargets": 3, "windup": 0.3 } },
     "behaviors": [{ "id": "melee" }, { "id": "iron_boost", "params": { "rateMul": 0.2 } }],
     "escorts": [{ "unitId": "swordsman", "count": 3 }]
+  },
+  {
+    "id": "morwen", "nameKey": "unit.morwen", "kind": "hero", "sprite": "hero_morwen", "origin": "new",
+    "ironCost": 70, "cooldown": 45, "unlockWave": 11, "unlockRule": "boss:gravewright",
+    "stats": { "hp": 260, "speed": 60, "attack": { "kind": "ranged", "damage": 12, "interval": 1.2, "range": 300, "projectile": "holy_light", "damageKind": "holy", "hitsFlying": true, "windup": 0.4 } },
+    "behaviors": [
+      { "id": "ranged" },
+      { "id": "vigil_light", "params": { "radius": 260, "slow": 0.2, "flyingDamageMul": 1.5 } },
+      { "id": "matins_flare", "params": { "interval": 12, "radius": 200, "stun": 1.2 } }
+    ]
+  },
+  {
+    "id": "garrick", "nameKey": "unit.garrick", "kind": "hero", "sprite": "hero_garrick", "origin": "new",
+    "ironCost": 80, "cooldown": 50, "unlockWave": 31, "unlockRule": "boss:sir_hollow",
+    "stats": { "hp": 380, "armor": 1, "speed": 60, "attack": { "kind": "ranged", "damage": 24, "interval": 1.6, "range": 400, "projectile": "bolt", "hitsFlying": true, "windup": 0.45 } },
+    "behaviors": [
+      { "id": "ranged" },
+      { "id": "silver_mark", "params": { "bonus": 0.25, "duration": 5 } },
+      { "id": "chain_drag", "params": { "interval": 10, "duration": 2, "range": 400 } }
+    ]
+  },
+  {
+    "id": "sheila", "nameKey": "unit.sheila", "kind": "hero", "sprite": "hero_sheila", "origin": "new",
+    "ironCost": 60, "cooldown": 45, "unlockWave": 46, "unlockRule": "boss:sheila_demon",
+    "stats": { "hp": 300, "speed": 110, "attack": { "kind": "melee", "damage": 9, "interval": 0.5, "range": 65, "windup": 0.15 } },
+    "behaviors": [
+      { "id": "melee" },
+      { "id": "shred", "params": { "perHit": 1, "maxStacks": 4 } }
+    ]
+  },
+  {
+    "id": "evil_ash_hero", "nameKey": "unit.evil_ash_hero", "kind": "hero", "sprite": "hero_evil_ash", "origin": "new",
+    "ironCost": 90, "cooldown": 60, "unlockWave": 0, "unlockRule": "boss:evil_ash", "size": "large",
+    "stats": { "hp": 700, "armor": 3, "speed": 75, "attack": { "kind": "melee", "damage": 34, "interval": 1.0, "range": 75, "windup": 0.3 } },
+    "behaviors": [
+      { "id": "melee" },
+      { "id": "lifesteal", "params": { "frac": 0.15 } },
+      { "id": "taunt", "params": { "interval": 15, "radius": 250, "duration": 4 } }
+    ]
   }
 ]

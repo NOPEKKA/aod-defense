@@ -33,5 +33,71 @@
     "id": "deathcoaster", "nameKey": "spell.deathcoaster", "descKey": "spell.deathcoaster.desc", "icon": "icon_deathcoaster", "origin": "original",
     "mana": 70, "cooldown": 40, "targeting": "none", "unlockWave": 26,
     "effects": [{ "effect": "dash_vehicle", "params": { "damage": 120, "knockback": 100, "speed": 900 } }]
+  },
+  {
+    "id": "salt_circle", "nameKey": "spell.salt_circle", "descKey": "spell.salt_circle.desc", "icon": "icon_salt_circle", "origin": "new",
+    "mana": 35, "cooldown": 18, "targeting": "point", "aimRadius": 140, "unlockWave": 12,
+    "effects": [{ "effect": "salt_circle", "params": {"radius": 140, "duration": 6, "slow": 0.5, "dps": 8} }],
+    "tree": {
+      "tier1": {"descKey": "spell.salt_circle.t1", "goldCost": 300},
+      "tier2": {"descKey": "spell.salt_circle.t2", "goldCost": 600, "paramOverrides": [{"radius": 180, "duration": 8}]},
+      "tier3A": {"descKey": "spell.salt_circle.t3a", "goldCost": 1200, "paramOverrides": [{"bindRoot": 1.5}]},
+      "tier3B": {"descKey": "spell.salt_circle.t3b", "goldCost": 1200, "paramOverrides": [{"healPerSec": 6}]}
+    }
+  },
+  {
+    "id": "matins_bell", "nameKey": "spell.matins_bell", "descKey": "spell.matins_bell.desc", "icon": "icon_matins_bell", "origin": "new",
+    "mana": 55, "cooldown": 35, "targeting": "none", "unlockWave": 16,
+    "effects": [{ "effect": "global_stun", "params": {"stun": 1.5, "bossStun": 0.5} }],
+    "tree": {
+      "tier1": {"descKey": "spell.matins_bell.t1", "goldCost": 400},
+      "tier2": {"descKey": "spell.matins_bell.t2", "goldCost": 800, "paramOverrides": [{"stun": 2, "interrupt": true}]},
+      "tier3A": {"descKey": "spell.matins_bell.t3a", "goldCost": 1500, "paramOverrides": [{"shatter": 0.3}]},
+      "tier3B": {"descKey": "spell.matins_bell.t3b", "goldCost": 1500, "paramOverrides": [], "cooldown": 22}
+    }
+  },
+  {
+    "id": "hellfire_pitch", "nameKey": "spell.hellfire_pitch", "descKey": "spell.hellfire_pitch.desc", "icon": "icon_hellfire_pitch", "origin": "new",
+    "mana": 40, "cooldown": 20, "targeting": "none", "unlockWave": 22,
+    "effects": [{ "effect": "burn_zone", "params": {"x0": 460, "x1": 760, "dps": 12, "duration": 5} }],
+    "tree": {
+      "tier1": {"descKey": "spell.hellfire_pitch.t1", "goldCost": 500},
+      "tier2": {"descKey": "spell.hellfire_pitch.t2", "goldCost": 1000, "paramOverrides": [{"x1": 900}]},
+      "tier3A": {"descKey": "spell.hellfire_pitch.t3a", "goldCost": 1800, "paramOverrides": [{"slow": 0.4}]},
+      "tier3B": {"descKey": "spell.hellfire_pitch.t3b", "goldCost": 1800, "paramOverrides": [{"burstDamage": 20, "burstRadius": 80}]}
+    }
+  },
+  {
+    "id": "bear_traps", "nameKey": "spell.bear_traps", "descKey": "spell.bear_traps.desc", "icon": "icon_bear_traps", "origin": "new",
+    "mana": 30, "cooldown": 16, "targeting": "point", "aimRadius": 140, "unlockWave": 26,
+    "effects": [{ "effect": "traps", "params": {"count": 3, "spread": 70, "damage": 35, "root": 2, "triggerRadius": 24} }],
+    "tree": {
+      "tier1": {"descKey": "spell.bear_traps.t1", "goldCost": 600},
+      "tier2": {"descKey": "spell.bear_traps.t2", "goldCost": 1200, "paramOverrides": [{"count": 5, "damage": 50}]},
+      "tier3A": {"descKey": "spell.bear_traps.t3a", "goldCost": 2000, "paramOverrides": [{"bleedDps": 6, "bleedDuration": 5}]},
+      "tier3B": {"descKey": "spell.bear_traps.t3b", "goldCost": 2000, "paramOverrides": [{"pullRadius": 80}]}
+    }
+  },
+  {
+    "id": "dawn_lance", "nameKey": "spell.dawn_lance", "descKey": "spell.dawn_lance.desc", "icon": "icon_dawn_lance", "origin": "new",
+    "mana": 45, "cooldown": 14, "targeting": "line", "unlockWave": 33,
+    "effects": [{ "effect": "lance", "params": {"damage": 70} }],
+    "tree": {
+      "tier1": {"descKey": "spell.dawn_lance.t1", "goldCost": 800},
+      "tier2": {"descKey": "spell.dawn_lance.t2", "goldCost": 1500, "paramOverrides": [{"damage": 100, "knockback": 60}]},
+      "tier3A": {"descKey": "spell.dawn_lance.t3a", "goldCost": 2500, "paramOverrides": [{"mark": 0.25, "markDuration": 5}]},
+      "tier3B": {"descKey": "spell.dawn_lance.t3b", "goldCost": 2500, "paramOverrides": [{"count": 2, "gap": 0.4}]}
+    }
+  },
+  {
+    "id": "rally_horn", "nameKey": "spell.rally_horn", "descKey": "spell.rally_horn.desc", "icon": "icon_rally_horn", "origin": "new",
+    "mana": 50, "cooldown": 30, "targeting": "none", "unlockWave": 38,
+    "effects": [{ "effect": "army_buff", "params": {"duration": 8, "damage": 0.25, "speed": 0.2} }],
+    "tree": {
+      "tier1": {"descKey": "spell.rally_horn.t1", "goldCost": 900},
+      "tier2": {"descKey": "spell.rally_horn.t2", "goldCost": 1700, "paramOverrides": [{"duration": 12}]},
+      "tier3A": {"descKey": "spell.rally_horn.t3a", "goldCost": 2800, "paramOverrides": [], "addEffects": [{"effect": "summon_units", "params": {"unit": "peasant", "count": 4}}]},
+      "tier3B": {"descKey": "spell.rally_horn.t3b", "goldCost": 2800, "paramOverrides": [{"lifesteal": 0.15}]}
+    }
   }
 ]

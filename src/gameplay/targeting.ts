@@ -22,6 +22,7 @@ export function nearestHostile(st: GState, x: number, reach: number, hitsFlying:
     const e = ents[s];
     if (!e.alive || e.hp <= 0) continue;
     if (e.flying && (!hitsFlying || groundOnly)) continue;
+    if (st.rts[s].hidden) continue;
     const r = st.rts[s].radius;
     const dx = e.x - x;
     if (dir !== 0 && dx * dir < -r) continue;
@@ -79,7 +80,7 @@ export function densestHostiles(st: GState, centerX: number, searchRange: number
   let bestX = NaN;
   for (let i = 0; i < list.length; i++) {
     const c = ents[list[i]];
-    if (!c.alive || c.hp <= 0 || c.x > maxX || (c.flying && !includeFlying)) continue;
+    if (!c.alive || c.hp <= 0 || c.x > maxX || (c.flying && !includeFlying) || st.rts[list[i]].hidden) continue;
     const dist = Math.abs(c.x - centerX);
     if (dist > searchRange) continue;
     let count = 0;

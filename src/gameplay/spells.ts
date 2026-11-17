@@ -8,20 +8,11 @@
  */
 import { SIM_DT, type DamageKind, type SimCommand, type SimContext, type SpellEffect } from '../contracts';
 import { applyStatus, dealDamage, heal, kill, knockback } from './damage';
-import { release, spawnEffect, spawnUnitAt } from './pool';
-import { byId, refreshLists, setAnim, type ActiveEffect, type GState } from './state';
+import { middleRowY, release, spawnEffect, spawnUnitAt } from './pool';
+import { byId, refreshLists, restartAnim, type ActiveEffect, type GState } from './state';
 import { allyCount } from './summon';
+import { NEW_EFFECTS } from './spells_new';
 import { densestHostiles } from './targeting';
-import {
-  AUTO_TARGET_RADIUS,
-  AUTO_TARGET_RANGE,
-  BOSS_STUN_MUL,
-  CAST_ANIM_TIME,
-  PORTAL_MAX_HPFRAC,
-  STRIKE_FALL_HEIGHT,
-  STRIKE_STAGGER,
-  VEHICLE_START_DX,
-} from './tuning';
 
 type Params = SpellEffect['params'];
 const n = (p: Params, k: string, d: number): number => (typeof p[k] === 'number' ? (p[k] as number) : d);
@@ -82,7 +73,7 @@ export function castCommand(st: GState, ctx: SimContext, cmd: Extract<SimCommand
   if (slot.targeting === 'point') {
     if (cmd.target === 'auto') {
       refreshLists(st);
-      x = densestHostiles(st, ash.x, AUTO_TARGET_RANGE, slot.aimRadius > 0 ? slot.aimRadius : AUTO_TARGET_RADIUS, Number.POSITIVE_INFINITY, true);
+      x = densestHostiles(st, ash.x, st.T.autoTargetRange, slot.aimRadius > 0 ? slot.aimRadius : st.T.autoTargetRadius, Number.POSITIVE_INFINITY, true);
       if (x !== x) return deny('no_target');
     } else x = Math.max(0, Math.min(w.width, cmd.target.x));
   }
@@ -91,16 +82,16 @@ export function castCommand(st: GState, ctx: SimContext, cmd: Extract<SimCommand
   st.bus.emit('spell:cast', { slot: index, spellId: rs.spellId, x });
   st.bus.emit('spectacle:action', { action: 'cast', x, y: w.groundY });
   if (st.ash.dodgeLeft <= 0) {
-    setAnim(ash, 'cast');
-    ash.animTime = 0;
-    st.rts[st.idSlot.get(ash.id)!].animHold = CAST_ANIM_TIME;
+    st.ash.wKind = 0; // casting cancels a swing
+    restartAnim(ash, 'cast', rs.spellId);
+    st.rts[st.idSlot.get(ash.id)!].animHold = st.T.castAnimTime;
   }
   for (const ef of rs.effects) startEffect(st, ctx, rs.spellId, ef, rs.power, x, ash.facing);
 }
 
 function freeEffect(st: GState): ActiveEffect {
   for (const fx of st.effects) if (!fx.active) return fx;
-  const fx: ActiveEffect = { active: false, spellId: '', effect: '', params: {}, power: 1, x: 0, dir: 1, t: 0, n: 0, m: 0, flaming: false, entityIds: [], hit: [] };
+  const fx: ActiveEffect = { active: false, spellId: '', effect: '', params: {}, power: 1, x: 0, dir: 1, t: 0, n: 0, m: 0, acc: 0, flaming: false, entityIds: [], hit: [] };
   st.effects.push(fx);
   return fx;
 }
@@ -117,6 +108,7 @@ function startEffect(st: GState, ctx: SimContext, spellId: string, ef: SpellEffe
   fx.t = 0;
   fx.n = 0;
   fx.m = 0;
+  fx.acc = 0;
   fx.flaming = false;
   fx.entityIds.length = 0;
   fx.hit.length = 0;
@@ -129,13 +121,13 @@ function startEffect(st: GState, ctx: SimContext, spellId: string, ef: SpellEffe
     const count = Math.max(1, Math.round(n(p, 'count', 1)));
     for (let i = 0; i < count; i++) {
       const rx = rockX(fx, i, count, w.width);
-      const s = spawnEffect(st, 'catapult_rock', 'rock', rx, w.groundY - STRIKE_FALL_HEIGHT, n(p, 'delay', 0) + i * STRIKE_STAGGER + 0.5);
+      const s = spawnEffect(st, 'catapult_rock', 'rock', rx, middleRowY(st), st.T.strikeFallHeight, n(p, 'delay', 0) + i * st.T.strikeStagger + 0.5);
       fx.entityIds.push(st.world.entities[s].id);
     }
   } else if (ef.effect === 'dash_vehicle') {
-    const x0 = w.castleRight + VEHICLE_START_DX;
+    const x0 = w.castleRight + st.T.vehicleStartDx;
     const speed = Math.max(1, n(p, 'speed', 900));
-    const s = spawnEffect(st, 'deathcoaster', 'fx_deathcoaster', x0, w.groundY, (w.fieldRight - x0) / speed + 0.5);
+    const s = spawnEffect(st, 'deathcoaster', 'fx_deathcoaster', x0, middleRowY(st), 0, (w.fieldRight - x0) / speed + 0.5);
     const e = st.world.entities[s];
     e.facing = 1;
     e.anim = 'walk';
@@ -165,7 +157,11 @@ export function effectsTick(st: GState, ctx: SimContext): void {
       case 'portal_execute': portalExecute(st, ctx, fx); break;
       case 'self_buff': selfBuff(st, ctx, fx); break;
       case 'dash_vehicle': dashVehicle(st, ctx, fx); break;
-      default: fx.active = false;
+      default: {
+        const run = NEW_EFFECTS[fx.effect];
+        if (run) run(st, ctx, fx);
+        else fx.active = false;
+      }
     }
   }
 }
@@ -250,7 +246,7 @@ function randomBoon(st: GState, ctx: SimContext, fx: ActiveEffect): void {
     const stun = n(p, 'stun', 0) * fx.power;
     for (let i = 0; i < st.hostiles.length; i++) {
       const o = ents[st.hostiles[i]];
-      if (o.hp > 0) applyStatus(st, o, 'stun', o.kind === 'boss' ? stun * BOSS_STUN_MUL : stun, 1);
+      if (o.hp > 0) applyStatus(st, o, 'stun', o.kind === 'boss' ? stun * st.T.bossStunMul : stun, 1);
     }
     impact(st, fx, 'random_boon.stun', x, 0);
   }
@@ -271,11 +267,11 @@ function areaStrike(st: GState, ctx: SimContext, fx: ActiveEffect): void {
   for (let i = fx.n; i < count; i++) {
     const rock = byId(st, fx.entityIds[i]);
     if (!rock) continue;
-    const land = delay + i * STRIKE_STAGGER;
+    const land = delay + i * st.T.strikeStagger;
     const prog = land <= 0 ? 1 : Math.min(1, fx.t / land);
-    rock.y = w.groundY - STRIKE_FALL_HEIGHT * (1 - prog * prog);
+    rock.alt = st.T.strikeFallHeight * (1 - prog * prog);
   }
-  while (fx.n < count && fx.t >= delay + fx.n * STRIKE_STAGGER - 1e-9) {
+  while (fx.n < count && fx.t >= delay + fx.n * st.T.strikeStagger - 1e-9) {
     const i = fx.n++;
     const rx = rockX(fx, i, count, w.width);
     for (let k = 0; k < st.hostiles.length; k++) {
@@ -297,7 +293,7 @@ function areaStrike(st: GState, ctx: SimContext, fx: ActiveEffect): void {
 function portalExecute(st: GState, ctx: SimContext, fx: ActiveEffect): void {
   const p = fx.params;
   const radius = n(p, 'radius', 0);
-  const thr = Math.min(PORTAL_MAX_HPFRAC, n(p, 'hpFrac', 0) * fx.power);
+  const thr = Math.min(st.T.portalMaxHpFrac, n(p, 'hpFrac', 0) * fx.power);
   const slow = n(p, 'slow', 0);
   const slowDur = n(p, 'slowDuration', 0);
   const ents = st.world.entities;

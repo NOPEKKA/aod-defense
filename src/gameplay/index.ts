@@ -3,17 +3,18 @@
  * Owner: gameplay agent.
  *
  * Sim systems (docs/ARCHITECTURE.md §5):
- *   100 gp-input    Ash walk/facing/dodge, summon slots + commands, spell slots + cast commands
- *   300 gp-ai       knockback/leaps, targeting, movement, formation, boss movement
- *   400 gp-combat   statuses (burn), projectiles, Ash/unit/enemy attacks, healers, book damage
- *   500 gp-effects  spell effects, boss attack loops + minions, castle defenses, iron_boost
+ *   100 gp-input    Ash walk/facing/dodge, summon slots + commands, spell slots + cast commands, rally
+ *   300 gp-ai       knockback/leaps/flyer height, targeting, movement, formation, rally hold, boss movement
+ *   400 gp-combat   statuses, projectiles, hero abilities, Ash/unit/enemy attacks (windup), healers, book siege
+ *   500 gp-effects  spell effects, army buff, boss loops + hazards + minions, castle defenses, iron_boost
  *   550 gp-drops    drops for this tick's deaths, pickup expiry, Ash collects pickups
  *   900 gp-cleanup  corpses (corpseTime) and effects -> alive=false
  *
  * Files: state.ts (per-wave state, Rt), pool.ts (entity pool + spawners),
  * registry.ts (registered ids + validateData), tuning.ts ([เดา] numbers with
  * no schema field yet), damage.ts, targeting.ts, ash.ts, summon.ts, ai.ts,
- * combat.ts, spells.ts, bosses.ts, castle.ts, drops.ts.
+ * combat.ts, heroes.ts, spells.ts, spells_new.ts, bosses.ts, castle.ts, drops.ts.
+ * Boss pattern sheets: docs/BOSSES.md.
  */
 import { SIM_DT, type GameplayModule, type SimContext, type SimSystem, type SpawnApi } from '../contracts';
 import { aiTick } from './ai';
@@ -25,6 +26,7 @@ import { cleanupTick, dropsTick } from './drops';
 import { spawnEnemyAt } from './pool';
 import { registeredIds, validateData } from './registry';
 import { castCommand, effectsTick, spellsCooldownTick, spellsInit } from './spells';
+import { spellUpkeep } from './spells_new';
 import { getState, refreshLists, type GState } from './state';
 import { summonCommand, summonInit, summonTick } from './summon';
 
@@ -62,6 +64,54 @@ function stateFor(ctx: SimContext): GState {
   return st;
 }
 
+/** equipped relic flags (modifiers are applied by systems through ModifierQuery) */
+function relicsInit(st: GState, ctx: SimContext): void {
+  const r = st.relic;
+  r.doubleShot = false;
+  r.chargeBonus = false;
+  r.censer = false;
+  for (const id of ctx.wave.relics) {
+    const def = ctx.data.relics.get(id);
+    if (!def) continue;
+    for (const f of def.flags) {
+      if (f === 'double_shot') r.doubleShot = true;
+      else if (f === 'charge_bonus') r.chargeBonus = true;
+      else if (f === 'censer') r.censer = true;
+    }
+  }
+}
+
+/** SPEC v2.5: the rally banner toggles the army stance */
+function rallyCommand(st: GState, ctx: SimContext): void {
+  const w = ctx.world;
+  w.rally = w.rally === 'advance' ? 'hold' : 'advance';
+  st.bus.emit('rally:changed', { mode: w.rally });
+}
+
+/**
+ * iron_boost (Henry's Red Banner): extra smithy output while alive, as a fraction of the
+ * CURRENT blacksmith rate (world.smith.level in balance.economy.smith.levels, with the
+ * economy.iron.rate modifiers), so it keeps its value when the smith is upgraded.
+ */
+function ironBoostTick(st: GState, ctx: SimContext): void {
+  const ents = ctx.world.entities;
+  let boost = 0;
+  for (let i = 0; i < st.players.length; i++) {
+    const slot = st.players[i];
+    if (ents[slot].hp > 0) boost += st.rts[slot].ironBoost;
+  }
+  if (boost <= 0) return;
+  const eco = ctx.data.balance.economy;
+  const levels = eco.smith?.levels;
+  let base = eco.ironRate;
+  if (levels && levels.length > 0) {
+    const lv = Math.max(1, Math.min(levels.length, Math.round(ctx.world.smith.level)));
+    base = levels[lv - 1].rate;
+  }
+  const rate = ctx.services.mods.apply(base, 'economy.iron.rate');
+  ctx.services.economy.gain('iron', rate * boost * SIM_DT);
+}
+
 function createSimSystems(): SimSystem[] {
   let st: GState | null = null;
 
@@ -73,6 +123,7 @@ function createSimSystems(): SimSystem[] {
       st.died.length = 0;
       st.minions.length = 0;
       ctx.world.telegraphs.length = 0;
+      relicsInit(st, ctx);
       ashInit(st, ctx);
       summonInit(ctx);
       spellsInit(st, ctx);
@@ -95,6 +146,7 @@ function createSimSystems(): SimSystem[] {
         if (cmd.type === 'summon') summonCommand(s, ctx, cmd.slot);
         else if (cmd.type === 'cast') castCommand(s, ctx, cmd);
         else if (cmd.type === 'dodge') dodgeCommand(s, ctx);
+        else if (cmd.type === 'rally') rallyCommand(s, ctx);
       }
       ashInput(s, ctx, frame);
     },
@@ -132,19 +184,10 @@ function createSimSystems(): SimSystem[] {
       const s = st!;
       refreshLists(s);
       effectsTick(s, ctx);
+      spellUpkeep(s);
       bossesTick(s, ctx);
       castleTick(s, ctx);
-      // iron_boost (Henry): extra smithy output while alive
-      const ents = ctx.world.entities;
-      let boost = 0;
-      for (let i = 0; i < s.players.length; i++) {
-        const slot = s.players[i];
-        if (ents[slot].hp > 0) boost += s.rts[slot].ironBoost;
-      }
-      if (boost > 0) {
-        const rate = ctx.services.mods.apply(ctx.data.balance.economy.ironRate, 'economy.iron.rate');
-        ctx.services.economy.gain('iron', rate * boost * SIM_DT);
-      }
+      ironBoostTick(s, ctx);
     },
     dispose() {},
   };
