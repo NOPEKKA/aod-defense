@@ -166,6 +166,32 @@
     }
    }
   },
+  "bear_trap": {
+   "id": "bear_trap",
+   "frameW": 91,
+   "frameH": 59,
+   "anchorX": 55,
+   "anchorY": 40,
+   "height": 18,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    },
+    "attack": {
+     "frames": 5,
+     "duration": 0.25,
+     "loop": false
+    }
+   }
+  },
   "bolt": {
    "id": "bolt",
    "frameW": 112,
@@ -693,6 +719,27 @@
     }
    },
    "scale": 1.1364
+  },
+  "coffin": {
+   "id": "coffin",
+   "frameW": 188,
+   "frameH": 184,
+   "anchorX": 94,
+   "anchorY": 92,
+   "height": 56,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.7,
+     "loop": true
+    }
+   }
   },
   "coin": {
    "id": "coin",
@@ -2193,6 +2240,48 @@
     }
    }
   },
+  "holy_light": {
+   "id": "holy_light",
+   "frameW": 166,
+   "frameH": 122,
+   "anchorX": 93,
+   "anchorY": 61,
+   "height": 20,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": true
+    }
+   }
+  },
+  "lance": {
+   "id": "lance",
+   "frameW": 277,
+   "frameH": 86,
+   "anchorX": 128,
+   "anchorY": 43,
+   "height": 13,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 4,
+     "duration": 0.24,
+     "loop": true
+    }
+   }
+  },
   "mana_orb": {
    "id": "mana_orb",
    "frameW": 66,
@@ -2269,6 +2358,48 @@
      "frames": 6,
      "duration": 0.45,
      "loop": false
+    }
+   }
+  },
+  "poison_flask": {
+   "id": "poison_flask",
+   "frameW": 136,
+   "frameH": 136,
+   "anchorX": 68,
+   "anchorY": 68,
+   "height": 40,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.6,
+     "loop": true
+    }
+   }
+  },
+  "pumpkin_head": {
+   "id": "pumpkin_head",
+   "frameW": 140,
+   "frameH": 142,
+   "anchorX": 70,
+   "anchorY": 71,
+   "height": 32,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.6,
+     "loop": true
     }
    }
   },

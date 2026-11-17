@@ -594,7 +594,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
       h.hop = -Math.abs(num(s, 'hop', 220));
       h.bounceWarn = Math.max(0.6, num(s, 'bounceWarn', 0.7));
       h.dkind = 'fire';
-      fallingFx(st, h, 'fireball');
+      fallingFx(st, h, 'pumpkin_head');
       break;
     }
     case 'toss_poison': {
@@ -606,7 +606,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
         const h = strike(st, slot, s.attack, 'shadow', clampField(st, cx + off), num(s, 'radius', 55), tel, num(s, 'damage', 0));
         h.poolLife = num(s, 'poolLife', 6);
         h.poolDps = num(s, 'poolDps', 8);
-        fallingFx(st, h, 'mana_orb');
+        fallingFx(st, h, 'poison_flask');
       }
       break;
     }
@@ -692,7 +692,7 @@ function armSequential(st: GState, ctx: SimContext, slot: number, s: BossStep, t
     case 'coffin_toss': {
       const h = strike(st, slot, s.attack, 'shadow', clampField(st, ashX(st)), r, warn, dmg);
       h.kb = num(s, 'knockback', 40);
-      fallingFx(st, h, 'rock');
+      fallingFx(st, h, 'coffin');
       break;
     }
     case 'grave_hands': {

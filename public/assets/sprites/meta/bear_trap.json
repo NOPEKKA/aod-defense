@@ -1,0 +1,26 @@
+{
+ "id": "bear_trap",
+ "frameW": 91,
+ "frameH": 59,
+ "anchorX": 55,
+ "anchorY": 40,
+ "height": 18,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 1,
+   "duration": 1,
+   "loop": true
+  },
+  "attack": {
+   "frames": 5,
+   "duration": 0.25,
+   "loop": false
+  }
+ }
+}

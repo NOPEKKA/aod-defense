@@ -64,10 +64,17 @@ export function spritesForWave(app: AppContext, params: WaveStartParams): Set<st
   for (const id of params.units) addUnit(data, id, out);
   const plan = app.waves.plan(params.wave, params.endless);
   for (const g of plan.groups) addEnemy(data, g.enemy, out);
+  // spell props that are entities (not fx sheets)
+  for (const id of params.spells) {
+    if (id === 'bear_traps') out.add('bear_trap');
+    else if (id === 'dawn_lance') out.add('lance');
+  }
   if (plan.bossId) {
     const b = data.bosses.get(plan.bossId);
     if (b) {
       out.add(b.sprite);
+      // what bosses throw (falling hazards)
+      for (const k of ['coffin', 'pumpkin_head', 'poison_flask', 'fireball', 'rock']) out.add(k);
       for (const ph of b.phases) {
         for (const m of ph.minions) addEnemy(data, m.enemy, out);
         // summon steps name their minion in params (e.g. {"enemy": "winged_deadite"})

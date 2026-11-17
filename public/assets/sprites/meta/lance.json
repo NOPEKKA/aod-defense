@@ -1,0 +1,21 @@
+{
+ "id": "lance",
+ "frameW": 277,
+ "frameH": 86,
+ "anchorX": 128,
+ "anchorY": 43,
+ "height": 13,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 4,
+   "duration": 0.24,
+   "loop": true
+  }
+ }
+}
