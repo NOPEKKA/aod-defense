@@ -43,9 +43,9 @@ export function deaditeEyes(rig: string, intensity = 2.2): Array<{ node: string;
 /** standard repaint per skeleton rig (palette cells from scripts/uvcells.mjs) */
 export const RECOLOR: Record<string, Recolor> = {
   Minion: { '1,1': DEAD.bone, '5,0': DEAD.red, '6,0': DEAD.leather, '7,0': ['#5a4a40', '#241c18'] },
-  Warrior: { '1,1': DEAD.bone, '3,0': DEAD.rust, '4,0': DEAD.rustDark, '2,2': DEAD.red, '6,0': DEAD.leather },
+  Warrior: { '1,1': DEAD.bone, '2,2': DEAD.red, '6,0': DEAD.leather },
   Mage: { '1,1': DEAD.bone, '2,2': DEAD.purple },
-  Rogue: { '1,1': DEAD.bone, '3,0': DEAD.rust, '2,2': DEAD.red, '7,0': ['#5e4636', '#261a13'] },
+  Rogue: { '1,1': DEAD.bone, '2,2': DEAD.red },
 };
 
 // ---------------------------------------------------------------------------
