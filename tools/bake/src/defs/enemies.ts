@@ -9,7 +9,7 @@ import { character, type Built } from '../character';
 import { definePortrait } from '../icon';
 import { defineSprite, type AnimDef } from '../sprite';
 import { glow } from '../props';
-import { addSampler, boneSpear, wingPair, flap, claws, TAU, DEAD, deaditeEyes, LEFT_ARM, overlay, RECOLOR, clipLength } from '../props_enemies';
+import { addSampler, bend, boneSpear, wingPair, flap, claws, TAU, DEAD, deaditeEyes, LEFT_ARM, overlay, RECOLOR, clipLength } from '../props_enemies';
 
 const SKE = '/kaykit/skeletons';
 const HELM = (rc: Record<string, string | [string, string]> = {}) => ({ from: SKE + '/Skeleton_Warrior.glb', node: 'Skeleton_Warrior_Helmet', to: 'head', recolor: { '3,0': DEAD.rust, '4,0': DEAD.rustDark, '2,2': DEAD.red, ...rc } });
@@ -253,3 +253,48 @@ defineSprite({
   },
 });
 definePortrait('portrait_enemy_winged_deadite', 'enemies', buildWinged, { yaw: -32 });
+
+// ---------------------------------------------------------------------------
+// Pit hag: small, hunched, green-skinned, wild white hair, claws. Fast, leaps over the line.
+// ---------------------------------------------------------------------------
+const ADV = '/kaykit/adventurers';
+async function buildHag() {
+  return character({
+    base: `${ADV}/Mage.glb`,
+    hide: ['Mage_Hat', 'Mage_Cape'],
+    recolor: {
+      '1,0': ['#e8e4d6', '#8f8b82'],
+      '0,0': ['#8bb04a', '#4c6a2a'],
+      '2,0': ['#c9d6a0', '#6e7d48'],
+      '0,1': ['#5a3a4a', '#241420'],
+      '3,0': ['#3e2f3a', '#1a1218'],
+      '5,0': ['#6b4a3a', '#2a1c16'],
+      '4,0': ['#8bb04a', '#4c6a2a'],
+    },
+    emissive: [],
+    attach: [
+      { to: 'handslot.r', object: claws(0x2a2420, 0.34) },
+      { to: 'handslot.l', object: claws(0x2a2420, 0.34) },
+    ],
+    scale: 0.82,
+  });
+}
+const hunch = (b: Built, k = 1): void => {
+  bend(b, 'spine', 22 * k);
+  bend(b, 'chest', 18 * k);
+  bend(b, 'head', -24 * k);
+};
+defineSprite({
+  id: 'enemy_pit_hag',
+  facing: -1,
+  build: buildHag,
+  anims: {
+    idle: { clip: 'Unarmed_Idle', frames: 8, loop: true, apply: (b) => hunch(b) },
+    walk: { clip: 'Running_A', frames: 12, loop: true, apply: (b) => hunch(b, 1.2) },
+    attack: { clip: 'Unarmed_Melee_Attack_Punch_A', frames: 10, duration: 0.5, hitAt: 0.45, apply: (b) => hunch(b) },
+    hurt: { clip: 'Hit_A', frames: 4, duration: 0.3, apply: (b) => hunch(b) },
+    die: { clip: 'Death_A', frames: 12, duration: 1.0 },
+    leap: { clip: 'Jump_Full_Short', frames: 6, duration: 0.4, apply: (b) => hunch(b, 0.7) },
+  },
+});
+definePortrait('portrait_enemy_pit_hag', 'enemies', buildHag, { yaw: -32 });
