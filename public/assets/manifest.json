@@ -213,6 +213,481 @@
     }
    }
   },
+  "boss_evil_ash": {
+   "id": "boss_evil_ash",
+   "frameW": 667,
+   "frameH": 481,
+   "anchorX": 432,
+   "anchorY": 430,
+   "height": 336,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 7,
+    "sd": 3
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 82
+    },
+    "hurt": {
+     "frames": 3,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 9,
+     "duration": 1.1,
+     "loop": false
+    },
+    "telegraph:melee_combo": {
+     "frames": 4,
+     "duration": 0.6,
+     "loop": false
+    },
+    "attack:melee_combo": {
+     "frames": 7,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.4
+    },
+    "telegraph:summon": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:summon": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "telegraph:shotgun_line": {
+     "frames": 4,
+     "duration": 0.6,
+     "loop": false
+    },
+    "attack:shotgun_line": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.3
+    },
+    "telegraph:ground_wave": {
+     "frames": 4,
+     "duration": 0.7,
+     "loop": false
+    },
+    "attack:ground_wave": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:drain_book": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:drain_book": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:fire_storm": {
+     "frames": 4,
+     "duration": 0.9,
+     "loop": false
+    },
+    "attack:fire_storm": {
+     "frames": 6,
+     "duration": 1,
+     "loop": false,
+     "hitAt": 0.5
+    }
+   }
+  },
+  "boss_gravewright": {
+   "id": "boss_gravewright",
+   "frameW": 1007,
+   "frameH": 733,
+   "anchorX": 412,
+   "anchorY": 441,
+   "height": 131,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 11,
+    "sd": 4
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 113
+    },
+    "hurt": {
+     "frames": 3,
+     "duration": 0.35,
+     "loop": false
+    },
+    "die": {
+     "frames": 8,
+     "duration": 1,
+     "loop": false
+    },
+    "telegraph:shovel_slam": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:shovel_slam": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:grave_hands": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:grave_hands": {
+     "frames": 6,
+     "duration": 0.7,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:burrow": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:burrow": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": false,
+     "hitAt": 0.6
+    },
+    "telegraph:coffin_toss": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:coffin_toss": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.45
+    }
+   }
+  },
+  "boss_malachar": {
+   "id": "boss_malachar",
+   "frameW": 959,
+   "frameH": 549,
+   "anchorX": 326,
+   "anchorY": 482,
+   "height": 459,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 9,
+    "sd": 4
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 8,
+     "duration": 1.6,
+     "loop": true,
+     "stride": 103
+    },
+    "hurt": {
+     "frames": 3,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 8,
+     "duration": 1.1,
+     "loop": false
+    },
+    "telegraph:raise_dead": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:raise_dead": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "telegraph:black_bell": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:black_bell": {
+     "frames": 6,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "telegraph:float_fireballs": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:float_fireballs": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": false,
+     "hitAt": 0.4
+    }
+   }
+  },
+  "boss_mother_mire": {
+   "id": "boss_mother_mire",
+   "frameW": 529,
+   "frameH": 475,
+   "anchorX": 312,
+   "anchorY": 392,
+   "height": 377,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 7,
+    "sd": 4
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 70
+    },
+    "hurt": {
+     "frames": 3,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 8,
+     "duration": 1,
+     "loop": false
+    },
+    "telegraph:toss_poison": {
+     "frames": 4,
+     "duration": 0.7,
+     "loop": false
+    },
+    "attack:toss_poison": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.4
+    },
+    "telegraph:mud_wave": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:mud_wave": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:steam_beam": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:steam_beam": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": false,
+     "hitAt": 0.3
+    },
+    "telegraph:summon": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:summon": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": false,
+     "hitAt": 0.45
+    }
+   }
+  },
+  "boss_sheila_demon": {
+   "id": "boss_sheila_demon",
+   "frameW": 626,
+   "frameH": 606,
+   "anchorX": 340,
+   "anchorY": 545,
+   "height": 388,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 6,
+    "sd": 3
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 40
+    },
+    "hurt": {
+     "frames": 3,
+     "duration": 0.35,
+     "loop": false
+    },
+    "die": {
+     "frames": 9,
+     "duration": 1,
+     "loop": false
+    },
+    "telegraph:swoop": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:swoop": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:summon": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:summon": {
+     "frames": 6,
+     "duration": 0.9,
+     "loop": false,
+     "hitAt": 0.45
+    },
+    "telegraph:scream": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:scream": {
+     "frames": 6,
+     "duration": 0.8,
+     "loop": false,
+     "hitAt": 0.35
+    }
+   }
+  },
+  "boss_sir_hollow": {
+   "id": "boss_sir_hollow",
+   "frameW": 481,
+   "frameH": 472,
+   "anchorX": 307,
+   "anchorY": 411,
+   "height": 308,
+   "facing": -1,
+   "shadow": true,
+   "pages": {
+    "hd": 6,
+    "sd": 3
+   },
+   "anims": {
+    "idle": {
+     "frames": 6,
+     "duration": 1.067,
+     "loop": true
+    },
+    "walk": {
+     "frames": 8,
+     "duration": 1.067,
+     "loop": true,
+     "stride": 150
+    },
+    "hurt": {
+     "frames": 3,
+     "duration": 0.3,
+     "loop": false
+    },
+    "die": {
+     "frames": 9,
+     "duration": 1.1,
+     "loop": false
+    },
+    "telegraph:charge": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:charge": {
+     "frames": 6,
+     "duration": 0.6,
+     "loop": false,
+     "hitAt": 0.5
+    },
+    "telegraph:throw_head": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:throw_head": {
+     "frames": 6,
+     "duration": 0.5,
+     "loop": false,
+     "hitAt": 0.4
+    },
+    "telegraph:double_charge": {
+     "frames": 4,
+     "duration": 0.8,
+     "loop": false
+    },
+    "attack:double_charge": {
+     "frames": 8,
+     "duration": 0.8,
+     "loop": false,
+     "hitAt": 0.35
+    }
+   }
+  },
   "coin": {
    "id": "coin",
    "frameW": 48,
@@ -3549,6 +4024,40 @@
      "h": 112
     },
     "portrait_unit_horseman": {
+     "w": 112,
+     "h": 112
+    }
+   }
+  },
+  "icons_bosses": {
+   "id": "icons_bosses",
+   "kind": "icons",
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "frames": {
+    "portrait_boss_sheila_demon": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_boss_evil_ash": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_boss_gravewright": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_boss_mother_mire": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_boss_sir_hollow": {
+     "w": 112,
+     "h": 112
+    },
+    "portrait_boss_malachar": {
      "w": 112,
      "h": 112
     }
