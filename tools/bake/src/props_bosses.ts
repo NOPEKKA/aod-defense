@@ -3,7 +3,7 @@
  * Units: 1 = 75 logical px. Model space: +Z forward, +Y up, +X the character's left.
  */
 import * as THREE from 'three';
-import { at, box, cone, cyl, extrude, group, mat, PAL, sphere } from './props';
+import { at, box, cone, cyl, extrude, glow, group, lathe, mat, PAL, sphere, torus } from './props';
 
 /** A bat wing pointing along +X from the shoulder (origin). Flap by rotating the returned group about Z. */
 export function batWing(span = 1, membrane: number | string = 0x4a2a5a, bone: number | string = 0x2a1830): THREE.Group {
@@ -68,6 +68,29 @@ export function shovel(): THREE.Group {
   g.add(at(extrude([[-0.24, 0], [0.24, 0], [0.26, 0.5], [0.12, 0.78], [0, 0.88], [-0.12, 0.78], [-0.26, 0.5]], 0.06, steel), 0, 1.6, 0));
   g.add(at(box(0.18, 0.12, 0.1, PAL.iron), 0, 1.62, 0));
   return g;
+}
+
+/** Bubbling cauldron on three legs. Origin at the ground; rim at y ~ 1.4; liquid disc at y 1.22. parts: liquid, bubbles[] */
+export function cauldron(): { root: THREE.Group; bubbles: THREE.Object3D[]; liquid: THREE.Object3D } {
+  const g = new THREE.Group();
+  const iron = mat(0x2c2f36, { rough: 0.6, metal: 0.4 });
+  g.add(lathe([[0.01, 0.12], [0.6, 0.1], [1.0, 0.45], [1.18, 0.95], [1.22, 1.35], [1.34, 1.42], [1.3, 1.5], [1.14, 1.44]], iron, 14));
+  g.add(at(torus(1.24, 0.07, mat(0x4a4f5a, { rough: 0.5, metal: 0.5 }), 14), 0, 1.45, 0, 90, 0, 0));
+  for (let i = 0; i < 3; i++) {
+    const a = (i / 3) * Math.PI * 2 + 0.5;
+    g.add(at(cone(0.14, 0.5, iron, 6), Math.cos(a) * 0.7, 0.1, Math.sin(a) * 0.7, 0, 0, 0));
+  }
+  const liquid = at(cyl(1.12, 1.12, 0.06, mat(0x7dff5a, { emissive: 0x4fe03a, emissiveIntensity: 1.1, rough: 0.3 }), 14), 0, 1.3, 0);
+  g.add(liquid);
+  const bubbles: THREE.Object3D[] = [];
+  for (let i = 0; i < 5; i++) {
+    const bub = sphere(0.13, mat(0xb8ff9a, { emissive: 0x7dff5a, emissiveIntensity: 0.9 }), 8);
+    g.add(bub);
+    bubbles.push(bub);
+  }
+  // ember glow under the pot
+  g.add(at(glow('#ff8a1e', 0.9, 0.8), 0, 0.2, 0.1));
+  return { root: g, bubbles, liquid };
 }
 
 export { PAL, group };
