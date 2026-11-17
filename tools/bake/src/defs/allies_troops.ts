@@ -190,14 +190,9 @@ defineSprite({
 definePortrait('portrait_unit_crossbowman', 'allies', buildCrossbowman);
 
 // --- horseman ------------------------------------------------------------
-let lastRider: Built | undefined;
-async function buildRiderOnly(): Promise<Built> {
-  const b = await buildHorseman();
-  return b;
-}
-const buildHorseman = rested(async () => {
+async function riderChar(): Promise<Built> {
   const t = tabard();
-  const rider: Built = await character({
+  return character({
     base: `${ADV}/Knight.glb`,
     hide: ['Knight_Cape'],
     recolor: { '0,1': BLUE },
@@ -208,6 +203,9 @@ const buildHorseman = rested(async () => {
     ],
     hands: [],
   });
+}
+const buildHorseman = rested(async () => {
+  const rider = await riderChar();
   const h = horse();
   const holder = new THREE.Group();
   holder.add(rider.root);
@@ -271,4 +269,4 @@ const horsemanAnims = anims({
   },
 });
 defineSprite({ id: 'unit_horseman', facing: 1, build: buildHorseman, anims: horsemanAnims });
-definePortrait('portrait_unit_horseman', 'allies', async () => buildRiderOnly());
+definePortrait('portrait_unit_horseman', 'allies', riderChar);
