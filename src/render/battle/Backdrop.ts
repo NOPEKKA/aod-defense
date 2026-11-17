@@ -232,7 +232,7 @@ export class Backdrop {
       this.flames.push({ prop: p, phase: 3 });
     }
     // chapter 4: the castle burns
-    if (paletteOf(this.meta.chapter).fires) {
+    if (this.meta.id.startsWith('fallback_') && paletteOf(this.meta.chapter).fires) {
       for (const [x, y, k] of [[980, 175, 1.3], [1520, 172, 1.1], [2080, 176, 1.4], [700, 300, 0.9]] as const) {
         const p = new Prop(s, 'fx_fire_big', null, x, y, DEPTH.wallProps, k);
         if (!p.info) p.img.setVisible(false);
