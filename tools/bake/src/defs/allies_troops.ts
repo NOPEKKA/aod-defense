@@ -138,3 +138,53 @@ defineSprite({
 definePortrait('portrait_unit_torch_boy', 'allies', buildTorchBoy);
 
 void PAL; void plume; void arrowProp; void BLUE_LIGHT;
+
+// --- armored guard -------------------------------------------------------
+const buildGuard = rested(async () =>
+  character({
+    base: `${ADV}/Knight.glb`,
+    hide: ['Knight_Cape'],
+    hands: ['1H_Sword', 'Rectangle_Shield'],
+    recolor: { '3,0': ['#a9b4c0', '#56616d'], '7,0': ['#e2b83a', '#8a6a14'], '0,1': BLUE },
+    attach: [{ to: 'head', object: plume(), pos: [0, 0.98, -0.05], as: 'plume' }],
+    scale: 1.18,
+    mirror: true,
+  }),
+);
+defineSprite({
+  id: 'unit_armored_guard',
+  facing: 1,
+  build: buildGuard,
+  anims: anims({
+    idle: { clip: 'Blocking', frames: 8, loop: true },
+    walk: { clip: 'Walking_B', frames: 12, loop: true },
+    attack: { clip: '1H_Melee_Attack_Slice_Diagonal', frames: 10, duration: 0.7, hitAt: 0.5 },
+    hurt: { clip: 'Block_Hit', frames: 4, duration: 0.3 },
+    die: { clip: 'Death_A', frames: 10, duration: 0.9 },
+  }),
+});
+definePortrait('portrait_unit_armored_guard', 'allies', buildGuard);
+
+// --- crossbowman ---------------------------------------------------------
+const buildCrossbowman = rested(async () =>
+  character({
+    base: `${ADV}/Rogue_Hooded.glb`,
+    hide: ['Rogue_Cape'],
+    hands: ['2H_Crossbow'],
+    recolor: { '1,1': ['#2f4f9a', '#142a66'], '0,1': ['#2a3f78', '#101e4a'], '3,2': ['#3a3a44', '#1c1c24'] },
+    attach: [{ to: 'chest', object: `${ADV}/props/arrow_bundle.gltf`, pos: [0, 0.05, -0.42], rot: [0, 0, 20], as: 'bolts' }],
+  }),
+);
+defineSprite({
+  id: 'unit_crossbowman',
+  facing: 1,
+  build: buildCrossbowman,
+  anims: anims({
+    idle: { clip: 'Idle', frames: 8, loop: true },
+    walk: { clip: 'Walking_A', frames: 12, loop: true },
+    attack: { clip: '2H_Ranged_Shoot', frames: 10, duration: 0.7, hitAt: 0.35 },
+    hurt: { clip: 'Hit_A', frames: 4, duration: 0.3 },
+    die: { clip: 'Death_A', frames: 10, duration: 0.9 },
+  }),
+});
+definePortrait('portrait_unit_crossbowman', 'allies', buildCrossbowman);
