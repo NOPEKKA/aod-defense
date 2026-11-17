@@ -1,70 +1,71 @@
 {
  "id": "boss_malachar",
- "frameW": 959,
- "frameH": 549,
- "anchorX": 326,
- "anchorY": 482,
- "height": 459,
+ "frameW": 709,
+ "frameH": 413,
+ "anchorX": 246,
+ "anchorY": 378,
+ "height": 324,
  "facing": -1,
  "shadow": true,
  "pages": {
-  "hd": 9,
-  "sd": 4
+  "hd": 4,
+  "sd": 2
  },
  "anims": {
   "idle": {
-   "frames": 6,
+   "frames": 4,
    "duration": 1.067,
    "loop": true
   },
   "walk": {
-   "frames": 8,
+   "frames": 6,
    "duration": 1.6,
    "loop": true,
-   "stride": 103
+   "stride": 70
   },
   "hurt": {
-   "frames": 3,
+   "frames": 2,
    "duration": 0.3,
    "loop": false
   },
   "die": {
-   "frames": 8,
+   "frames": 6,
    "duration": 1.1,
    "loop": false
   },
   "telegraph:raise_dead": {
-   "frames": 4,
+   "frames": 3,
    "duration": 0.8,
    "loop": false
   },
   "attack:raise_dead": {
-   "frames": 6,
+   "frames": 5,
    "duration": 0.9,
    "loop": false,
    "hitAt": 0.45
   },
   "telegraph:black_bell": {
-   "frames": 4,
+   "frames": 3,
    "duration": 0.8,
    "loop": false
   },
   "attack:black_bell": {
-   "frames": 6,
+   "frames": 5,
    "duration": 0.6,
    "loop": false,
    "hitAt": 0.45
   },
   "telegraph:float_fireballs": {
-   "frames": 4,
+   "frames": 3,
    "duration": 0.8,
    "loop": false
   },
   "attack:float_fireballs": {
-   "frames": 6,
+   "frames": 5,
    "duration": 0.9,
    "loop": false,
    "hitAt": 0.4
   }
- }
+ },
+ "scale": 1.3333
 }
