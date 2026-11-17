@@ -1,0 +1,48 @@
+{
+ "id": "hero_arthur",
+ "frameW": 474,
+ "frameH": 293,
+ "anchorX": 285,
+ "anchorY": 252,
+ "height": 228,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 2,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 12,
+   "duration": 1.067,
+   "loop": true,
+   "stride": 60
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.7,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 10,
+   "duration": 0.9,
+   "loop": false
+  },
+  "cheer": {
+   "frames": 10,
+   "duration": 1.15,
+   "loop": true
+  }
+ }
+}
