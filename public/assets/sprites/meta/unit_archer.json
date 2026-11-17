@@ -1,0 +1,43 @@
+{
+ "id": "unit_archer",
+ "frameW": 294,
+ "frameH": 222,
+ "anchorX": 188,
+ "anchorY": 181,
+ "height": 160,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 12,
+   "duration": 1.067,
+   "loop": true,
+   "stride": 51
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.6,
+   "loop": false,
+   "hitAt": 0.4
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 10,
+   "duration": 0.9,
+   "loop": false
+  }
+ }
+}

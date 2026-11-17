@@ -29,18 +29,18 @@ export const BLUE_LIGHT: [string, string] = ['#7fb0ff', '#2f62c4'];
 // shared animation helpers
 // ---------------------------------------------------------------------------
 
-type Apply = (b: Built, u: number, frame: number) => void;
-type Anims = Record<string, AnimDef>;
+export type Apply = (b: Built, u: number, frame: number) => void;
+export type Anims = Record<string, AnimDef>;
 
 /** remember the rest transform of a part so `restoreParts` can put it back each frame */
-function remember(b: Built): void {
+export function remember(b: Built): void {
   for (const o of Object.values(b.parts)) {
     o.userData.rest = { p: o.position.clone(), q: o.quaternion.clone(), s: o.scale.clone(), v: o.visible };
   }
   b.root.userData.rest = { p: b.root.position.clone(), q: b.root.quaternion.clone(), s: b.root.scale.clone() };
 }
 
-function restoreParts(b: Built): void {
+export function restoreParts(b: Built): void {
   for (const o of Object.values(b.parts)) {
     const r = o.userData.rest as { p: THREE.Vector3; q: THREE.Quaternion; s: THREE.Vector3; v: boolean } | undefined;
     if (!r) continue;
@@ -61,7 +61,7 @@ function restoreParts(b: Built): void {
  * Wrap a sprite's animations: before each frame, parts and the root go back to their rest
  * transform, then `every` (flames, stars...) and the animation's own apply run.
  */
-function anims(list: Anims, every?: (b: Built, u: number, frame: number, anim: string) => void): Anims {
+export function anims(list: Anims, every?: (b: Built, u: number, frame: number, anim: string) => void): Anims {
   const out: Anims = {};
   for (const [name, a] of Object.entries(list)) {
     const own = a.apply;
@@ -78,7 +78,7 @@ function anims(list: Anims, every?: (b: Built, u: number, frame: number, anim: s
 }
 
 /** build wrapper that records rest transforms (needed by `anims`) */
-function rested(build: () => Promise<Built>): () => Promise<Built> {
+export function rested(build: () => Promise<Built>): () => Promise<Built> {
   return async () => {
     const b = await build();
     remember(b);
@@ -87,7 +87,7 @@ function rested(build: () => Promise<Built>): () => Promise<Built> {
 }
 
 /** nudge a bone after the clip pose, degrees in the bone's local axes */
-function nudge(b: Built, bone: string, x: number, y = 0, z = 0): void {
+export function nudge(b: Built, bone: string, x: number, y = 0, z = 0): void {
   const o = byName(b.root, bone);
   if (x) o.rotateX(x * RAD);
   if (y) o.rotateY(y * RAD);
@@ -95,13 +95,13 @@ function nudge(b: Built, bone: string, x: number, y = 0, z = 0): void {
 }
 
 /** a smooth 0..1..0 bump over [a, b] */
-function bump(u: number, a: number, b: number): number {
+export function bump(u: number, a: number, b: number): number {
   if (u <= a || u >= b) return 0;
   return Math.sin(((u - a) / (b - a)) * Math.PI);
 }
 
 /** stunned sway: head and spine circle, stars spin above the head */
-function stunSway(b: Built, u: number): void {
+export function stunSway(b: Built, u: number): void {
   const w = u * Math.PI * 2;
   nudge(b, 'spine', 6 + 3 * Math.cos(w), 0, 7 * Math.sin(w));
   nudge(b, 'head', 10 + 8 * Math.cos(w + 0.8), 8 * Math.sin(w), 12 * Math.sin(w + 0.8));
@@ -113,7 +113,7 @@ function stunSway(b: Built, u: number): void {
 }
 
 /** circling stars above the head, hidden unless an animation shows them */
-function addStars(b: Built, y = 1.32): void {
+export function addStars(b: Built, y = 1.32): void {
   const head = byName(b.root, 'head');
   const holder = new THREE.Group();
   holder.add(stunStars(4, 0.5));
