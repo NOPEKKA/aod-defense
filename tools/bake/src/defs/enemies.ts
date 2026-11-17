@@ -111,7 +111,7 @@ defineSprite({
     },
   ),
 });
-definePortrait('portrait_enemy_skeleton_shield', 'enemies', buildShield, { yaw: -32 });
+definePortrait('portrait_enemy_skeleton_shield', 'enemies', buildShield, { yaw: -32, span: 1.9, lookAt: [0.1, 1.32, 0], apply: (b) => overlay(b, 'Blocking', 0.3, LEFT_ARM, 0.85) });
 
 // ---------------------------------------------------------------------------
 // Spear skeleton: long bone spear, stabs from the second row.
@@ -252,7 +252,7 @@ defineSprite({
     die: { clip: 'Death_C_Skeletons', frames: 12, duration: 1.0, apply: (b, u) => flap(b, 52 + 30 * (1 - u) * Math.sin(u * TAU * 2) - 40 * u, u) },
   },
 });
-definePortrait('portrait_enemy_winged_deadite', 'enemies', buildWinged, { yaw: -32 });
+definePortrait('portrait_enemy_winged_deadite', 'enemies', buildWinged, { yaw: -32, span: 1.9, lookAt: [0, 1.45, 0], apply: (b) => flap(b, 62, 0.3) });
 
 // ---------------------------------------------------------------------------
 // Pit hag: small, hunched, green-skinned, wild white hair, claws. Fast, leaps over the line.
@@ -297,4 +297,4 @@ defineSprite({
     leap: { clip: 'Jump_Full_Short', frames: 6, duration: 0.4, apply: (b) => hunch(b, 0.7) },
   },
 });
-definePortrait('portrait_enemy_pit_hag', 'enemies', buildHag, { yaw: -32 });
+definePortrait('portrait_enemy_pit_hag', 'enemies', buildHag, { yaw: -32, span: 1.3, lookAt: [0.0, 1.05, 0.1], apply: (b) => hunch(b) });

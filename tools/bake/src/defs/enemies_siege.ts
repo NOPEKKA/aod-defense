@@ -102,7 +102,7 @@ defineSprite({
     },
   },
 });
-definePortrait('portrait_enemy_battering_ram', 'enemies', ramBuilt, { yaw: -32 });
+definePortrait('portrait_enemy_battering_ram', 'enemies', ramBuilt, { yaw: 25, clip: undefined, span: 5.2, lookAt: [0.5, 1.3, 0], pitch: 14, apply: (b) => pushPose(R(b), 0.2, 0.6) });
 
 // ---------------------------------------------------------------------------
 // Catapult
@@ -211,7 +211,7 @@ defineSprite({
     },
   },
 });
-definePortrait('portrait_enemy_skeleton_catapult', 'enemies', catBuilt, { yaw: -32 });
+definePortrait('portrait_enemy_skeleton_catapult', 'enemies', catBuilt, { yaw: 25, clip: undefined, span: 4.8, lookAt: [0.5, 1.5, 0], pitch: 14, apply: (b) => { setArm(C(b), 200); pose(C(b).crew.inst!, 'Idle', 0.2); } });
 
 function resetCat(c: CatBuilt): void {
   c.body.position.set(0, 0, 0);
