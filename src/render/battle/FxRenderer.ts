@@ -8,6 +8,7 @@ import { findEntity } from '../../core/world';
 import { applyFrame, frameOf, spriteFrame, type FrameInfo } from '../art/atlas';
 import { FONT_L } from '../art/build';
 import { clamp01, numStr, plusStr } from '../style';
+import type { WorldQuery } from './WorldRenderer';
 
 interface Part {
   img: Phaser.GameObjects.Image;
@@ -187,6 +188,23 @@ export class FxRenderer implements BattleRenderer {
 
   // ---- public helpers (also used by the world renderer) ---------------------
 
+  private world: WorldQuery | null = null;
+  attachWorld(w: WorldQuery): void {
+    this.world = w;
+  }
+  footDust(x: number, y: number, big: boolean): void {
+    this.emit('p_smoke', x, y - 4, (Math.random() - 0.5) * 30, -12, 0.5, big ? 0.5 : 0.3, big ? 1.1 : 0.7, 0xb8a88e, 0, false, false, 0, 0, 0.45);
+  }
+  ember(x: number, y: number): void {
+    this.emit('p_dot', x, y, (Math.random() - 0.5) * 20, -50 - Math.random() * 40, 0.6, 0.45, 0.1, 0xff8a2a, -30, true, false, 0, 0, 0.9);
+  }
+  anvilSparks(x: number, y: number): void {
+    this.burst('p_spark', x, y, 5, 80, 200, -2.8, -0.3, 0.35, 0.45, 0.1, 0xffc060, 500, true, true);
+  }
+  lightning(): void {
+    this.haptic(20);
+  }
+
   /** Small fading trail puff (fireballs etc.), throttled. */
   trail(x: number, y: number, tint: number): void {
     if ((this.trailTick++ & 1) === 1) return;
@@ -200,6 +218,7 @@ export class FxRenderer implements BattleRenderer {
   // ---- event handlers -------------------------------------------------------
 
   private topOf(e: EntityState): number {
+    if (this.world) return this.world.topOf(e);
     const f = spriteFrame(e.sprite, e.kind);
     return e.y - f.h * f.ay;
   }

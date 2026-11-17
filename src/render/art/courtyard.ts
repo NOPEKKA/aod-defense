@@ -138,14 +138,14 @@ export function fallbackMeta(chapter: number, w: World): BgMeta {
       smith: { x: 668, y: g.gy - 50 },
       forge: { x: g.forgeX, y: g.gy - 96 },
       archers: [
-        { x: g.castleRight - 110, y: 196 },
-        { x: g.castleRight - 70, y: 196 },
-        { x: g.castleRight - 30, y: 196 },
-        { x: g.castleRight - 150, y: 196 },
-        { x: 70, y: 96 },
-        { x: 120, y: 96 },
+        { x: g.castleRight - 100, y: 196 },
+        { x: g.castleRight - 62, y: 196 },
+        { x: g.castleRight - 24, y: 196 },
+        { x: g.castleRight - 138, y: 196 },
+        { x: g.castleRight - 176, y: 196 },
+        { x: g.castleRight + 14, y: 196 },
       ],
-      catapult: { x: 150, y: 96 },
+      catapult: { x: g.castleRight - 236, y: 198 },
       pit: { x: g.pitL, y: g.gy - 10, w: g.pitR - g.pitL, h: 34 },
       torches: [
         { x: 40, y: 318, scale: 0.8 },
@@ -865,33 +865,23 @@ export function paintMain(ctx: Ctx, W: number, h: number, p: ChapterPalette, g: 
   ctx.clearRect(0, 0, kx1, 34);
 }
 
-/** Sparse dark foreground (parallax 1.2): pillars with chains and rubble at the bottom edge. */
+/** Sparse dark foreground (parallax 1.2): rubble along the bottom edge. */
 export function paintFront(ctx: Ctx, w: number, h: number, p: ChapterPalette): void {
   ctx.clearRect(0, 0, w, h);
   const rnd = lcg(51);
   const dark = shade(p.stoneDark, -0.55);
-  for (const x of [1180, 2240]) {
-    ctx.fillStyle = dark;
-    ctx.fillRect(x - 26, 0, 52, h);
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(x - 26, 0, 6, h);
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    for (let y = 30; y < h; y += 46) ctx.fillRect(x - 26, y, 52, 3);
-    // hanging chain
-    ctx.strokeStyle = 'rgba(20,16,24,0.95)';
-    ctx.lineWidth = 3;
-    for (let y = 0; y < 220; y += 10) {
-      ctx.beginPath();
-      ctx.ellipse(x + 40, y + 5, 3, 6, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  }
+  // only low rubble along the bottom edge: nothing tall may hide the fight
+  const fade = ctx.createLinearGradient(0, h - 120, 0, h);
+  fade.addColorStop(0, 'rgba(0,0,0,0)');
+  fade.addColorStop(1, 'rgba(0,0,0,0.35)');
+  ctx.fillStyle = fade;
+  ctx.fillRect(0, h - 120, w, 120);
   for (let i = 0; i < 26; i++) {
     const x = rnd() * w;
     const s = 10 + rnd() * 24;
     ctx.fillStyle = dark;
     ctx.beginPath();
-    ctx.ellipse(x, h - 40 + rnd() * 30, s * 1.6, s, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, h - 18 + rnd() * 20, s * 1.6, s * 0.8, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 }

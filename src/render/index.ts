@@ -10,6 +10,7 @@ import type { RenderModule } from '../contracts';
 import { getApp } from '../core/app';
 import { buildAllTextures } from './art/build';
 import { queueBoot } from './assets/library';
+import { preloadBattle } from './assets/preload';
 import { FxRenderer } from './battle/FxRenderer';
 import { HudRenderer } from './battle/HudRenderer';
 import { WorldRenderer } from './battle/WorldRenderer';
@@ -24,6 +25,9 @@ export const render: RenderModule = {
   preloadBoot(scene) {
     // baked-art manifest + icon atlases (see assets/library.ts)
     queueBoot(scene, getApp().profile.settings);
+  },
+  preloadBattle(scene, params) {
+    preloadBattle(scene, getApp(), params);
   },
   buildTextures(scene, renderScale) {
     buildAllTextures(scene, getApp().data, renderScale);

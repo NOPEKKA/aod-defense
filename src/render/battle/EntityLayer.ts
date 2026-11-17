@@ -25,6 +25,8 @@ export interface EntityFxHooks {
 const BAR_W = { small: 46, normal: 54, large: 66, huge: 0 } as const;
 const BAR_COLOR: Partial<Record<EntityKind, number>> = { ally: 0x6ad65a, hero: 0xffc93a, enemy: 0xe8483a, ash: 0x6ad65a };
 const CORPSE_HOLD = 1.6;
+/** baked shadow frames are full-strength alpha maps (ART_BIBLE 3: about 45%) */
+const SHADOW_A = 0.5;
 const CORPSE_FADE = 0.6;
 const MAX_CORPSES = 28;
 const TAU = Math.PI * 2;
@@ -510,7 +512,7 @@ export class EntityLayer {
       const hk = alt > 0 ? clamp01(1 - alt / 520) : 1;
       const k = 0.45 + 0.55 * hk;
       if (v.info && v.info.hasShadow) {
-        sh.setPosition(x, y).setScale((flip ? -k : k) * s, k * s).setAlpha(a * (0.35 + 0.6 * hk));
+        sh.setPosition(x, y).setScale((flip ? -k : k) * s, k * s).setAlpha(a * SHADOW_A * (0.3 + 0.7 * hk));
       } else {
         const w = Math.max(30, (v.ph ? v.ph.w : 60) * 0.8);
         sh.setPosition(x, y + 2).setScale((w / this.phShadow.w) * k / atlasScale(), ((w * 0.3) / this.phShadow.h) * k / atlasScale()).setAlpha(a * 0.8 * hk + 0.2);
@@ -740,7 +742,7 @@ export class EntityLayer {
     v.drawY = y - alt + oy;
     const sh = v.shadow;
     sh.setVisible(true);
-    if (v.info && v.info.hasShadow) sh.setPosition(x, y).setScale(s, s).setAlpha(0.7 * a);
+    if (v.info && v.info.hasShadow) sh.setPosition(x, y).setScale(s, s).setAlpha(SHADOW_A * a);
     else {
       const f = this.phShadow;
       sh.setPosition(x, y + 1).setScale(26 / f.w / atlasScale(), 8 / f.h / atlasScale()).setAlpha(0.6 * a);
@@ -766,7 +768,7 @@ export class EntityLayer {
     img.setAlpha(e.ttl < 0.35 && e.ttl > 0 ? e.ttl / 0.35 : 1).setDepth(DEPTH.char + y + 0.3);
     img.clearTint();
     v.drawY = y - alt;
-    if (v.info && v.info.hasShadow) v.shadow.setVisible(true).setPosition(x, y).setScale(flip ? -s : s, s).setAlpha(0.8);
+    if (v.info && v.info.hasShadow) v.shadow.setVisible(true).setPosition(x, y).setScale(flip ? -s : s, s).setAlpha(SHADOW_A);
     else v.shadow.setVisible(false);
   }
 

@@ -47,7 +47,7 @@ class Prop {
       const i = this.info;
       this.scale = i.scale * mul;
       this.img = scene.add.image(x, y, i.tex, i.rest.names[0]).setOrigin(i.ox, i.oy).setScale(this.scale).setDepth(depth);
-      if (withShadow && i.hasShadow) this.shadow = scene.add.image(x, y, i.tex, 'shadow').setOrigin(i.ox, i.oy).setScale(this.scale).setDepth(DEPTH.shadow).setAlpha(0.85);
+      if (withShadow && i.hasShadow) this.shadow = scene.add.image(x, y, i.tex, 'shadow').setOrigin(i.ox, i.oy).setScale(this.scale).setDepth(DEPTH.shadow).setAlpha(0.5);
       this.clip = i.rest;
     } else {
       const f = fallback ?? spriteFrame('fallback_effect');
@@ -265,7 +265,7 @@ export class Backdrop {
 
     // wall archers (up to 6 anchors); visible count follows world.castle.archers
     for (const a of pick<Pt[]>('archers') ?? []) {
-      const p = new Prop(s, 'unit_archer', spriteFrame(placeholderKey('ally', 'normal')), a.x, a.y, DEPTH.wallProps + 1, 0.82);
+      const p = new Prop(s, 'unit_archer', spriteFrame(placeholderKey('ally', 'normal')), a.x, a.y, DEPTH.wallProps + 1, 0.56);
       p.img.setVisible(false);
       this.archers.push(p);
       this.archerT.push(0);
