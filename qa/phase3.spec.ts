@@ -976,7 +976,15 @@ test.describe('phase 3 / more controls', () => {
     await page.evaluate(() => (window as any).__aodd.startWave(1));
     await waitScene(page, 'Battle');
     await pauseSim(page);
-    await advance(page, 34_000);
+    await advance(page, 6_000);
+    // the field is long now: bring the first skeleton 450 px in front of Ash
+    await page.evaluate(() => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      const w = (window as any).__aodd.runtime().battle.runner.world; // eslint-disable-line @typescript-eslint/no-explicit-any
+      const ash = w.entities.find((e: any) => e.id === w.ashId); // eslint-disable-line @typescript-eslint/no-explicit-any
+      const sk = w.entities.find((e: any) => e.alive && e.kind === 'enemy'); // eslint-disable-line @typescript-eslint/no-explicit-any
+      sk.x = sk.prevX = ash.x + 450;
+    });
+    await advance(page, 100);
     const s = await snap(page);
     const target = s.hostiles[0];
     expect(target).toBeTruthy();
