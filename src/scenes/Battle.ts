@@ -14,6 +14,7 @@ import { getRuntime, setBattle } from '../core/app';
 import { setupCamera, viewSize } from '../core/camera';
 import { computeHudLayout, readSafeInsets } from '../core/layout';
 import { SimRunner } from '../core/SimRunner';
+import { terrainAt } from '../core/terrain';
 import { findEntity } from '../core/world';
 
 const CAMERA = {
@@ -35,7 +36,7 @@ export class Battle extends Phaser.Scene {
   private inputSource!: InputSource;
   private renderers: BattleRenderer[] = [];
   private layout!: HudLayout;
-  private view!: RenderView & { cameraX: number; paused: boolean; speed: 1 | 2; layout: HudLayout };
+  private view!: RenderView & { cameraX: number; cameraY: number; paused: boolean; speed: 1 | 2; layout: HudLayout };
   private unsubs: Unsubscribe[] = [];
   private ended = false;
   private lastFrameAt = -1;
@@ -79,6 +80,7 @@ export class Battle extends Phaser.Scene {
       paused: false,
       speed: 1,
       cameraX: 0,
+      cameraY: 0,
       t: app.t,
     };
 
@@ -131,6 +133,8 @@ export class Battle extends Phaser.Scene {
     setBattle({ runner: this.runner, scene: this });
     cam.setScroll(this.targetCameraX(0), 0);
     this.view.cameraX = cam.scrollX;
+    this.view.cameraY = terrainAt(app.data, this.view.cameraX + this.layout.viewW * 0.5);
+    cam.setScroll(this.view.cameraX, this.view.cameraY);
   }
 
   update(_time: number, smoothedDelta: number): void {
@@ -143,7 +147,10 @@ export class Battle extends Phaser.Scene {
     const target = this.targetCameraX(alpha);
     const k = 1 - Math.exp((-CAMERA.follow * Math.min(delta, 100)) / 1000);
     this.view.cameraX += (target - this.view.cameraX) * k;
-    this.cameras.main.setScroll(this.view.cameraX, 0);
+    // the field runs downhill: the camera sinks with the ground under the middle of the view
+    const ty = terrainAt(getRuntime().app.data, this.view.cameraX + this.layout.viewW * 0.5);
+    this.view.cameraY += (ty - this.view.cameraY) * k;
+    this.cameras.main.setScroll(this.view.cameraX, this.view.cameraY);
     for (const r of this.renderers) r.frame(this.view, alpha, delta);
   }
 

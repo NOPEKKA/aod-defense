@@ -1040,6 +1040,8 @@ export interface RenderView {
   readonly speed: 1 | 2;
   /** camera scroll x in world px (core keeps it following Ash) */
   readonly cameraX: number;
+  /** camera scroll y (logical px): follows the downhill ground, 0 at the castle */
+  readonly cameraY: number;
   t(key: string, vars?: Record<string, string | number>): string;
 }
 

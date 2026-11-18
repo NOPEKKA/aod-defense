@@ -79,6 +79,8 @@ export interface Rt {
   scheduled: boolean;
   /** ground y of the entity's depth row */
   laneY: number;
+  /** terrain offset (px below groundY) already added to e.y; NaN = not yet (fresh spawn) */
+  tdy: number;
   /** cruising altitude (flyers) */
   baseAlt: number;
   /** burrowed boss: untargetable, does not block */
@@ -455,7 +457,7 @@ export function newRt(): Rt {
     id: 0, role: 'none', unit: null, enemy: null, boss: null, attack: null,
     damage: 0, interval: 1, range: 0, windup: 0, speed: 0, radius: 30, hitH: 80,
     attackTimer: 0, targetId: NONE, engaged: false, settled: false, corpse: 0, kbV: 0, kbDist: 0, kbLeft: 0, animHold: 0, scheduled: false,
-    laneY: 0, baseAlt: 0, hidden: false,
+    laneY: 0, tdy: Number.NaN, baseAlt: 0, hidden: false,
     wState: W_IDLE, wTimer: 0, wTarget: NONE, wPointX: NaN, wDmg: 0, wKb: 0,
     secondRow: false, preferAsh: false, shieldBlock: 0, flyer: '', leapDistance: 0, leapUsed: false, leapLeft: 0, leapV: 0,
     siegeSlow: -1, artilleryMin: -1, chargeMul: 1, chargeKb: 0, charged: false, chargeIdle: 0,

@@ -6,6 +6,7 @@
  * mods.apply(1, 'spell.<id>.power'). Mana via 'spell.<id>.mana' (picks up
  * 'spell.*.mana'), cooldown via 'spell.<id>.cooldown'.
  */
+import { groundAt } from '../core/terrain';
 import { SIM_DT, type DamageKind, type SimCommand, type SimContext, type SpellEffect } from '../contracts';
 import { applyStatus, dealDamage, heal, kill, knockback } from './damage';
 import { middleRowY, release, spawnEffect, spawnUnitAt } from './pool';
@@ -80,7 +81,7 @@ export function castCommand(st: GState, ctx: SimContext, cmd: Extract<SimCommand
   if (!ctx.services.economy.spend('mana', slot.manaCost)) return deny('mana');
   slot.cooldownLeft = slot.cooldownTotal;
   st.bus.emit('spell:cast', { slot: index, spellId: rs.spellId, x });
-  st.bus.emit('spectacle:action', { action: 'cast', x, y: w.groundY });
+  st.bus.emit('spectacle:action', { action: 'cast', x, y: groundAt(st.data, x) });
   if (st.ash.dodgeLeft <= 0) {
     st.ash.wKind = 0; // casting cancels a swing
     restartAnim(ash, 'cast', rs.spellId);
@@ -133,7 +134,7 @@ function startEffect(st: GState, ctx: SimContext, spellId: string, ef: SpellEffe
     e.anim = 'walk';
     fx.entityIds.push(e.id);
     fx.m = x0;
-    st.bus.emit('spell:impact', { spellId, effect: ef.effect, x: x0, y: w.groundY, radius: 0 });
+    st.bus.emit('spell:impact', { spellId, effect: ef.effect, x: x0, y: groundAt(st.data, x0), radius: 0 });
   }
 }
 
@@ -167,7 +168,7 @@ export function effectsTick(st: GState, ctx: SimContext): void {
 }
 
 function impact(st: GState, fx: ActiveEffect, effect: string, x: number, radius: number): void {
-  st.bus.emit('spell:impact', { spellId: fx.spellId, effect, x, y: st.data.balance.world.groundY, radius });
+  st.bus.emit('spell:impact', { spellId: fx.spellId, effect, x, y: groundAt(st.data, x), radius });
 }
 
 function lineBlast(st: GState, ctx: SimContext, fx: ActiveEffect): void {
@@ -285,7 +286,7 @@ function areaStrike(st: GState, ctx: SimContext, fx: ActiveEffect): void {
     const rock = byId(st, fx.entityIds[i]);
     if (rock) release(st, st.idSlot.get(rock.id)!);
     impact(st, fx, 'area_strike', rx, radius);
-    st.bus.emit('spectacle:hit', { x: rx, y: w.groundY, big: true });
+    st.bus.emit('spectacle:hit', { x: rx, y: groundAt(st.data, rx), big: true });
   }
   if (fx.n >= count) fx.active = false;
 }

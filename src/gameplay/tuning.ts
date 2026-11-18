@@ -144,6 +144,9 @@ export const TUNING_DEFAULTS = {
   'ai.enemyEnterDepth': 160,
   /** a boss 'summon' step only tops the field up to this many live hostiles */
   'boss.summonCap': 8,
+  /** out-of-contact march: no foe within marchRange -> walk speed x marchMul */
+  'ai.marchRange': 520,
+  'ai.marchMul': 1.7,
   /** per-body walk speed spread (+-fraction) */
   'ai.speedJitter': 0.07,
   /** ranged/healer units stand this far behind the melee line (when no keepBack param) */
@@ -191,6 +194,8 @@ export interface Tuning {
   flyerAltSpeed: number;
   knockbackHop: number;
   speedJitter: number;
+  marchRange: number;
+  marchMul: number;
   enemyEnterDepth: number;
   backKeepBack: number;
   backSoloLine: number;
@@ -298,6 +303,8 @@ export function tuningOf(data: GameData): Tuning {
     flyerAltSpeed: get('ai.flyerAltSpeed'),
     knockbackHop: get('ai.knockbackHop'),
     speedJitter: Math.max(0, Math.min(0.3, get('ai.speedJitter'))),
+    marchRange: Math.max(0, get('ai.marchRange')),
+    marchMul: Math.max(1, get('ai.marchMul')),
     enemyEnterDepth: Math.max(0, get('ai.enemyEnterDepth')),
     backKeepBack: get('ai.backKeepBack'),
     backSoloLine: get('ai.backSoloLine'),

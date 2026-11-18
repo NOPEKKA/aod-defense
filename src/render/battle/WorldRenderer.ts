@@ -3,6 +3,7 @@
  * sprites (baked atlases animated from sim time, placeholders otherwise), boss telegraphs and
  * the spell-aim preview. Reads WorldState only.
  */
+import { groundAt } from '../../core/terrain';
 import type { BattleRenderer, EntityState, EventBus, GameEvents, HudLayout, RenderView, Unsubscribe } from '../../contracts';
 import { findEntity } from '../../core/world';
 import { clamp01 } from '../style';
@@ -80,12 +81,13 @@ export class WorldRenderer implements BattleRenderer, WorldQuery {
     g.clear();
     ga.clear();
     const world = view.world;
-    const gy = view.data.balance.world.groundY;
+    const data = view.data;
     const pulse = 0.5 + 0.5 * Math.sin(this.clock * 16);
     // the ground band is drawn with the camera pitch: depth rows span about +-40 px around groundY
     const bandH = 92;
     for (let i = 0; i < world.telegraphs.length; i++) {
       const tg = world.telegraphs[i];
+      const gy = groundAt(data, tg.x); // the field slopes downhill: mark the ground under the telegraph
       const p = 1 - clamp01(tg.remaining / Math.max(0.001, tg.total));
       const urgent = tg.remaining < 0.2;
       const edge = urgent ? 0xffffff : 0xff4a3a;
@@ -145,7 +147,7 @@ export class WorldRenderer implements BattleRenderer, WorldQuery {
           break;
       }
     }
-    this.drawAim(view, gy, pulse);
+    this.drawAim(view, groundAt(data, view.aim.worldX ?? 0), pulse);
   }
 
   private drawAim(view: RenderView, gy: number, pulse: number): void {

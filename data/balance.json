@@ -286,6 +286,8 @@
     "ai.backKeepBack": 120,
     "ai.backSoloLine": 900,
     "ai.enemyEnterDepth": 160,
-    "boss.summonCap": 8
+    "boss.summonCap": 8,
+    "ai.marchRange": 520,
+    "ai.marchMul": 1.7
   }
 }

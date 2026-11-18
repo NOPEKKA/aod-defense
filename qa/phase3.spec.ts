@@ -388,8 +388,11 @@ test.describe('phase 3 / 2. enemies', () => {
     const x1 = await xAt();
     await advance(page, 4000);
     const x2 = await xAt();
-    // data speed * 4 s, each body gets a +-7% walk-speed spread (ai.speedJitter)
-    const skSpeed = await page.evaluate(() => (window as any).__aodd.app().data.enemies.get('skeleton').stats.speed as number); // eslint-disable-line @typescript-eslint/no-explicit-any
+    // data speed * difficulty speed mul * forced-march mul (nobody near yet) * 4 s; +-7% spread per body
+    const skSpeed = await page.evaluate(() => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      const d = (window as any).__aodd.app().data; // eslint-disable-line @typescript-eslint/no-explicit-any
+      return d.enemies.get('skeleton').stats.speed * d.balance.difficulty.enemySpeedMul * (d.balance.tuning['ai.marchMul'] ?? 1);
+    }) as number;
     expect(x1 - x2).toBeGreaterThan(skSpeed * 4 * 0.9);
     expect(x1 - x2).toBeLessThan(skSpeed * 4 * 1.1);
     expect((await worldEntities(page)).find((e) => e.id === id)!.facing).toBe(-1);

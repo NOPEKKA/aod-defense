@@ -21,6 +21,8 @@ export async function openGame(page: Page): Promise<string[]> {
   await page.addInitScript(() => localStorage.clear());
   await page.goto('/');
   await expect.poll(async () => page.evaluate(() => typeof (window as any).render_game_to_text === 'function'), { timeout: 15_000 }).toBe(true); // eslint-disable-line @typescript-eslint/no-explicit-any
+  // wait until boot + preload are done (textures and fonts built) before tests jump into waves
+  await expect.poll(async () => page.evaluate(() => JSON.parse((window as any).render_game_to_text()).scene), { timeout: 30_000 }).toBe('Title'); // eslint-disable-line @typescript-eslint/no-explicit-any
   return errors;
 }
 
