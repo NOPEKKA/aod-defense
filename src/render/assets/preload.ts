@@ -164,7 +164,8 @@ function loadingBar(scene: Phaser.Scene, app: AppContext, params: WaveStartParam
   const level = params.endless ? undefined : app.data.levels[params.wave - 1];
   const title = params.endless ? app.t('ui.wave_endless', { n: params.wave }) : app.t('ui.wave', { n: params.wave, total: app.data.balance.campaignWaves });
   const chap = level ? app.t(`map.chapter${level.chapter}`) : '';
-  const style = { fontFamily: 'Kanit, sans-serif', fontStyle: 'bold', color: '#ffd76a', stroke: '#140c08', strokeThickness: 6, fontSize: '40px' };
+  // same type as the menus: Chonburi/Taviraj heading, thin engraved edge instead of a fat stroke
+  const style = { fontFamily: 'Chonburi, Taviraj, "Leelawadee UI", serif', fontStyle: 'normal', color: '#e8c46a', stroke: '#140c08', strokeThickness: 3, fontSize: '40px' };
   const t1 = scene.add.text(cx, cy - 92, title, style).setOrigin(0.5).setDepth(100002).setResolution(R);
   const t2 = scene.add.text(cx, cy - 46, chap, { ...style, color: '#e8dcc8', fontSize: '22px', strokeThickness: 4, fontStyle: 'normal' }).setOrigin(0.5).setDepth(100002).setResolution(R);
   const t3 = scene.add.text(cx, cy + 34, app.t('ui.loading'), { ...style, color: '#b8aec8', fontSize: '16px', strokeThickness: 3, fontStyle: 'normal' }).setOrigin(0.5, 0).setDepth(100002).setResolution(R);

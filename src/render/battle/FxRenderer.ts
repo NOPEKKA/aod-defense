@@ -12,7 +12,7 @@
 import type { BattleRenderer, EntityState, EventBus, GameEvents, HudLayout, RenderView, Unsubscribe } from '../../contracts';
 import { findEntity } from '../../core/world';
 import { applyFrame, atlasScale, frameOf, spriteFrame, type FrameInfo } from '../art/atlas';
-import { FONT_L } from '../art/build';
+import { FONT_DMG } from '../art/build';
 import { warnOnce } from '../assets/library';
 import { lazyFx } from '../assets/preload';
 import { getSpriteInfo, type ClipInfo, type SpriteInfo } from '../assets/sprites';
@@ -160,7 +160,7 @@ export class FxRenderer implements BattleRenderer {
       this.sheets.push({ img, on: false, clip: null, t: 0, speed: 1, x: 0, y: 0, vy: 0, s: 1, a: 1, hold: 0, life: 0, fadeIn: 0 });
     }
     for (let i = 0; i < lim.maxDamageNumbers; i++) {
-      const t = scene.add.bitmapText(0, 0, FONT_L, '0', 20).setOrigin(0.5, 0.5).setVisible(false).setDepth(DEPTH.nums);
+      const t = scene.add.bitmapText(0, 0, FONT_DMG, '0', 20).setOrigin(0.5, 0.5).setVisible(false).setDepth(DEPTH.nums);
       this.nums.push({ t, on: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 20 });
     }
     for (let i = 0; i < FLYER_POOL; i++) {
