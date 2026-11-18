@@ -264,7 +264,7 @@ export class PreWaveScene extends MenuScene<PreWaveSceneData> {
     c.add(nameT);
     if (unlocked) {
       c.add(addIcon(this, -10, h / 2 - 13, 'ui_mana', 'ui_mana', 16));
-      c.add(addNum(this, 0, h / 2 - 13, sub, 15).setOrigin(0, 0.5).setTint(0x2a4a7a));
+      c.add(addText(this, 0, h / 2 - 13, sub, 15, { originY: 0.5, color: '#1f3e70' }));
     } else {
       c.add(addIcon(this, 0, -h / 2 + 34, 'ui_lock', 'ui_lock', 26));
       const lt = addText(this, 0, h / 2 - 13, sub, 11, { originX: 0.5, originY: 0.5, color: C.inkSoft, bold: false });

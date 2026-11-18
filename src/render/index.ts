@@ -42,7 +42,9 @@ export const render: RenderModule = {
       ['Chonburi', 'fonts/Chonburi-Regular.ttf', '400'],
     ];
     for (const [family, url, weight] of faces) {
-      scene.load.font(family, url, 'truetype', { weight });
+      // Pirata One's numerals read poorly ("1" looks like "l"): leave digits to Chonburi
+      const range = family === 'Pirata One' ? { unicodeRange: 'U+0020-002F, U+003A-024F, U+2000-206F' } : {};
+      scene.load.font(family, url, 'truetype', { weight, ...range });
     }
     // the UI material kit (ui/skin.ts)
     queueUiKit(scene);

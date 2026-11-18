@@ -90,9 +90,16 @@ function lockGlyph(ctx: Ctx, x: number, y: number, r: number): void {
   ctx.strokeStyle = PAL.steel;
   ctx.lineWidth = r * 0.22;
   ctx.stroke();
-  rrect(ctx, x - r * 0.85, y - r * 0.25, r * 1.7, r * 1.25, r * 0.2, PAL.gold, Math.max(1.5, r * 0.15));
-  circle(ctx, x, y + r * 0.25, r * 0.16, OUT, 0);
-  stick(ctx, x, y + r * 0.3, x, y + r * 0.6, r * 0.12, OUT, 0);
+  // forged iron body with two rivets and a bone keyhole (matches the UI kit's iron)
+  const body = ctx.createLinearGradient(x, y - r * 0.25, x, y + r);
+  body.addColorStop(0, '#6a6470');
+  body.addColorStop(0.5, '#3e3a44');
+  body.addColorStop(1, '#24212a');
+  rrect(ctx, x - r * 0.85, y - r * 0.25, r * 1.7, r * 1.25, r * 0.12, body, Math.max(1.5, r * 0.15));
+  circle(ctx, x - r * 0.6, y - r * 0.02, r * 0.09, '#a89e8c', 0);
+  circle(ctx, x + r * 0.6, y - r * 0.02, r * 0.09, '#a89e8c', 0);
+  circle(ctx, x, y + r * 0.25, r * 0.17, '#e8d8b4', 0);
+  stick(ctx, x, y + r * 0.3, x, y + r * 0.6, r * 0.12, '#e8d8b4', 0);
 }
 
 // ---------------------------------------------------------------------------

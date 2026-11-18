@@ -474,9 +474,9 @@ export class HudRenderer implements BattleRenderer {
     this.smithFrame.setPosition(ip.x + 27, ip.y + 27).setDisplaySize(42, 42);
     this.smithFace.setPosition(ip.x + 27, ip.y + 27);
     this.smithLevel.setPosition(ip.x + 27, ip.y + 53);
-    this.ironIcon.setPosition(ip.x + 64, ip.y + 24);
-    this.ironBase = this.fitIcon(this.ironIcon, 'coin_silver', 'coin_silver', 24, 24);
-    this.ironNum.setPosition(ip.x + 78, ip.y + 25);
+    this.ironIcon.setPosition(ip.x + 63, ip.y + 25);
+    this.ironBase = this.fitIcon(this.ironIcon, 'coin_silver', 'coin_silver', 28, 28);
+    this.ironNum.setPosition(ip.x + 80, ip.y + 25);
     this.ironMax.setPosition(ip.x + 66, ip.y + 47);
     this.placeBar(this.smithBar, { x: ip.x + 52, y: ip.y + 59, w: ip.w - 62, h: 7 }, 2);
     this.anvilIcon.setPosition(ip.x + 18, ip.y + ip.h - 16);
