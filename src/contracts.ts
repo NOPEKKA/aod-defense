@@ -1110,11 +1110,17 @@ export const SceneKey = {
   Battle: 'Battle',
   Result: 'Result',
   Settings: 'Settings',
+  /** online co-op lobby (host a room / join with a code) */
+  Lobby: 'Lobby',
 } as const;
 export type SceneKeyName = (typeof SceneKey)[keyof typeof SceneKey];
 
 export interface PreWaveSceneData { wave: number; endless: boolean }
-export interface BattleSceneData { params: WaveStartParams }
+export interface BattleSceneData {
+  params: WaveStartParams;
+  /** online guest: mirror the host's battle from snapshots instead of simulating it */
+  remote?: boolean;
+}
 export interface ResultSceneData { outcome: WaveOutcome; params: WaveStartParams }
 export interface SettingsSceneData { returnTo: SceneKeyName }
 
@@ -1141,4 +1147,28 @@ export interface QaHooks {
     /** frame-time samples (ms) since the last call */
     frameTimes(): number[];
   };
+}
+
+// ---------------------------------------------------------------------------
+// 10. Online co-op (src/net): host-authoritative, the guest commands the army
+// ---------------------------------------------------------------------------
+
+export type NetRole = 'off' | 'host' | 'guest';
+/** opening = registering the room / dialing; waiting = host has a code, no guest yet */
+export type NetStatus = 'idle' | 'opening' | 'waiting' | 'connected' | 'closed' | 'error';
+
+/** What menu scenes see of the online link (core puts it on the runtime as modules.net). */
+export interface NetService {
+  readonly role: NetRole;
+  readonly status: NetStatus;
+  /** room code (host: the one to share; guest: the one dialled) */
+  readonly code: string;
+  /** i18n key of the last problem, '' if none */
+  readonly error: string;
+  host(): void;
+  join(code: string): void;
+  /** close the link and go back to single player */
+  leave(): void;
+  /** fires on every role/status change */
+  onChange(fn: () => void): Unsubscribe;
 }

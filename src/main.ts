@@ -5,6 +5,7 @@ import { computeRenderScale, computeViewWidth, measureRefreshHz } from './core/d
 import { audio } from './audio';
 import { controls } from './controls';
 import { gameplay } from './gameplay';
+import { net } from './net';
 import { render } from './render';
 import { Battle } from './scenes/Battle';
 import { Boot, type BootConfig } from './scenes/Boot';
@@ -12,7 +13,7 @@ import { Preloader } from './scenes/Preloader';
 import { systems } from './systems';
 
 async function start(): Promise<void> {
-  const modules: Modules = { systems, gameplay, controls, render, audio };
+  const modules: Modules = { systems, gameplay, controls, render, audio, net };
   const renderScale = computeRenderScale();
   // Phaser's fps target follows the display (brief: never lock to 60).
   const refreshHz = await measureRefreshHz();

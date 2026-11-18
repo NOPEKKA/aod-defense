@@ -16,6 +16,7 @@ import { computeHudLayout, readSafeInsets } from '../core/layout';
 import { SimRunner } from '../core/SimRunner';
 import { terrainAt } from '../core/terrain';
 import { findEntity } from '../core/world';
+import { attachHostBattle, createRemoteRunner, detachHostBattle, remoteBattleClosed, type HostBattleLink, type RemoteRunner } from '../net';
 
 const CAMERA = {
   /** Ash sits at this fraction of the view width */
@@ -24,6 +25,10 @@ const CAMERA = {
   follow: 8,
   /** real ms between the wave ending and the result screen */
   resultDelayMs: 1400,
+  /** online guest: camera pan speed (px/s) with A/D or the touch move zones */
+  panSpeed: 900,
+  /** online guest: seconds without panning before the camera drifts back to Ash */
+  panHold: 2.5,
 } as const;
 
 /**
@@ -32,7 +37,12 @@ const CAMERA = {
  */
 export class Battle extends Phaser.Scene {
   private params!: WaveStartParams;
-  private runner!: SimRunner;
+  private runner!: SimRunner | RemoteRunner;
+  /** online: set when hosting (streams the battle) / when this is the guest's mirror */
+  private hostLink: HostBattleLink | null = null;
+  private remote: RemoteRunner | null = null;
+  private panX = 0;
+  private panIdle = 0;
   private inputSource!: InputSource;
   private renderers: BattleRenderer[] = [];
   private layout!: HudLayout;
@@ -40,6 +50,7 @@ export class Battle extends Phaser.Scene {
   private unsubs: Unsubscribe[] = [];
   private ended = false;
   private lastFrameAt = -1;
+  private remoteRequested = false;
 
   constructor() {
     super(SceneKey.Battle);
@@ -47,6 +58,11 @@ export class Battle extends Phaser.Scene {
 
   init(data: BattleSceneData): void {
     this.params = data.params;
+    this.remote = null;
+    this.hostLink = null;
+    this.panX = 0;
+    this.panIdle = 0;
+    this.remoteRequested = !!data.remote;
     this.renderers = [];
     this.unsubs = [];
     this.ended = false;
@@ -65,7 +81,20 @@ export class Battle extends Phaser.Scene {
     this.layout = this.computeLayout();
 
     this.inputSource = rt.modules.controls.createInputSource();
-    this.runner = new SimRunner(app, this.params, rt.modules.systems, rt.modules.gameplay, () => this.inputSource.poll());
+    if (this.remoteRequested) {
+      this.remote = createRemoteRunner(this.params, app.bus);
+      if (!this.remote) {
+        // the link dropped while this battle was loading
+        this.scene.start(SceneKey.Title);
+        return;
+      }
+      this.runner = this.remote;
+    } else {
+      const poll = () => this.inputSource.poll();
+      const sim = new SimRunner(app, this.params, rt.modules.systems, rt.modules.gameplay, () => (this.hostLink ? this.hostLink.merge(poll()) : poll()));
+      this.runner = sim;
+      this.hostLink = attachHostBattle(app.bus, sim.world, this.params, () => sim.paused);
+    }
 
     const world = this.runner.world;
     this.view = {
@@ -115,7 +144,8 @@ export class Battle extends Phaser.Scene {
     this.scale.on('resize', onResize);
 
     const onVisibility = () => {
-      if (document.hidden && !this.runner.paused) app.bus.emit('ui:pause', { paused: true });
+      // the online guest looking away must not pause the host's battle
+      if (document.hidden && !this.runner.paused && !this.remote) app.bus.emit('ui:pause', { paused: true });
     };
     document.addEventListener('visibilitychange', onVisibility);
 
@@ -126,6 +156,8 @@ export class Battle extends Phaser.Scene {
       for (const r of this.renderers) r.destroy();
       this.inputSource.detach();
       this.runner.dispose();
+      if (this.hostLink) detachHostBattle(this.hostLink, this.ended);
+      if (this.remote && !this.ended) remoteBattleClosed();
       setBattle(null);
     });
 
@@ -140,10 +172,13 @@ export class Battle extends Phaser.Scene {
   update(_time: number, smoothedDelta: number): void {
     // Real wall-clock delta: Phaser's smoothed delta is capped at 1000/fps.target for
     // 120 frames after a focus event, which ran the sim in slow motion (QA BUG-C1).
+    if (this.remoteRequested && !this.remote) return; // leaving: the link dropped while loading
     const now = performance.now();
     const delta = this.lastFrameAt < 0 ? smoothedDelta : now - this.lastFrameAt;
     this.lastFrameAt = now;
     const alpha = this.runner.frame(delta);
+    if (this.remote) this.guestInput(delta);
+    else this.hostLink?.frame(now);
     const target = this.targetCameraX(alpha);
     const k = 1 - Math.exp((-CAMERA.follow * Math.min(delta, 100)) / 1000);
     this.view.cameraX += (target - this.view.cameraX) * k;
@@ -152,6 +187,21 @@ export class Battle extends Phaser.Scene {
     this.view.cameraY += (ty - this.view.cameraY) * k;
     this.cameras.main.setScroll(this.view.cameraX, this.view.cameraY);
     for (const r of this.renderers) r.frame(this.view, alpha, delta);
+  }
+
+  /** online guest: send army commands to the host; A/D (or the move zones) pan the camera */
+  private guestInput(deltaMs: number): void {
+    const f = this.inputSource.poll();
+    this.remote!.forwardInput(f);
+    const dt = Math.min(deltaMs, 100) / 1000;
+    if (f.move !== 0) {
+      this.panX += f.move * CAMERA.panSpeed * dt;
+      this.panIdle = 0;
+    } else if ((this.panIdle += dt) > CAMERA.panHold) {
+      this.panX *= Math.exp(-2.5 * dt);
+    }
+    const worldW = getRuntime().app.data.balance.world.width;
+    this.panX = Math.max(-worldW, Math.min(worldW, this.panX));
   }
 
   private computeLayout(): HudLayout {
@@ -165,7 +215,7 @@ export class Battle extends Phaser.Scene {
     const worldW = getRuntime().app.data.balance.world.width;
     const viewW = this.layout.viewW;
     if (!ash) return this.view?.cameraX ?? 0;
-    const x = ash.prevX + (ash.x - ash.prevX) * alpha;
+    const x = ash.prevX + (ash.x - ash.prevX) * alpha + this.panX;
     return Math.max(0, Math.min(worldW - viewW, x - viewW * CAMERA.ashAnchor));
   }
 
@@ -173,8 +223,11 @@ export class Battle extends Phaser.Scene {
     if (this.ended) return;
     this.ended = true;
     const app = getRuntime().app;
-    app.progression.applyOutcome(app.profile, outcome);
-    app.commitProfile();
+    // the online guest only watches the host's result; its own save is untouched
+    if (!this.remote) {
+      app.progression.applyOutcome(app.profile, outcome);
+      app.commitProfile();
+    }
     this.time.delayedCall(CAMERA.resultDelayMs, () => {
       if (this.scene.get(SceneKey.Result)) {
         const data: ResultSceneData = { outcome, params: this.params };
