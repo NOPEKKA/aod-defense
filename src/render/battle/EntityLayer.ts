@@ -29,7 +29,7 @@ const CORPSE_HOLD = 1.6;
 /** baked shadow frames are full-strength alpha maps (ART_BIBLE 3: about 45%) */
 const SHADOW_A = 0.5;
 /** display scale per kind: the player's side stands out from the enemy crowd */
-const KIND_SCALE: Partial<Record<EntityState['kind'], number>> = { ash: 1.2, hero: 1.12, ally: 1.07 };
+const KIND_SCALE: Partial<Record<EntityState['kind'], number>> = { ash: 1.32, hero: 1.2, ally: 1.12, enemy: 0.96 };
 const FLASH_T = 0.12;
 const FLASH_WHITE = 0.035;
 const CORPSE_FADE = 0.6;

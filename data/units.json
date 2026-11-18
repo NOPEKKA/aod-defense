@@ -56,7 +56,7 @@
   },
   {
     "id": "wiseman", "nameKey": "unit.wiseman", "kind": "hero", "sprite": "hero_wiseman", "origin": "original",
-    "ironCost": 55, "cooldown": 45, "unlockWave": 24,
+    "ironCost": 55, "cooldown": 45, "unlockWave": 8,
     "stats": { "hp": 220, "speed": 48, "attack": { "kind": "none", "damage": 0, "interval": 1, "range": 0 } },
     "behaviors": [{ "id": "healer", "params": { "interval": 3, "amount": 25, "targets": 3, "radius": 300, "keepBack": 160 } }]
   },
