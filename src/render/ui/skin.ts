@@ -142,7 +142,7 @@ export function ribbon(scene: Phaser.Scene, cx: number, cy: number, minW: number
 /** ornamental rule; gold for dark backgrounds, ink for parchment */
 export function divider(scene: Phaser.Scene, cx: number, cy: number, w: number, gold = false): Phaser.GameObjects.Image {
   const img = scene.add.image(cx, cy, KIT, gold ? 'divider_gold' : 'divider_ink');
-  img.setDisplaySize(w, w * (48 / 512));
+  img.setDisplaySize(w, Math.min(26, w * (48 / 512)));
   return img;
 }
 

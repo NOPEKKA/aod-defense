@@ -240,7 +240,7 @@ export class HudRenderer implements BattleRenderer {
     this.speedHint = num(false, 11).setOrigin(0, 0).setText('F').setTint(0xbcaa86);
 
     this.smithFace = icon('fallback_ally');
-    this.smithLevel = keep(addText(scene, 0, 0, '', 17, { originX: 0.5, originY: 0.5, color: C.gold, font: 'head', stroke: 2 }).setDepth(D_NUM));
+    this.smithLevel = keep(addText(scene, 0, 0, '', 15, { originX: 0.5, originY: 0.5, color: C.gold, stroke: 2 }).setDepth(D_NUM));
     this.ironIcon = icon('coin_silver');
     this.ironNum = num(true, 27).setOrigin(0, 0.5);
     this.ironMax = num(false, 13).setOrigin(0, 0.5).setTint(0xb8c2cc);

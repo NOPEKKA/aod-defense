@@ -36,7 +36,6 @@ export class MapScene extends MenuScene {
     const sy = 64;
     const sh = 720 - sy - 74;
     page(this, sx, sy, sw, sh, { bound: false, seed: 7 });
-    kitImage(this, 'compass', sx + sw - 70, sy + sh - 66, 104, 104).setAlpha(0.55).setAngle(-8);
     this.header(this.t('map.title'), { label: this.t('ui.title_screen'), to: () => this.go(SceneKey.Title) });
 
     const maxWave = app.progression.maxPlayableWave(p);
@@ -92,6 +91,7 @@ export class MapScene extends MenuScene {
       for (let k = 0; k < pts.length - 1; k++) this.inkLine(road, pts[k].x, pts[k].y, pts[k + 1].x, pts[k + 1].y, done);
     }
 
+    kitImage(this, 'compass', left + 34, sy + sh - 34, 58, 58).setAlpha(0.6).setAngle(-8);
     for (const n of nodes) this.waveNode(n.wave, n.x, n.y, n.wave <= maxWave, n.wave === maxWave && n.wave > p.highestWave);
 
     // footer
@@ -166,9 +166,9 @@ export class MapScene extends MenuScene {
       }
     } else {
       const g = this.add.graphics();
-      g.lineStyle(2, INK, 0.38);
+      g.lineStyle(2, INK, 0.4);
       g.strokeCircle(0, 0, boss ? 22 : 16);
-      g.fillStyle(0xf0dfb8, 0.35);
+      g.fillStyle(0xdcc596, 1);
       g.fillCircle(0, 0, boss ? 21 : 15);
       c.add(g);
       if (boss) c.add(kitImage(this, 'em_skull', 0, 0, 34, 34).setAlpha(0.45));

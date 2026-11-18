@@ -6,6 +6,7 @@
 import { SceneKey, type HudLayout, type RenderView } from '../../contracts';
 import { getApp } from '../../core/app';
 import { C, addText } from '../style';
+import { divider } from '../ui/skin';
 import { Button, confirmDialog, panel } from '../ui/widgets';
 
 const DEPTH = 5000;
@@ -51,21 +52,22 @@ export class PauseMenu {
       this.objs.push(o);
       return o;
     };
-    const dim = keep(s.add.rectangle(0, 0, vw, vh, 0x07040b, 0.66).setOrigin(0, 0));
+    const dim = keep(s.add.rectangle(0, 0, vw, vh, 0x070302, 0.66).setOrigin(0, 0));
     dim.setInteractive();
-    const pw = 520;
-    const ph = 420;
+    const pw = 540;
+    const ph = 440;
     const px = (vw - pw) / 2;
     const py = (vh - ph) / 2;
     keep(panel(s, px, py, pw, ph));
-    keep(addText(s, vw / 2, py + 22, t('ui.paused'), 36, { originX: 0.5, color: C.gold }));
+    keep(addText(s, vw / 2, py + 26, t('ui.paused'), 40, { originX: 0.5, color: C.rubric, font: 'head' }));
     const w = this.view.world;
     const waveKey = w.wave.endless ? 'ui.wave_endless' : 'ui.wave';
-    keep(addText(s, vw / 2, py + 70, t(waveKey, { n: w.wave.number, total: this.view.data.balance.campaignWaves }), 18, { originX: 0.5, color: C.textDim, bold: false }));
+    keep(addText(s, vw / 2, py + 78, t(waveKey, { n: w.wave.number, total: this.view.data.balance.campaignWaves }), 18, { originX: 0.5, color: C.inkSoft, bold: false }));
+    keep(divider(s, vw / 2, py + 124, 340));
 
     const bw = pw - 80;
-    let y = py + 140;
-    const resume = new Button(s, vw / 2, y, t('ui.resume'), () => app.bus.emit('ui:pause', { paused: false }), { w: bw, h: 64, variant: 'primary', size: 26, icon: 'ui_play' });
+    let y = py + 172;
+    const resume = new Button(s, vw / 2, y, t('ui.resume'), () => app.bus.emit('ui:pause', { paused: false }), { w: bw, h: 64, variant: 'primary', size: 28, icon: 'ui_play', head: true });
     keep(resume);
     y += 78;
     const restart = new Button(s, vw / 2, y, t('pause.restart_wave'), () => {
@@ -88,11 +90,11 @@ export class PauseMenu {
     const st = app.profile.settings;
     const lang = new Button(s, vw / 2 - half / 2 - 7, y, t('pause.lang', { lang: t(st.lang === 'th' ? 'lang.th' : 'lang.en') }), () => {
       app.applySettings({ ...app.profile.settings, lang: app.profile.settings.lang === 'th' ? 'en' : 'th' });
-    }, { w: half, h: 58, variant: 'ghost', size: 19, icon: 'ui_globe', iconSize: 28 });
+    }, { w: half, h: 56, variant: 'secondary', size: 18, icon: 'ui_globe', iconSize: 26 });
     keep(lang);
     const fps = new Button(s, vw / 2 + half / 2 + 7, y, t(st.fpsCap === 60 ? 'pause.fps60_on' : 'pause.fps60_off'), () => {
       app.applySettings({ ...app.profile.settings, fpsCap: app.profile.settings.fpsCap === 60 ? 0 : 60 });
-    }, { w: half, h: 58, variant: st.fpsCap === 60 ? 'selected' : 'ghost', size: 19 });
+    }, { w: half, h: 56, variant: st.fpsCap === 60 ? 'primary' : 'ghost', size: 18 });
     keep(fps);
     y += 74;
     const quit = new Button(s, vw / 2, y, t('ui.quit_map'), () => {

@@ -56,7 +56,7 @@ export class TitleScene extends MenuScene {
     // the menu hangs from the logo bar on chains, like tavern signs
     const bw = 360;
     let y = 290;
-    let chainTop = 176;
+    let chainTop = 214;
     const progress = this.hasProgress();
     const sign = (h: number) => {
       for (const sx of [-1, 1]) {

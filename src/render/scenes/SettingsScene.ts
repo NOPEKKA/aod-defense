@@ -1,5 +1,5 @@
 import { SceneKey, type Settings, type SettingsSceneData } from '../../contracts';
-import { C, addNum, addText, numStr } from '../style';
+import { C, addText, numStr } from '../style';
 import { KIT, coin, inkRule, nine } from '../ui/skin';
 import { Button, confirmDialog, panel, toast } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
@@ -31,13 +31,13 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     this.header(this.t('ui.settings'), { to: () => this.back() }, false);
     const vw = this.vw;
     const s = this.app.profile.settings;
-    const colW = Math.min(560, (vw - 100) / 2);
-    const lx = vw / 2 - colW - 14;
-    const rx = vw / 2 + 14;
+    const colW = Math.min(540, (vw - 140) / 2);
+    const lx = vw / 2 - colW - 30;
+    const rx = vw / 2 + 30;
     const top = 100;
     const rowH = 76;
-    panel(this, lx - 26, top - 18, colW + 52, rowH * 7 + 40);
-    panel(this, rx - 26, top - 18, colW + 52, rowH * 7 + 40);
+    panel(this, lx - 20, top - 18, colW + 40, rowH * 7 + 40);
+    panel(this, rx - 20, top - 18, colW + 40, rowH * 7 + 40);
     const rules = this.add.graphics();
     for (let i = 1; i < 7; i++) {
       inkRule(rules, lx + 6, top + rowH * i - 2, lx + colW - 6, 0.22);
@@ -113,7 +113,7 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     nine(this, 'bar_trough', barX - 4, y - 11, barW + 8, 22);
     const fill = this.add.image(barX, y - 7, KIT, 'bar_fill').setOrigin(0, 0).setDisplaySize(barW, 14).setTint(0xa8241a);
     const knob = coin(this, barX, y, 'gold', 30);
-    const pct = addNum(this, barX + barW / 2, y + 25, '', 13).setOrigin(0.5, 0.5).setTint(0x3a2414);
+    const pct = addText(this, barX + barW / 2, y + 26, '', 14, { originX: 0.5, originY: 0.5, color: C.inkSoft });
     let cur = value;
     const draw = (v: number) => {
       fill.setCrop(0, 0, fill.frame.realWidth * v, fill.frame.realHeight);
