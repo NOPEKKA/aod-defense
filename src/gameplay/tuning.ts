@@ -144,6 +144,8 @@ export const TUNING_DEFAULTS = {
   'ai.enemyEnterDepth': 160,
   /** a boss 'summon' step only tops the field up to this many live hostiles */
   'boss.summonCap': 8,
+  /** px/s^2 a body that died in the air falls with */
+  'combat.corpseGravity': 1800,
   /** out-of-contact march: no foe within marchRange -> walk speed x marchMul */
   'ai.marchRange': 520,
   'ai.marchMul': 1.7,
@@ -195,6 +197,7 @@ export interface Tuning {
   knockbackHop: number;
   speedJitter: number;
   marchRange: number;
+  corpseGravity: number;
   marchMul: number;
   enemyEnterDepth: number;
   backKeepBack: number;
@@ -304,6 +307,7 @@ export function tuningOf(data: GameData): Tuning {
     knockbackHop: get('ai.knockbackHop'),
     speedJitter: Math.max(0, Math.min(0.3, get('ai.speedJitter'))),
     marchRange: Math.max(0, get('ai.marchRange')),
+    corpseGravity: Math.max(100, get('combat.corpseGravity')),
     marchMul: Math.max(1, get('ai.marchMul')),
     enemyEnterDepth: Math.max(0, get('ai.enemyEnterDepth')),
     backKeepBack: get('ai.backKeepBack'),

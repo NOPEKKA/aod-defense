@@ -95,6 +95,13 @@ export function cleanupTick(st: GState): void {
     if (!e.alive) continue;
     const rt = st.rts[s];
     if (rt.corpse > 0) {
+      // a body that died in the air (flyers, knocked-up units) falls to the ground first,
+      // so its death pose never hangs in mid-air
+      if (e.alt > 0) {
+        rt.fallV += st.T.corpseGravity * SIM_DT;
+        e.alt = Math.max(0, e.alt - rt.fallV * SIM_DT);
+        if (e.alt > 0) continue;
+      }
       rt.corpse -= SIM_DT;
       if (rt.corpse <= 1e-9) release(st, s);
       continue;
