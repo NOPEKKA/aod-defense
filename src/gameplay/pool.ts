@@ -202,18 +202,25 @@ function setAttack(rt: Rt, a: AttackDef, damage: number): void {
   rt.windup = Math.min(a.windup, a.interval);
 }
 
+/** wave number used for difficulty scaling (1-based) */
+function waveN(st: GState): number {
+  return Math.max(1, st.world.wave.number || 1);
+}
+
 export function spawnEnemyAt(st: GState, def: EnemyDef, x: number, scheduled: boolean): number {
   const slot = alloc(st, 'enemy', 'enemy', def.id, def.sprite, x, st.data.balance.world.groundY);
   const e = st.world.entities[slot];
   const rt = st.rts[slot];
-  e.hp = e.maxHp = def.stats.hp;
+  const dif = st.data.balance.difficulty;
+  const n = waveN(st) - 1;
+  e.hp = e.maxHp = Math.max(1, Math.round(def.stats.hp * (dif.enemyHpBase + dif.enemyHpPerWave * n)));
   e.armor = def.stats.armor;
   e.flying = def.flying;
   e.size = def.size;
   rt.enemy = def;
-  setAttack(rt, def.stats.attack, def.stats.attack.damage);
+  setAttack(rt, def.stats.attack, def.stats.attack.damage * (dif.enemyDmgBase + dif.enemyDmgPerWave * n));
   // small per-body speed spread so a group never marches in lockstep
-  rt.speed = def.stats.speed * st.jitter.range(1 - st.T.speedJitter, 1 + st.T.speedJitter);
+  rt.speed = def.stats.speed * dif.enemySpeedMul * st.jitter.range(1 - st.T.speedJitter, 1 + st.T.speedJitter);
   rt.scheduled = scheduled;
   setBody(st, rt, e);
   applyBehaviors(rt, def.behaviors, def.stats.attack);
@@ -232,7 +239,7 @@ export function spawnBossAt(st: GState, def: BossDef, x: number, scheduled: bool
   const slot = alloc(st, 'boss', 'enemy', def.id, def.sprite, x, middleRowY(st));
   const e = st.world.entities[slot];
   const rt = st.rts[slot];
-  e.hp = e.maxHp = def.hp;
+  e.hp = e.maxHp = Math.round(def.hp * st.data.balance.difficulty.bossHpMul);
   e.armor = def.armor;
   e.flying = def.flying;
   e.size = def.size;

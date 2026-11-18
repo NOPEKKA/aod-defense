@@ -391,6 +391,14 @@ export const DEATH_RING = 64;
 export function getState(world: WorldState, data: GameData, bus: EventBus, mods: () => ModifierQuery): GState {
   let st = states.get(world);
   if (st) return st;
+  st = createState(world, data, bus, mods);
+  // dev builds: expose the live gameplay state for debugging probes
+  if (import.meta.env.DEV) (globalThis as unknown as { __aoddGS?: GState }).__aoddGS = st;
+  return st;
+}
+
+function createState(world: WorldState, data: GameData, bus: EventBus, mods: () => ModifierQuery): GState {
+  let st: GState;
   const deaths: DeathRecord[] = [];
   for (let i = 0; i < DEATH_RING; i++) deaths.push({ defId: '', x: 0, y: 0, t: -1e9, used: true });
   st = {

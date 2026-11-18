@@ -153,6 +153,21 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
   const holdLine = w.stairsX + w.holdAheadOfStairs;
   let chain = dir * INF; // cap from the nearest settled unit ahead
   let frontmost = player ? -INF : INF;
+  // up to `rows` settled units share one x (one per lane row) so a melee line fights
+  // shoulder to shoulder instead of single file; the next one queues a spacing behind
+  const rows = Math.max(1, w.laneRows.length);
+  let stack = 0;
+  let stackX = NaN;
+  const settleAt = (x: number, gap: number): number => {
+    if (stack < rows - 1 && (stackX !== stackX || Math.abs(x - stackX) < 1)) {
+      if (stackX !== stackX) stackX = x;
+      stack++;
+      return stackX;
+    }
+    stack = 0;
+    stackX = NaN;
+    return x - dir * gap;
+  };
   for (let k = 0; k < layer.length; k++) {
     const s = layer[k];
     const e = ents[s];
@@ -163,7 +178,7 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
     const gap = !player && e.x - w.bookX <= T.bookSiegeRange ? Math.min(spacing, T.bookSpacing) : spacing;
     if (immobile(e, rt) || rt.wState === W_WINDUP) {
       if (statusOf(e, 'stun')) setAnim(e, 'stunned');
-      chain = e.x - dir * gap;
+      chain = settleAt(e.x, gap);
       continue;
     }
     const hitsFlying = !!rt.attack && rt.attack.hitsFlying;
@@ -293,7 +308,7 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
     if (moved !== 0) setAnim(e, 'walk');
     else if (rt.animHold <= 0) setAnim(e, 'idle');
     if (retreat) chain = Math.min(e.x, target) - dir * spacing;
-    else if (!advancing && moveDir === dir) chain = e.x - dir * gap;
+    else if (!advancing && moveDir === dir) chain = settleAt(e.x, gap);
   }
   return frontmost;
 }

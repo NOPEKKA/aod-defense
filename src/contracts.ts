@@ -347,6 +347,20 @@ export const BalanceSchema = z.object({
     dodge: z.object({ distance: z.number(), invuln: z.number(), cooldown: z.number(), unlockWave: z.number().int() }),
   }),
   book: z.object({ hp: z.number().positive() }),
+  /**
+   * Global challenge knobs. Enemy hp/damage multiplier on wave n = base + perWave * (n - 1)
+   * (endless keeps growing); bosses get their own hp multiplier.
+   */
+  difficulty: z
+    .object({
+      enemyHpBase: z.number().positive(),
+      enemyHpPerWave: z.number().min(0),
+      enemyDmgBase: z.number().positive(),
+      enemyDmgPerWave: z.number().min(0),
+      enemySpeedMul: z.number().positive(),
+      bossHpMul: z.number().positive(),
+    })
+    .default({ enemyHpBase: 1, enemyHpPerWave: 0, enemyDmgBase: 1, enemyDmgPerWave: 0, enemySpeedMul: 1, bossHpMul: 1 }),
   economy: z.object({
     ironStart: z.number().min(0),
     ironRate: z.number().min(0),

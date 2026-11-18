@@ -59,14 +59,22 @@
   "book": {
     "hp": 500
   },
+  "difficulty": {
+    "enemyHpBase": 1.3,
+    "enemyHpPerWave": 0.018,
+    "enemyDmgBase": 1.2,
+    "enemyDmgPerWave": 0.008,
+    "enemySpeedMul": 1.1,
+    "bossHpMul": 1.3
+  },
   "economy": {
-    "ironStart": 15,
+    "ironStart": 10,
     "ironRate": 4,
     "ironMax": 200,
     "manaMax": 100,
     "manaRegen": 2,
     "goldPerThreat": 0.5,
-    "silverPerThreat": 0.6,
+    "silverPerThreat": 0.5,
     "goldLifetime": 15,
     "waveBonus": {
       "base": 20,
