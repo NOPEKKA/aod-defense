@@ -1,6 +1,6 @@
 import { SceneKey, type Settings, type SettingsSceneData } from '../../contracts';
 import { C, addNum, addText, numStr } from '../style';
-import { barFill, trough } from '../ui/skin';
+import { KIT, coin, inkRule, nine } from '../ui/skin';
 import { Button, confirmDialog, panel, toast } from '../ui/widgets';
 import { MenuScene } from './MenuScene';
 
@@ -36,8 +36,13 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     const rx = vw / 2 + 14;
     const top = 100;
     const rowH = 76;
-    panel(this, lx - 12, top - 10, colW + 24, rowH * 7 + 24);
-    panel(this, rx - 12, top - 10, colW + 24, rowH * 7 + 24);
+    panel(this, lx - 26, top - 18, colW + 52, rowH * 7 + 40);
+    panel(this, rx - 26, top - 18, colW + 52, rowH * 7 + 40);
+    const rules = this.add.graphics();
+    for (let i = 1; i < 7; i++) {
+      inkRule(rules, lx + 6, top + rowH * i - 2, lx + colW - 6, 0.22);
+      if (i !== 3 && i < 6) inkRule(rules, rx + 6, top + rowH * i - 2, rx + colW - 6, 0.22);
+    }
 
     let y = top + rowH / 2;
     this.choice(lx, y, colW, this.t('settings.lang'), [['th', this.t('lang.th')], ['en', this.t('lang.en')]], s.lang, (v) => this.apply({ lang: v as Settings['lang'] }));
@@ -60,14 +65,14 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     y += rowH;
     this.volume(rx, y, colW, this.t('settings.music'), s.musicVolume, (v) => this.apply({ musicVolume: v }));
     y += rowH;
-    addText(this, rx + 8, y - 6, this.t('settings.save'), 22, { originY: 0.5, color: C.gold });
-    addText(this, rx + 8, y + 22, this.t('settings.save_hint'), 14, { originY: 0.5, color: C.textDim, bold: false, wrap: colW - 16 });
+    addText(this, rx + 8, y - 8, this.t('settings.save'), 26, { originY: 0.5, color: C.rubric, font: 'head' });
+    addText(this, rx + 8, y + 22, this.t('settings.save_hint'), 14, { originY: 0.5, color: C.inkSoft, bold: false, wrap: colW - 16 });
     y += rowH;
     const bw = (colW - 16) / 2;
-    new Button(this, rx + bw / 2, y, this.t('settings.export'), () => this.exportSave(), { w: bw, h: 62, variant: 'secondary', size: 21, icon: 'ui_export', iconSize: 30 });
-    new Button(this, rx + colW - bw / 2, y, this.t('settings.import'), () => this.importSave(), { w: bw, h: 62, variant: 'secondary', size: 21, icon: 'ui_import', iconSize: 30 });
+    new Button(this, rx + bw / 2, y, this.t('settings.export'), () => this.exportSave(), { w: bw, h: 60, variant: 'secondary', size: 20, icon: 'ui_export', iconSize: 28 });
+    new Button(this, rx + colW - bw / 2, y, this.t('settings.import'), () => this.importSave(), { w: bw, h: 60, variant: 'secondary', size: 20, icon: 'ui_import', iconSize: 28 });
     y += rowH;
-    new Button(this, rx + colW / 2, y, this.t('settings.reset'), () => this.resetSave(), { w: colW, h: 62, variant: 'danger', size: 21, icon: 'ui_trash', iconSize: 30 });
+    new Button(this, rx + colW / 2, y, this.t('settings.reset'), () => this.resetSave(), { w: colW, h: 60, variant: 'danger', size: 20, icon: 'ui_trash', iconSize: 28 });
 
     if (this.pendingToast) {
       toast(this, this.vw, this.pendingToast.text, this.pendingToast.color);
@@ -76,7 +81,7 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
   }
 
   private label(x: number, y: number, text: string, maxW: number): void {
-    const t = addText(this, x + 8, y, text, 21, { originY: 0.5 });
+    const t = addText(this, x + 8, y, text, 21, { originY: 0.5, color: C.ink });
     if (t.width > maxW) t.setFontSize(17);
   }
 
@@ -85,7 +90,7 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     const bw = Math.min(150, (w * 0.56 - 8 * (opts.length - 1)) / opts.length);
     opts.forEach(([v, text], i) => {
       const bx = x + w - (opts.length - i) * bw - (opts.length - 1 - i) * 8 + bw / 2;
-      new Button(this, bx, y, text, () => v !== current && set(v), { w: bw, h: 58, variant: v === current ? 'selected' : 'ghost', size: 18 });
+      new Button(this, bx, y, text, () => v !== current && set(v), { w: bw, h: 56, variant: v === current ? 'primary' : 'ghost', size: 18 });
     });
   }
 
@@ -103,26 +108,16 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     const right = x + w;
     const barW = w * 0.36;
     const barX = right - 58 - 10 - barW;
-    new Button(this, barX - 10 - 29, y, '−', () => set(Math.max(0, Math.round((value - step) * 10) / 10)), { w: 58, h: 56, variant: 'ghost', size: 28 });
-    new Button(this, right - 29, y, '+', () => set(Math.min(1, Math.round((value + step) * 10) / 10)), { w: 58, h: 56, variant: 'ghost', size: 28 });
-    const g = this.add.graphics();
-    const knob = this.add.graphics();
-    const pct = addNum(this, barX + barW / 2, y + 24, '', 13).setOrigin(0.5, 0.5);
+    new Button(this, barX - 10 - 29, y, '−', () => set(Math.max(0, Math.round((value - step) * 10) / 10)), { w: 58, h: 54, variant: 'secondary', size: 28 });
+    new Button(this, right - 29, y, '+', () => set(Math.min(1, Math.round((value + step) * 10) / 10)), { w: 58, h: 54, variant: 'secondary', size: 28 });
+    nine(this, 'bar_trough', barX - 4, y - 11, barW + 8, 22);
+    const fill = this.add.image(barX, y - 7, KIT, 'bar_fill').setOrigin(0, 0).setDisplaySize(barW, 14).setTint(0xa8241a);
+    const knob = coin(this, barX, y, 'gold', 30);
+    const pct = addNum(this, barX + barW / 2, y + 25, '', 13).setOrigin(0.5, 0.5).setTint(0x3a2414);
     let cur = value;
     const draw = (v: number) => {
-      g.clear();
-      trough(g, { x: barX, y: y - 8, w: barW, h: 16 });
-      barFill(g, { x: barX, y: y - 8, w: barW, h: 16 }, v, 0x3a8ce8);
-      knob.clear();
-      const kx = barX + barW * v;
-      knob.fillStyle(0x000000, 0.4);
-      knob.fillCircle(kx + 1, y + 3, 13);
-      knob.fillStyle(0x15131a, 1);
-      knob.fillCircle(kx, y, 13);
-      knob.fillStyle(0xd8c49a, 1);
-      knob.fillCircle(kx, y, 10);
-      knob.fillStyle(0xffffff, 0.5);
-      knob.fillCircle(kx - 3, y - 3, 3.5);
+      fill.setCrop(0, 0, fill.frame.realWidth * v, fill.frame.realHeight);
+      knob.setX(barX + barW * v);
       pct.setText(`${numStr(Math.round(v * 100))}%`);
     };
     draw(cur);

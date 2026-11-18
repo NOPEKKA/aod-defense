@@ -33,6 +33,13 @@ export interface FontSpec {
   base: number;
   outline: number;
   chars: string;
+  /** CSS font family (default NUM_FONT_FAMILY) and weight (default bold) */
+  family?: string;
+  weight?: string;
+  /** outline colour (default OUT) */
+  outlineColor?: string;
+  /** extra px of hard drop shadow under each glyph (engraved look) */
+  drop?: number;
 }
 
 interface Glyph {
@@ -133,12 +140,14 @@ interface Placed {
 
 function layoutFont(spec: FontSpec, R: number): { item: ArtItem; glyphs: Glyph[]; lineH: number } {
   const meas = document.createElement('canvas').getContext('2d')!;
-  meas.font = `bold ${spec.base}px ${NUM_FONT_FAMILY}`;
+  const font = `${spec.weight ?? 'bold'} ${spec.base}px ${spec.family ?? NUM_FONT_FAMILY}`;
+  const drop = spec.drop ?? 0;
+  meas.font = font;
   const lineH = Math.ceil(spec.base * 1.32);
   // centre the digits by their real ink box (fonts such as Kanit sit high on a 'middle' baseline)
   const dm = meas.measureText('0123456789');
   const inkMid = ((dm.actualBoundingBoxAscent || spec.base * 0.72) - (dm.actualBoundingBoxDescent || 0)) / 2;
-  const gh = Math.ceil((lineH + 2) * R);
+  const gh = Math.ceil((lineH + 2 + drop) * R);
   const maxRow = Math.ceil(520 * R);
   const glyphs: Glyph[] = [];
   let x = 0;
@@ -164,16 +173,23 @@ function layoutFont(spec: FontSpec, R: number): { item: ArtItem; glyphs: Glyph[]
     ax: 0,
     ay: 0,
     draw(ctx) {
-      ctx.font = `bold ${spec.base}px ${NUM_FONT_FAMILY}`;
+      ctx.font = font;
       ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'left';
       ctx.lineJoin = 'round';
       ctx.lineWidth = spec.outline * 2;
-      ctx.strokeStyle = OUT;
-      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = spec.outlineColor ?? OUT;
       for (const g of glyphs) {
         const lx = g.x / R + spec.outline + 1;
         const ly = g.y / R + (lineH + 2) / 2 + 1 + inkMid;
+        if (drop > 0) {
+          ctx.fillStyle = spec.outlineColor ?? OUT;
+          ctx.globalAlpha = 0.85;
+          ctx.strokeText(g.ch, lx, ly + drop);
+          ctx.fillText(g.ch, lx, ly + drop);
+          ctx.globalAlpha = 1;
+        }
+        ctx.fillStyle = '#ffffff';
         ctx.strokeText(g.ch, lx, ly);
         ctx.fillText(g.ch, lx, ly);
       }

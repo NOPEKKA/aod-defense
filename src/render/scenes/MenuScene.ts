@@ -9,8 +9,8 @@ import { spriteFrame } from '../art/atlas';
 import { bgForChapter, queueBackground, queueSprite, syncQuality } from '../assets/library';
 import { clearSpriteInfo } from '../assets/sprites';
 import { addStaticCourtyard } from '../battle/Backdrop';
-import { addNum, numStr } from '../style';
-import { SKIN, addIcon, goldStyle, stonePanel } from '../ui/skin';
+import { C, addNum, addText, numStr } from '../style';
+import { SKIN, coin, divider, ironPlate, queueUiKit, ribbon } from '../ui/skin';
 import { Button } from '../ui/widgets';
 
 export abstract class MenuScene<D extends object = object> extends Phaser.Scene {
@@ -41,6 +41,7 @@ export abstract class MenuScene<D extends object = object> extends Phaser.Scene 
     const bg = bgForChapter(this.chapter(app));
     if (bg) queueBackground(this, bg.id);
     for (const k of this.menuSprites()) queueSprite(this, k);
+    queueUiKit(this);
   }
 
   create(data: D): void {
@@ -98,27 +99,39 @@ export abstract class MenuScene<D extends object = object> extends Phaser.Scene 
     addStaticCourtyard(this, this.chapter(), scroll, this.vw, -100, { data: this.app.data });
     if (dim > 0) {
       const px = spriteFrame('px');
-      this.add.image(0, 0, px.tex, px.frame).setOrigin(0, 0).setDisplaySize(this.vw, 720).setTint(0x0b0612).setAlpha(dim).setDepth(-90);
+      this.add.image(0, 0, px.tex, px.frame).setOrigin(0, 0).setDisplaySize(this.vw, 720).setTint(0x0d0604).setAlpha(dim).setDepth(-90);
       const v = spriteFrame('vignette');
       this.add.image(0, 0, v.tex, v.frame).setOrigin(0, 0).setDisplaySize(this.vw, 720).setTint(0x000000).setAlpha(0.85).setDepth(-89);
     }
   }
 
-  /** Title + optional back button + gold counter along the top. */
+  /** Title on a blood-red banner + optional back plank + gold purse along the top. */
   protected header(title: string, back?: { label?: string; to: () => void }, showGold = true): void {
-    this.add.text(this.vw / 2, 46, title, goldStyle(38)).setOrigin(0.5).setResolution(this.R).setShadow(0, 3, 'rgba(0,0,0,0.6)', 4, true, true);
+    const cx = this.vw / 2;
+    const t = addText(this, cx, 44, title, 34, { originX: 0.5, originY: 0.5, color: '#f6e2b0', font: 'head', shadow: true });
+    ribbon(this, cx, 46, t.width);
+    t.setDepth(1);
     if (back) {
-      new Button(this, 96, 48, back.label ?? this.t('ui.back'), back.to, { w: 160, h: 60, variant: 'ghost', size: 22, icon: 'ui_back', iconSize: 28 });
+      new Button(this, 98, 46, back.label ?? this.t('ui.back'), back.to, { w: 168, h: 58, variant: 'secondary', size: 21, icon: 'ui_back', iconSize: 26 });
     }
-    if (showGold) this.goldBadge(this.vw - 24, 48);
+    if (showGold) this.goldBadge(this.vw - 22, 46);
   }
 
   protected goldBadge(right: number, cy: number): Phaser.GameObjects.BitmapText {
-    const w = 190;
-    const g = this.add.graphics();
-    stonePanel(g, { x: right - w, y: cy - 26, w, h: 52 }, 12);
-    addIcon(this, right - w + 30, cy, 'ui_gold', 'ui_gold', 38);
-    return addNum(this, right - 20, cy, numStr(this.app.profile.gold), 28, true).setOrigin(1, 0.5).setTint(SKIN.gold);
+    const w = 178;
+    ironPlate(this, { x: right - w, y: cy - 27, w, h: 56 });
+    coin(this, right - w + 32, cy, 'gold', 34);
+    return addNum(this, right - 22, cy - 1, numStr(this.app.profile.gold), 28, true).setOrigin(1, 0.5).setTint(SKIN.gold);
+  }
+
+  /** gold rule under a floating heading */
+  protected rule(cx: number, y: number, w: number): void {
+    divider(this, cx, y, w, true).setAlpha(0.9);
+  }
+
+  /** muted caption colour on the dark backdrop */
+  protected get dim(): string {
+    return C.textDim;
   }
 
   protected go(key: SceneKeyName, data?: object): void {

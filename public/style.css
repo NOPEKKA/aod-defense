@@ -18,6 +18,14 @@
     font-display: block;
 }
 
+/* Taviraj (SIL OFL 1.1, see fonts/Taviraj-OFL.txt): the UI body face, bundled */
+@font-face {
+    font-family: "Taviraj";
+    src: url("fonts/Taviraj-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-display: swap;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -29,9 +37,9 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: #14101c;
-    color: #f4eee0;
-    font-family: "Kanit", system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
+    background-color: #0e0907;
+    color: #f1e4c4;
+    font-family: "Taviraj", "Kanit", system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
     touch-action: none;
     -webkit-user-select: none;
     user-select: none;
@@ -50,7 +58,7 @@ body {
     position: fixed;
     inset: 0;
     z-index: 10;
-    background: #14101c;
+    background: #0e0907;
     align-items: center;
     justify-content: center;
     flex-direction: column;
