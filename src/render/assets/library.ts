@@ -96,6 +96,8 @@ export function chooseQuality(settings: Pick<Settings, 'texQuality'>): Quality {
   if (settings.texQuality === 'hd' || settings.texQuality === 'sd') return settings.texQuality;
   const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
   if (mem !== undefined && mem <= 4) return 'sd';
+  // iOS exposes no deviceMemory: any touch-first phone / tablet gets the lighter set
+  if (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches && matchMedia('(hover: none)').matches) return 'sd';
   return 'hd';
 }
 

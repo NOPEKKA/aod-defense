@@ -95,8 +95,18 @@ export class AudioSystem {
   unlock(): void {
     const eng = this.ensure();
     if (!eng) return;
-    if (eng.ctx.state !== 'running' && !document.hidden) {
-      void (eng.ctx as AudioContext).resume().catch(() => undefined);
+    const ctx = eng.ctx as AudioContext;
+    // iOS Safari: state can be 'suspended' or 'interrupted' (after backgrounding / a call)
+    if ((ctx.state as string) === 'running' || document.hidden) return;
+    void ctx.resume().catch(() => undefined);
+    // iOS: a silent buffer started inside the gesture fully unlocks output
+    try {
+      const src = ctx.createBufferSource();
+      src.buffer = ctx.createBuffer(1, 1, 22050);
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch {
+      /* ignore */
     }
   }
 
@@ -109,6 +119,7 @@ export class AudioSystem {
       void ctx.suspend().catch(() => undefined);
     } else {
       this.hiddenSuspended = false;
+      // may need a fresh gesture on iOS: the persistent gesture listeners retry
       void ctx.resume().catch(() => undefined);
     }
   }
