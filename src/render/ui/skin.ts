@@ -1,152 +1,190 @@
 /**
- * The HUD / menu material (ART_BIBLE section 8): dark stone slabs with riveted iron rims,
- * wooden boards for the unit slots, round iron-ringed spell buttons, gold numbers with a black
- * edge. Everything is drawn into a Graphics object (cheap, batched with the rest of the HUD).
+ * The UI material kit ("war ledger" look): aged vellum pages in tooled-leather bindings with
+ * iron corner guards, oak / oxblood-leather / brass plank buttons strapped with forged iron,
+ * iron HUD plaques, wax seals and stamped coins. The art is procedural (numpy noise +
+ * heightmap lighting, see output/ui-tools) baked at 2x logical px into public/assets/ui/kit:
+ * one atlas (`uikit`) plus seamless tiles for large fills. Big surfaces are a TileSprite fill
+ * under a NineSlice frame, so nothing stretches noticeably.
  */
 import type { Rect } from '../../contracts';
 import { icon as bakedIcon } from '../assets/library';
 import { spriteFrame } from '../art/atlas';
 
+export const KIT = 'uikit';
+export const TILE_PARCH = 'uikit_parch';
+export const TILE_WOOD = 'uikit_wood';
+export const TILE_LEATHER = 'uikit_leather';
+/** kit texture px per logical px */
+export const KIT_RES = 2;
+const KS = 1 / KIT_RES;
+
 export const SKIN = {
-  stone: 0x2e2a34,
-  stoneHi: 0x4a4552,
-  stoneLo: 0x1a171f,
-  iron: 0x15131a,
-  ironHi: 0x7c7886,
-  rivet: 0xb4ab98,
-  wood: 0x5d3a26,
-  woodHi: 0x8a5433,
-  woodLo: 0x3a2418,
-  gold: 0xffd76a,
-  goldText: '#ffd76a',
-  ink: '#140c08',
+  gold: 0xe9c463,
+  goldText: '#e9c463',
+  silver: 0xdfe6ee,
+  silverText: '#e4eaf0',
+  ink: '#1a0d06',
+  inkN: 0x24160c,
+  blood: 0x9a1c12,
+  bone: 0xefe3c4,
 } as const;
 
-function rivet(g: Phaser.GameObjects.Graphics, x: number, y: number, r = 2.6): void {
-  g.fillStyle(0x0a080c, 0.9);
-  g.fillCircle(x + 0.6, y + 0.8, r);
-  g.fillStyle(SKIN.rivet, 1);
-  g.fillCircle(x, y, r);
-  g.fillStyle(0xffffff, 0.55);
-  g.fillCircle(x - r * 0.35, y - r * 0.35, r * 0.4);
+/** queue the kit (call from a preload; skipped once loaded) */
+export function queueUiKit(scene: Phaser.Scene): void {
+  const base = 'assets/ui/kit/';
+  if (!scene.textures.exists(KIT)) scene.load.atlas(KIT, `${base}kit.webp`, `${base}kit.json`);
+  if (!scene.textures.exists(TILE_PARCH)) scene.load.image(TILE_PARCH, `${base}parchment.webp`);
+  if (!scene.textures.exists(TILE_WOOD)) scene.load.image(TILE_WOOD, `${base}wood.webp`);
+  if (!scene.textures.exists(TILE_LEATHER)) scene.load.image(TILE_LEATHER, `${base}leather.webp`);
 }
 
-/** Dark stone slab with an iron rim and corner rivets. */
-export function stonePanel(g: Phaser.GameObjects.Graphics, r: Rect, rad = 10, alpha = 0.94, rivets = true): void {
-  // drop shadow
-  g.fillStyle(0x000000, 0.35);
-  g.fillRoundedRect(r.x + 1, r.y + 4, r.w, r.h, rad);
-  // iron rim
-  g.fillStyle(SKIN.iron, alpha);
-  g.fillRoundedRect(r.x - 2, r.y - 2, r.w + 4, r.h + 4, rad + 2);
-  // stone face: lighter top half, darker bottom
-  g.fillStyle(SKIN.stone, alpha);
-  g.fillRoundedRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2, rad);
-  // top light fading down in a few steps (no hard edge across big panels)
-  const hh = Math.max(4, Math.min(44, (r.h - 6) * 0.45));
-  for (let i = 0; i < 4; i++) {
-    g.fillStyle(SKIN.stoneHi, 0.1 * alpha);
-    g.fillRoundedRect(r.x + 3, r.y + 3, r.w - 6, hh * (1 - i * 0.22), { tl: rad - 2, tr: rad - 2, bl: 2, br: 2 });
-  }
-  g.fillStyle(SKIN.stoneLo, 0.6 * alpha);
-  g.fillRect(r.x + rad * 0.5, r.y + r.h - 6, r.w - rad, 3);
-  // inner bevel line
-  g.lineStyle(1, SKIN.ironHi, 0.45 * alpha);
-  g.strokeRoundedRect(r.x + 1.5, r.y + 1.5, r.w - 3, r.h - 3, rad - 1);
-  if (rivets && r.w > 30 && r.h > 30) {
-    const k = Math.min(9, rad * 0.8 + 3);
-    rivet(g, r.x + k, r.y + k);
-    rivet(g, r.x + r.w - k, r.y + k);
-    rivet(g, r.x + k, r.y + r.h - k);
-    rivet(g, r.x + r.w - k, r.y + r.h - k);
-  }
+export function hasKit(scene: Phaser.Scene, frame?: string): boolean {
+  if (!scene.textures.exists(KIT)) return false;
+  return frame === undefined || scene.textures.get(KIT).has(frame);
 }
 
-/** Wooden board (unit slots): planks with grain and iron corner brackets. */
-export function woodPanel(g: Phaser.GameObjects.Graphics, r: Rect, rad = 8, alpha = 0.96): void {
-  g.fillStyle(0x000000, 0.35);
-  g.fillRoundedRect(r.x + 1, r.y + 4, r.w, r.h, rad);
-  g.fillStyle(SKIN.iron, alpha);
-  g.fillRoundedRect(r.x - 2, r.y - 2, r.w + 4, r.h + 4, rad + 2);
-  g.fillStyle(SKIN.wood, alpha);
-  g.fillRoundedRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2, rad);
-  // planks
-  const n = 3;
-  const pw = (r.w - 2) / n;
-  for (let i = 0; i < n; i++) {
-    const x = r.x + 1 + i * pw;
-    g.fillStyle(i % 2 ? SKIN.woodHi : SKIN.wood, 0.35 * alpha);
-    g.fillRect(x + 1, r.y + 4, pw - 2, r.h - 8);
-    g.fillStyle(SKIN.woodLo, 0.7 * alpha);
-    g.fillRect(x + pw - 1, r.y + 3, 1.5, r.h - 6);
-    // grain
-    g.fillStyle(SKIN.woodLo, 0.25 * alpha);
-    g.fillRect(x + pw * 0.3, r.y + 8, 1, r.h * 0.35);
-    g.fillRect(x + pw * 0.65, r.y + r.h * 0.45, 1, r.h * 0.4);
-  }
-  // top light and inner shadow
-  g.fillStyle(0xffffff, 0.08 * alpha);
-  g.fillRect(r.x + 3, r.y + 3, r.w - 6, 3);
-  g.fillStyle(0x000000, 0.25 * alpha);
-  g.fillRect(r.x + 3, r.y + r.h - 7, r.w - 6, 4);
-  // iron corner brackets
-  const b = 12;
-  g.fillStyle(0x3a3640, alpha);
-  for (const [cx, cy, sx, sy] of [[r.x, r.y, 1, 1], [r.x + r.w, r.y, -1, 1], [r.x, r.y + r.h, 1, -1], [r.x + r.w, r.y + r.h, -1, -1]] as const) {
-    g.fillTriangle(cx, cy, cx + sx * b, cy, cx, cy + sy * b);
-    rivet(g, cx + sx * 4.5, cy + sy * 4.5, 1.8);
-  }
+/** [left, right, top, bottom] slice widths in kit texture px */
+const NINE: Record<string, [number, number, number, number]> = {
+  btn_primary: [44, 44, 34, 44],
+  btn_secondary: [44, 44, 34, 44],
+  btn_ghost: [44, 44, 34, 44],
+  btn_danger: [44, 44, 34, 44],
+  btn_gold: [44, 44, 34, 44],
+  btn_selected: [44, 44, 34, 44],
+  panel_frame: [72, 72, 72, 72],
+  paper_edge: [80, 80, 80, 80],
+  shadow: [48, 48, 48, 48],
+  iron_plate: [28, 28, 28, 30],
+  bar_trough: [18, 18, 14, 14],
+  ribbon: [112, 112, 0, 0],
+};
+
+/**
+ * NineSlice of a kit frame covering (x, y, w, h) logical px, origin top-left.
+ * `res` < KIT_RES draws the borders thinner (e.g. 4 = half-thickness rims for small bars).
+ */
+export function nine(scene: Phaser.Scene, frame: string, x: number, y: number, w: number, h: number, res = KIT_RES): Phaser.GameObjects.NineSlice {
+  const [l, r, t, b] = NINE[frame] ?? [8, 8, 8, 8];
+  const ns = scene.add.nineslice(x, y, KIT, frame, Math.max(l + r, w * res), t + b > 0 ? Math.max(t + b, h * res) : undefined, l, r, t, b);
+  ns.setOrigin(0, 0).setScale(1 / res);
+  return ns;
 }
 
-/** Round iron ring around a circular button. */
-export function ironRing(g: Phaser.GameObjects.Graphics, cx: number, cy: number, rad: number, fill = 0x221c2a, alpha = 0.95): void {
-  g.fillStyle(0x000000, 0.4);
-  g.fillCircle(cx + 1, cy + 4, rad + 3);
-  g.fillStyle(SKIN.iron, alpha);
-  g.fillCircle(cx, cy, rad + 3);
-  g.fillStyle(0x4a4652, alpha);
-  g.fillCircle(cx, cy, rad);
-  g.fillStyle(fill, alpha);
-  g.fillCircle(cx, cy, rad - 5);
-  g.lineStyle(1, SKIN.ironHi, 0.5);
-  g.strokeCircle(cx, cy, rad - 1);
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2 + Math.PI / 8;
-    rivet(g, cx + Math.cos(a) * (rad - 2.5), cy + Math.sin(a) * (rad - 2.5), 1.7);
+/** resize a NineSlice made by nine() */
+export function resizeNine(ns: Phaser.GameObjects.NineSlice, w: number, h: number): void {
+  const res = 1 / ns.scaleX;
+  ns.setSize(w * res, h * res);
+}
+
+/** plain kit image sized to w x h logical px (origin centre) */
+export function kitImage(scene: Phaser.Scene, frame: string, x: number, y: number, w: number, h = w): Phaser.GameObjects.Image {
+  const img = scene.add.image(x, y, KIT, frame);
+  img.setDisplaySize(w, h);
+  return img;
+}
+
+/** seamless material fill (TileSprite at kit resolution) */
+export function tileFill(scene: Phaser.Scene, tex: string, x: number, y: number, w: number, h: number, seed = 0): Phaser.GameObjects.TileSprite {
+  const ts = scene.add.tileSprite(x, y, Math.ceil(w * KIT_RES), Math.ceil(h * KIT_RES), tex);
+  ts.setOrigin(0, 0).setScale(KS);
+  ts.setTilePosition((seed * 137) % 512, (seed * 211) % 512);
+  return ts;
+}
+
+export interface PageOpts {
+  /** leather binding + iron corner guards (default true); false = bare deckled sheet */
+  bound?: boolean;
+  shadow?: boolean;
+  seed?: number;
+  /** multiplies the parchment colour (e.g. 0xe8dcc8 to age it) */
+  tint?: number;
+}
+
+/**
+ * A vellum page in a tooled-leather binding (all menu panels, dialogs, pause). Returns a
+ * container positioned at (x, y); children use local coordinates.
+ */
+export function page(scene: Phaser.Scene, x: number, y: number, w: number, h: number, o: PageOpts = {}): Phaser.GameObjects.Container {
+  const c = scene.add.container(x, y);
+  const bound = o.bound ?? true;
+  if (o.shadow ?? true) c.add(nine(scene, 'shadow', -18, -12, w + 36, h + 34));
+  if (bound) {
+    const fill = tileFill(scene, TILE_PARCH, 8, 8, w - 16, h - 16, o.seed ?? Math.round(x + y));
+    if (o.tint !== undefined) fill.setTint(o.tint);
+    c.add(fill);
+    c.add(nine(scene, 'panel_frame', 0, 0, w, h));
+  } else {
+    const fill = tileFill(scene, TILE_PARCH, 20, 20, w - 40, h - 40, o.seed ?? Math.round(x + y));
+    if (o.tint !== undefined) fill.setTint(o.tint);
+    c.add(fill);
+    const edge = nine(scene, 'paper_edge', 0, 0, w, h);
+    if (o.tint !== undefined) edge.setTint(o.tint);
+    c.add(edge);
   }
+  return c;
 }
 
-/** Recessed bar trough (HP, book, wave, smith progress). */
-export function trough(g: Phaser.GameObjects.Graphics, r: Rect, rad?: number): void {
-  const k = rad ?? r.h / 2;
-  g.fillStyle(SKIN.iron, 0.95);
-  g.fillRoundedRect(r.x - 3, r.y - 3, r.w + 6, r.h + 6, k + 3);
-  g.fillStyle(0x0c0a10, 1);
-  g.fillRoundedRect(r.x, r.y, r.w, r.h, k);
-  g.fillStyle(0x000000, 0.5);
-  g.fillRect(r.x + k * 0.5, r.y + 1, r.w - k, 2);
+/** dark forged-iron plaque (HUD readouts, toasts, badges) */
+export function ironPlate(scene: Phaser.Scene, r: Rect, res = KIT_RES): Phaser.GameObjects.NineSlice {
+  return nine(scene, 'iron_plate', r.x, r.y, r.w, r.h, res);
 }
 
-/** Glossy fill inside a trough. */
-export function barFill(g: Phaser.GameObjects.Graphics, r: Rect, frac: number, color: number, rad?: number): void {
-  const w = r.w * (frac < 0 ? 0 : frac > 1 ? 1 : frac);
-  if (w <= 0.5) return;
-  const k = Math.min(rad ?? r.h / 2, w / 2);
-  g.fillStyle(color, 1);
-  g.fillRoundedRect(r.x, r.y, w, r.h, k);
-  g.fillStyle(0xffffff, 0.28);
-  g.fillRoundedRect(r.x + 2, r.y + 2, Math.max(0, w - 4), Math.max(1, r.h * 0.28), Math.min(k, r.h * 0.14));
-  g.fillStyle(0x000000, 0.2);
-  g.fillRect(r.x + k * 0.5, r.y + r.h - 3, Math.max(0, w - k), 2);
+/**
+ * Blood-red cloth banner centred on (cx, cy) wide enough for `minW` px of text.
+ * Returns the banner; place the title text over it.
+ */
+export function ribbon(scene: Phaser.Scene, cx: number, cy: number, minW: number): Phaser.GameObjects.NineSlice {
+  const w = Math.max(260, minW + 150);
+  const ns = nine(scene, 'ribbon', cx - w / 2, cy - 34, w, 64);
+  return ns;
+}
+
+/** ornamental rule; gold for dark backgrounds, ink for parchment */
+export function divider(scene: Phaser.Scene, cx: number, cy: number, w: number, gold = false): Phaser.GameObjects.Image {
+  const img = scene.add.image(cx, cy, KIT, gold ? 'divider_gold' : 'divider_ink');
+  img.setDisplaySize(w, Math.min(26, w * (48 / 512)));
+  return img;
+}
+
+/** hand-ruled ink line on parchment */
+export function inkRule(g: Phaser.GameObjects.Graphics, x0: number, y: number, x1: number, alpha = 0.35): void {
+  g.lineStyle(1.5, SKIN.inkN, alpha);
+  g.lineBetween(x0, y, x1, y + 0.5);
+  g.lineStyle(1, SKIN.inkN, alpha * 0.4);
+  g.lineBetween(x0 + 6, y + 2.5, x1 - 10, y + 2);
+}
+
+export type Coin = 'gold' | 'silver';
+export function coin(scene: Phaser.Scene, x: number, y: number, kind: Coin, size: number): Phaser.GameObjects.Image {
+  return kitImage(scene, kind === 'gold' ? 'coin_gold' : 'coin_silver', x, y, size, size);
 }
 
 // ---- icons ---------------------------------------------------------------------------
 
+/** currency icons are kit coins whatever the caller asked for */
+const KIT_ALIAS: Record<string, string> = {
+  ui_gold: 'coin_gold',
+  ui_iron: 'coin_silver',
+  ui_silver: 'coin_silver',
+  coin_gold: 'coin_gold',
+  coin_silver: 'coin_silver',
+  ui_star: 'star_gold',
+  ui_star_empty: 'star_ink',
+};
+
 /**
- * Shows a baked icon / portrait (`portrait_unit_archer`, `icon_chainsaw`, `ui_gold`) on an image,
- * fitted into maxW x maxH logical px; falls back to a generated atlas frame. Returns true if baked.
+ * Shows a baked icon / portrait (`portrait_unit_archer`, `icon_chainsaw`), a kit frame (coins,
+ * stars) or a generated atlas frame, fitted into maxW x maxH logical px. Returns true unless
+ * it fell back to generated art.
  */
 export function setIcon(img: Phaser.GameObjects.Image, id: string, fallback: string, maxW: number, maxH: number): boolean {
+  const kit = KIT_ALIAS[id];
+  if (kit && hasKit(img.scene, kit)) {
+    img.setTexture(KIT, kit);
+    img.setOrigin(0.5, 0.5);
+    img.setScale(Math.min(maxW / img.frame.realWidth, maxH / img.frame.realHeight));
+    return true;
+  }
   const b = bakedIcon(id);
   if (b && img.scene.textures.exists(b.key)) {
     img.setTexture(b.key, b.frame);
@@ -169,16 +207,4 @@ export function addIcon(scene: Phaser.Scene, x: number, y: number, id: string, f
   const img = scene.add.image(x, y, f.tex, f.frame);
   setIcon(img, id, fallback, maxW, maxH);
   return img;
-}
-
-/** Bold gold number / title style for Text objects. */
-export function goldStyle(size: number, color: string = SKIN.goldText): Phaser.Types.GameObjects.Text.TextStyle {
-  return {
-    fontFamily: 'Kanit, "Noto Sans Thai", Tahoma, sans-serif',
-    fontStyle: 'bold',
-    fontSize: `${size}px`,
-    color,
-    stroke: SKIN.ink,
-    strokeThickness: Math.max(3, Math.round(size / 5)),
-  };
 }

@@ -25,6 +25,10 @@ import * as P from './props';
 
 export const FONT_S = 'aodd_num_s';
 export const FONT_L = 'aodd_num_l';
+/** UI numerals (HUD, menus): Taviraj bold, thin brown edge, engraved drop */
+export const FONT_UI = 'aodd_num_ui';
+export const FONT_UI_L = 'aodd_num_ui_l';
+const UI_NUM_FAMILY = 'Taviraj, Georgia, serif';
 
 const ASCII = (() => {
   let s = '';
@@ -148,6 +152,8 @@ export function buildAllTextures(scene: Phaser.Scene, data: GameData, R: number)
   const fonts: FontSpec[] = [
     { key: FONT_S, base: 16, outline: 2.6, chars: ASCII },
     { key: FONT_L, base: 30, outline: 3.6, chars: ASCII },
+    { key: FONT_UI, base: 16, outline: 1.3, chars: ASCII, family: UI_NUM_FAMILY, weight: '700', outlineColor: '#1a0d06', drop: 1.2 },
+    { key: FONT_UI_L, base: 30, outline: 1.8, chars: ASCII, family: UI_NUM_FAMILY, weight: '700', outlineColor: '#1a0d06', drop: 2 },
   ];
   buildAtlas(scene, items, fonts, R);
 }

@@ -1,38 +1,27 @@
 /**
- * Touch-friendly menu widgets: Button (Container + Graphics + Text, the only
- * interactive object is the container), segmented choice, drag-scroll area,
+ * Touch-friendly menu widgets: Button (Container + NineSlice plank + Text, the only
+ * interactive object is the container), the ledger page panel, drag-scroll area,
  * confirm dialog and toast.
  */
 import { inRect } from '../../core/layout';
 import type { Rect } from '../../contracts';
-import { SKIN, addIcon, stonePanel } from './skin';
+import { KIT_RES, addIcon, ironPlate, nine, page, type PageOpts } from './skin';
 import { C, addText, fitText } from '../style';
 
 export type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'gold' | 'selected';
 
-const VARIANT: Record<Variant, { fill: number; text: string }> = {
-  primary: { fill: 0xb8661c, text: '#fff4dc' },
-  secondary: { fill: 0x2f4f8a, text: '#f0f4ff' },
-  danger: { fill: 0x9a2a22, text: '#fff0ea' },
-  ghost: { fill: 0x3a3442, text: '#e8e0d4' },
-  gold: { fill: 0xa8801e, text: '#fff7e6' },
-  selected: { fill: 0x2f7a4a, text: '#ffffff' },
+/**
+ * Plank materials: primary = oxblood leather, secondary = oak, ghost = charred wood,
+ * danger = blackened iron, gold = brass plate, selected = vellum. All strapped with iron.
+ */
+const VARIANT: Record<Variant, { frame: string; text: string; icon: number }> = {
+  primary: { frame: 'btn_primary', text: '#f6e2b0', icon: 0xf6e2b0 },
+  secondary: { frame: 'btn_secondary', text: '#f1e4c4', icon: 0xf1e4c4 },
+  ghost: { frame: 'btn_ghost', text: '#cdbb98', icon: 0xcdbb98 },
+  danger: { frame: 'btn_danger', text: '#ff8a6a', icon: 0xff8a6a },
+  gold: { frame: 'btn_gold', text: '#2a1806', icon: 0x3a2408 },
+  selected: { frame: 'btn_selected', text: '#24160c', icon: 0x3a2414 },
 };
-
-function lighten(c: number, k: number): number {
-  const r = (c >> 16) & 255;
-  const g = (c >> 8) & 255;
-  const b = c & 255;
-  const f = (v: number) => Math.min(255, Math.round(v + (255 - v) * k));
-  return (f(r) << 16) | (f(g) << 8) | f(b);
-}
-function darken(c: number, k: number): number {
-  const r = (c >> 16) & 255;
-  const g = (c >> 8) & 255;
-  const b = c & 255;
-  const f = (v: number) => Math.round(v * (1 - k));
-  return (f(r) << 16) | (f(g) << 8) | f(b);
-}
 
 export interface ButtonOpts {
   w: number;
@@ -45,15 +34,21 @@ export interface ButtonOpts {
   /** return false to swallow the click (drag-scroll lists) */
   guard?: (p: Phaser.Input.Pointer) => boolean;
   sub?: string;
+  /** label in the blackletter / Thai display face */
+  head?: boolean;
 }
+
+/** generated UI glyphs (white) are tinted to the plank's ink; baked art keeps its colours */
+const TINTED_ICON = /^ui_(play|back|gear|retry|speed|pause|cancel|export|import|up|check|globe|trash|map|shop)$/;
 
 export class Button extends Phaser.GameObjects.Container {
   readonly bw: number;
   readonly bh: number;
-  private bg: Phaser.GameObjects.Graphics;
+  private bg: Phaser.GameObjects.NineSlice;
   private label: Phaser.GameObjects.Text;
   private subLabel?: Phaser.GameObjects.Text;
   private icon?: Phaser.GameObjects.Image;
+  private iconKey = '';
   private variant: Variant;
   private enabled: boolean;
   private pressed = false;
@@ -62,6 +57,7 @@ export class Button extends Phaser.GameObjects.Container {
   private readonly onClick: () => void;
   private readonly fontSize: number;
   private readonly iconSize: number;
+  private readonly head: boolean;
 
   constructor(scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void, o: ButtonOpts) {
     super(scene, x, y);
@@ -72,17 +68,19 @@ export class Button extends Phaser.GameObjects.Container {
     this.guard = o.guard;
     this.onClick = onClick;
     this.fontSize = o.size ?? 22;
-    this.iconSize = o.iconSize ?? Math.min(40, this.bh - 16);
-    this.bg = scene.add.graphics();
+    this.head = o.head ?? false;
+    this.iconSize = o.iconSize ?? Math.min(38, this.bh - 18);
+    this.bg = nine(scene, VARIANT[this.variant].frame, -this.bw / 2, -this.bh / 2, this.bw, this.bh + 4);
     this.add(this.bg);
     if (o.icon) {
+      this.iconKey = o.icon;
       this.icon = addIcon(scene, 0, 0, o.icon, o.icon, this.iconSize, this.iconSize);
       this.add(this.icon);
     }
-    this.label = addText(scene, 0, 0, text, this.fontSize, { originX: 0.5, originY: 0.5, color: VARIANT[this.variant].text });
+    this.label = addText(scene, 0, 0, text, this.fontSize, { originX: 0.5, originY: 0.5, color: VARIANT[this.variant].text, font: this.head ? 'head' : 'body' });
     this.add(this.label);
     if (o.sub) {
-      this.subLabel = addText(scene, 0, 0, o.sub, Math.round(this.fontSize * 0.62), { originX: 0.5, originY: 0.5, color: VARIANT[this.variant].text, bold: false });
+      this.subLabel = addText(scene, 0, 0, o.sub, Math.round(this.fontSize * 0.6), { originX: 0.5, originY: 0.5, color: VARIANT[this.variant].text, bold: false });
       this.add(this.subLabel);
     }
     this.layoutContent();
@@ -115,7 +113,7 @@ export class Button extends Phaser.GameObjects.Container {
   }
 
   private layoutContent(): void {
-    const pad = 14;
+    const pad = 30; // clear of the iron end straps
     const iconW = this.icon ? this.iconSize + 8 : 0;
     const maxLabel = this.bw - pad * 2 - iconW;
     fitText(this.label, maxLabel, 11);
@@ -125,62 +123,21 @@ export class Button extends Phaser.GameObjects.Container {
     const left = -total / 2;
     if (this.icon) this.icon.setPosition(left + this.iconSize / 2, 0);
     const tx = this.icon ? left + iconW + textW / 2 : 0;
-    if (this.subLabel) {
-      this.label.setPosition(tx, -this.bh * 0.14);
-      this.subLabel.setPosition(tx, this.bh * 0.24);
-    } else {
-      this.label.setPosition(tx, 0);
-    }
+    this.label.setX(tx);
+    this.subLabel?.setX(tx);
   }
 
   private redraw(): void {
-    const g = this.bg;
-    const w = this.bw;
-    const h = this.bh;
-    const r = Math.min(12, h / 3);
-    const base = this.enabled ? VARIANT[this.variant].fill : C.disabledN;
-    const face = this.pressed ? darken(base, 0.18) : this.hovered && this.enabled ? lighten(base, 0.1) : base;
-    const dy = this.pressed ? 3 : 0;
-    g.clear();
-    if (!this.pressed) {
-      g.fillStyle(0x000000, 0.45);
-      g.fillRoundedRect(-w / 2 + 1, -h / 2 + 5, w, h, r);
-    }
-    // forged iron rim
-    g.fillStyle(0x15131a, 1);
-    g.fillRoundedRect(-w / 2 - 2, -h / 2 + dy - 2, w + 4, h + 4, r + 2);
-    g.fillStyle(0x5a5662, 1);
-    g.fillRoundedRect(-w / 2, -h / 2 + dy, w, h, r);
-    // enamelled face: lighter top, darker foot
-    g.fillStyle(face, 1);
-    g.fillRoundedRect(-w / 2 + 3, -h / 2 + dy + 3, w - 6, h - 6, r - 2);
-    g.fillStyle(0xffffff, this.enabled ? 0.16 : 0.05);
-    g.fillRoundedRect(-w / 2 + 5, -h / 2 + dy + 5, w - 10, (h - 10) * 0.42, { tl: r - 4, tr: r - 4, bl: 3, br: 3 });
-    g.fillStyle(0x000000, 0.22);
-    g.fillRoundedRect(-w / 2 + 5, h / 2 + dy - 12, w - 10, 7, { tl: 2, tr: 2, bl: r - 4, br: r - 4 });
-    g.lineStyle(1, lighten(face, 0.35), this.enabled ? 0.55 : 0.2);
-    g.strokeRoundedRect(-w / 2 + 3.5, -h / 2 + dy + 3.5, w - 7, h - 7, r - 2);
-    if (w >= 110 && h >= 50) {
-      for (const sx of [-1, 1]) {
-        const rx = sx * (w / 2 - 9);
-        const ry = dy;
-        g.fillStyle(0x0a080c, 0.8);
-        g.fillCircle(rx + 0.6, ry + 0.8, 2.6);
-        g.fillStyle(0xb4ab98, 1);
-        g.fillCircle(rx, ry, 2.6);
-        g.fillStyle(0xffffff, 0.5);
-        g.fillCircle(rx - 0.9, ry - 0.9, 1);
-      }
-    }
-    this.label.setY((this.subLabel ? -this.bh * 0.14 : 0) + dy);
-    this.label.setAlpha(this.enabled ? 1 : 0.55);
-    if (this.subLabel) {
-      this.subLabel.setY(this.bh * 0.24 + dy);
-      this.subLabel.setAlpha(this.enabled ? 0.9 : 0.5);
-    }
+    const v = VARIANT[this.variant];
+    const dy = this.pressed ? 2 : 0;
+    const face = !this.enabled ? 0x7a746e : this.pressed ? 0xb8b0a8 : this.hovered ? 0xffffff : 0xe4ded6;
+    this.bg.setTint(face).setY(-this.bh / 2 + dy);
+    const ty = (this.subLabel ? -this.bh * 0.15 : -2) + dy;
+    this.label.setY(ty).setAlpha(this.enabled ? 1 : 0.5);
+    if (this.subLabel) this.subLabel.setY(this.bh * 0.2 + dy).setAlpha(this.enabled ? 0.85 : 0.45);
     if (this.icon) {
-      this.icon.setY(dy);
-      this.icon.setAlpha(this.enabled ? 1 : 0.5);
+      this.icon.setY(dy - 2).setAlpha(this.enabled ? 1 : 0.45);
+      if (TINTED_ICON.test(this.iconKey)) this.icon.setTint(v.icon);
     }
   }
 
@@ -196,7 +153,10 @@ export class Button extends Phaser.GameObjects.Container {
 
   setVariant(v: Variant): this {
     this.variant = v;
+    this.bg.setFrame(VARIANT[v].frame);
+    this.bg.setSize(this.bw * KIT_RES, (this.bh + 4) * KIT_RES);
     this.label.setColor(VARIANT[v].text);
+    this.subLabel?.setColor(VARIANT[v].text);
     this.redraw();
     return this;
   }
@@ -206,7 +166,7 @@ export class Button extends Phaser.GameObjects.Container {
     this.label.setFontSize(this.fontSize);
     if (this.subLabel && sub !== undefined) {
       this.subLabel.setText(sub);
-      this.subLabel.setFontSize(Math.round(this.fontSize * 0.62));
+      this.subLabel.setFontSize(Math.round(this.fontSize * 0.6));
     }
     this.layoutContent();
     this.redraw();
@@ -214,18 +174,12 @@ export class Button extends Phaser.GameObjects.Container {
   }
 }
 
-/** Stone slab with a riveted iron rim (ART_BIBLE 8). `fill` tints the face. */
-export function panel(scene: Phaser.Scene, x: number, y: number, w: number, h: number, fill: number = SKIN.stone, alpha = 0.94, edge: number = C.panelEdgeN): Phaser.GameObjects.Graphics {
-  const g = scene.add.graphics();
-  if (fill === SKIN.stone || fill === C.panelN) stonePanel(g, { x, y, w, h }, 14, alpha);
-  else {
-    stonePanel(g, { x, y, w, h }, 14, alpha);
-    g.fillStyle(fill, 0.55 * alpha);
-    g.fillRoundedRect(x + 4, y + 4, w - 8, h - 8, 11);
-  }
-  g.lineStyle(1, edge, 0.35);
-  g.strokeRoundedRect(x + 6, y + 6, w - 12, h - 12, 10);
-  return g;
+/**
+ * A vellum page in a leather binding (menus are pages of the castle's war ledger).
+ * The legacy fill / alpha / edge args are ignored; `opts` picks an unbound sheet or a tint.
+ */
+export function panel(scene: Phaser.Scene, x: number, y: number, w: number, h: number, _fill?: number, _alpha?: number, _edge?: number, opts: PageOpts = {}): Phaser.GameObjects.Container {
+  return page(scene, x, y, w, h, opts);
 }
 
 // ---------------------------------------------------------------------------
@@ -327,7 +281,9 @@ export class ScrollArea {
     if (max > 0) {
       const h = Math.max(40, (this.rect.h * this.rect.h) / this.contentH);
       const y0 = this.rect.y + ((this.rect.h - h) * this.scrollY) / max;
-      this.bar.fillStyle(0xffffff, 0.35);
+      this.bar.fillStyle(C.inkN, 0.12);
+      this.bar.fillRoundedRect(this.rect.x + this.rect.w + 7, this.rect.y, 4, this.rect.h, 2);
+      this.bar.fillStyle(C.rubricN, 0.8);
       this.bar.fillRoundedRect(this.rect.x + this.rect.w + 6, y0, 6, h, 3);
     }
   }
@@ -337,6 +293,7 @@ export class ScrollArea {
     this.bar.setDepth(d);
   }
 }
+
 
 // ---------------------------------------------------------------------------
 
@@ -351,34 +308,34 @@ export interface DialogOpts {
   scrollFactor?: number;
 }
 
-/** Modal confirm dialog. Returns a close function. */
+/** Modal confirm dialog on a ledger page. Returns a close function. */
 export function confirmDialog(scene: Phaser.Scene, vw: number, vh: number, o: DialogOpts): () => void {
   const objs: Phaser.GameObjects.GameObject[] = [];
   const depth = 9000;
   const sf = o.scrollFactor ?? 1;
-  const dim = scene.add.rectangle(0, 0, vw, vh, 0x07040b, 0.72).setOrigin(0, 0).setDepth(depth).setScrollFactor(sf);
+  const dim = scene.add.rectangle(0, 0, vw, vh, 0x070302, 0.74).setOrigin(0, 0).setDepth(depth).setScrollFactor(sf);
   dim.setSize(vw, vh);
   dim.setInteractive(); // swallow clicks
   objs.push(dim);
   const w = Math.min(640, vw - 80);
-  const msg = addText(scene, vw / 2, 0, o.message, 22, { originX: 0.5, align: 'center', wrap: w - 60, bold: false });
-  const h = Math.max(260, msg.height + 210);
+  const msg = addText(scene, vw / 2, 0, o.message, 22, { originX: 0.5, align: 'center', wrap: w - 100, bold: false, color: C.ink });
+  const h = Math.max(270, msg.height + 220);
   const x = (vw - w) / 2;
   const y = (vh - h) / 2;
-  objs.push(panel(scene, x, y, w, h).setDepth(depth + 1).setScrollFactor(sf));
-  const title = addText(scene, vw / 2, y + 26, o.title, 30, { originX: 0.5, color: o.danger ? '#ff8a7a' : C.gold });
+  objs.push(panel(scene, x, y, w, h).setDepth(depth + 1).setScrollFactor(sf, sf, true));
+  const title = addText(scene, vw / 2, y + 34, o.title, 34, { originX: 0.5, color: o.danger ? C.rubric : C.ink, font: 'head' });
   objs.push(title.setDepth(depth + 2).setScrollFactor(sf));
-  msg.setY(y + 82).setDepth(depth + 2).setScrollFactor(sf);
+  msg.setY(y + 94).setDepth(depth + 2).setScrollFactor(sf);
   objs.push(msg);
   const close = () => {
     for (const ob of objs) ob.destroy();
   };
-  const bw = Math.min(240, (w - 80) / 2);
-  const by = y + h - 56;
+  const bw = Math.min(240, (w - 100) / 2);
+  const by = y + h - 64;
   const no = new Button(scene, vw / 2 - bw / 2 - 12, by, o.no, () => {
     close();
     o.onNo?.();
-  }, { w: bw, h: 64, variant: 'ghost', size: 22 });
+  }, { w: bw, h: 64, variant: 'secondary', size: 22 });
   const yes = new Button(scene, vw / 2 + bw / 2 + 12, by, o.yes, () => {
     close();
     o.onYes();
@@ -390,14 +347,12 @@ export function confirmDialog(scene: Phaser.Scene, vw: number, vh: number, o: Di
   return close;
 }
 
-/** Short message near the bottom of the screen. */
+/** Short message near the bottom of the screen, on an iron plaque. */
 export function toast(scene: Phaser.Scene, vw: number, text: string, color: string = C.text, sf = 1): void {
   const t = addText(scene, vw / 2, 640, text, 22, { originX: 0.5, originY: 0.5, color, align: 'center', wrap: vw - 160 });
-  const bg = scene.add.graphics();
-  bg.fillStyle(0x0b0810, 0.85);
-  bg.fillRoundedRect(vw / 2 - t.width / 2 - 20, 640 - t.height / 2 - 10, t.width + 40, t.height + 20, 14);
-  bg.lineStyle(2, 0x5c4a73, 1);
-  bg.strokeRoundedRect(vw / 2 - t.width / 2 - 20, 640 - t.height / 2 - 10, t.width + 40, t.height + 20, 14);
+  const w = t.width + 64;
+  const h = t.height + 28;
+  const bg = ironPlate(scene, { x: vw / 2 - w / 2, y: 640 - h / 2, w, h });
   bg.setDepth(9500).setScrollFactor(sf);
   t.setDepth(9501).setScrollFactor(sf);
   scene.tweens.add({
