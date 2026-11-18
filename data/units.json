@@ -14,7 +14,7 @@
   {
     "id": "archer", "nameKey": "unit.archer", "kind": "troop", "sprite": "unit_archer", "origin": "original",
     "ironCost": 10, "cooldown": 4, "unlockWave": 3,
-    "stats": { "hp": 45, "speed": 56, "attack": { "kind": "ranged", "damage": 9, "interval": 1.4, "range": 360, "projectile": "arrow", "hitsFlying": true, "windup": 0.35 } },
+    "stats": { "hp": 45, "speed": 56, "attack": { "kind": "ranged", "damage": 9, "interval": 1.4, "range": 400, "projectile": "arrow", "hitsFlying": true, "windup": 0.35 } },
     "behaviors": [{ "id": "ranged" }]
   },
   {
@@ -38,7 +38,7 @@
   {
     "id": "crossbowman", "nameKey": "unit.crossbowman", "kind": "troop", "sprite": "unit_crossbowman", "origin": "original",
     "ironCost": 20, "cooldown": 6, "unlockWave": 17,
-    "stats": { "hp": 55, "speed": 50, "attack": { "kind": "ranged", "damage": 22, "interval": 2.2, "range": 420, "projectile": "bolt", "armorPierce": true, "hitsFlying": true, "windup": 0.45 } },
+    "stats": { "hp": 55, "speed": 50, "attack": { "kind": "ranged", "damage": 22, "interval": 2.2, "range": 460, "projectile": "bolt", "armorPierce": true, "hitsFlying": true, "windup": 0.45 } },
     "behaviors": [{ "id": "ranged" }]
   },
   {
@@ -70,7 +70,7 @@
   {
     "id": "morwen", "nameKey": "unit.morwen", "kind": "hero", "sprite": "hero_morwen", "origin": "new",
     "ironCost": 70, "cooldown": 45, "unlockWave": 11, "unlockRule": "boss:gravewright",
-    "stats": { "hp": 260, "speed": 54, "attack": { "kind": "ranged", "damage": 12, "interval": 1.2, "range": 300, "projectile": "holy_light", "damageKind": "holy", "hitsFlying": true, "windup": 0.4 } },
+    "stats": { "hp": 260, "speed": 54, "attack": { "kind": "ranged", "damage": 12, "interval": 1.2, "range": 340, "projectile": "holy_light", "damageKind": "holy", "hitsFlying": true, "windup": 0.4 } },
     "behaviors": [
       { "id": "ranged" },
       { "id": "vigil_light", "params": { "radius": 260, "slow": 0.2, "flyingDamageMul": 1.5 } },
@@ -80,7 +80,7 @@
   {
     "id": "garrick", "nameKey": "unit.garrick", "kind": "hero", "sprite": "hero_garrick", "origin": "new",
     "ironCost": 80, "cooldown": 50, "unlockWave": 31, "unlockRule": "boss:sir_hollow",
-    "stats": { "hp": 380, "armor": 1, "speed": 52, "attack": { "kind": "ranged", "damage": 24, "interval": 1.6, "range": 400, "projectile": "bolt", "hitsFlying": true, "windup": 0.45 } },
+    "stats": { "hp": 380, "armor": 1, "speed": 52, "attack": { "kind": "ranged", "damage": 24, "interval": 1.6, "range": 440, "projectile": "bolt", "hitsFlying": true, "windup": 0.45 } },
     "behaviors": [
       { "id": "ranged" },
       { "id": "silver_mark", "params": { "bonus": 0.25, "duration": 5 } },

@@ -70,7 +70,26 @@ export function ashInit(st: GState, ctx: SimContext): void {
   a.shot2Target = NONE;
 }
 
+/** Out-of-combat regen: after ash.regenDelay s without damage Ash slowly heals (one heal event a second). */
+function ashRegen(st: GState, ctx: SimContext): void {
+  const slot = st.idSlot.get(ctx.world.ashId);
+  if (slot === undefined) return;
+  const ash = st.world.entities[slot];
+  const rt = st.rts[slot];
+  if (!ash.alive || ash.hp <= 0 || ash.hp >= ash.maxHp || ctx.world.time - rt.hurtAt < st.T.ashRegenDelay) {
+    rt.regenAcc = 0;
+    return;
+  }
+  const perSec = ash.maxHp * st.T.ashRegenPerSec;
+  rt.regenAcc += perSec * SIM_DT;
+  if (rt.regenAcc >= Math.max(1, perSec)) {
+    heal(st, ash, rt.regenAcc);
+    rt.regenAcc = 0;
+  }
+}
+
 export function ashInput(st: GState, ctx: SimContext, input: InputFrame): void {
+  ashRegen(st, ctx);
   const d = ctx.world.dodge;
   d.cooldownLeft = Math.max(0, d.cooldownLeft - SIM_DT);
   const a = st.ash;

@@ -28,6 +28,8 @@ const BAR_COLOR: Partial<Record<EntityKind, number>> = { ally: 0x6ad65a, hero: 0
 const CORPSE_HOLD = 1.6;
 /** baked shadow frames are full-strength alpha maps (ART_BIBLE 3: about 45%) */
 const SHADOW_A = 0.5;
+/** display scale per kind: the player's side stands out from the enemy crowd */
+const KIND_SCALE: Partial<Record<EntityState['kind'], number>> = { ash: 1.2, hero: 1.12, ally: 1.07 };
 const FLASH_T = 0.12;
 const FLASH_WHITE = 0.035;
 const CORPSE_FADE = 0.6;
@@ -234,8 +236,10 @@ export class EntityLayer {
     if (v.info) {
       const info = v.info;
       v.ph = null;
-      v.height = info.height;
-      v.scaleBase = info.scale;
+      // Ash and the player's side read bigger than the horde (hero focus)
+      const k = KIND_SCALE[e.kind] ?? 1;
+      v.height = info.height * k;
+      v.scaleBase = info.scale * k;
       v.img.setTexture(info.tex, info.rest.names[0]);
       v.img.setOrigin(info.ox, info.oy);
       v.img.setBlendMode(e.kind === 'effect' && info.blend === 'add' ? Phaser.BlendModes.ADD : Phaser.BlendModes.NORMAL);

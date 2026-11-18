@@ -355,13 +355,16 @@ function healerTick(st: GState, slot: number): void {
   for (let n = 0; n < rt.healTargets; n++) {
     let best = -1;
     let bestFrac = 1;
+    // (Ash's bias can push his score below 0)
     for (let i = 0; i < st.players.length; i++) {
       const s = st.players[i];
       if (chosen.includes(s)) continue;
       const o = ents[s];
       if (!o.alive || o.hp <= 0 || o.hp >= o.maxHp) continue;
-      if (Math.abs(o.x - e.x) > rt.healRadius) continue;
-      const frac = o.hp / o.maxHp;
+      const isAsh = o.kind === 'ash';
+      if (Math.abs(o.x - e.x) > rt.healRadius * (isAsh ? st.T.healAshReach : 1)) continue;
+      // Ash comes first: he counts as more hurt than he is
+      const frac = o.hp / o.maxHp - (isAsh ? st.T.healAshBias : 0);
       if (frac < bestFrac) {
         bestFrac = frac;
         best = s;

@@ -125,6 +125,7 @@ export function dealDamage(
   if (armor > 0) dmg = Math.max(1, dmg - armor);
   dmg = Math.min(dmg, e.hp);
   e.hp -= dmg;
+  if (dmg > 0) st.rts[slot].hurtAt = st.world.time;
   st.bus.emit('entity:damaged', { id: e.id, amount: dmg, x: e.x, y: e.y, damageKind: kind, sourceId, blocked });
   if (spectacle) st.bus.emit('spectacle:hit', { x: e.x, y: e.y, big: dmg >= st.T.bigHit });
   if (e.hp <= 0.0001) {

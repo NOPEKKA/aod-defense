@@ -144,6 +144,12 @@ export const TUNING_DEFAULTS = {
   'ai.enemyEnterDepth': 160,
   /** a boss 'summon' step only tops the field up to this many live hostiles */
   'boss.summonCap': 8,
+  /** Ash heals himself after this many seconds without taking damage, at regenPerSec x max hp */
+  'ash.regenDelay': 5,
+  'ash.regenPerSec': 0.012,
+  /** healers favour Ash: he counts as this much more hurt, and is reached from radius x this */
+  'ai.healAshBias': 0.25,
+  'ai.healAshReach': 1.6,
   /** px/s^2 a body that died in the air falls with */
   'combat.corpseGravity': 1800,
   /** out-of-contact march: no foe within marchRange -> walk speed x marchMul */
@@ -197,6 +203,10 @@ export interface Tuning {
   knockbackHop: number;
   speedJitter: number;
   marchRange: number;
+  ashRegenDelay: number;
+  ashRegenPerSec: number;
+  healAshBias: number;
+  healAshReach: number;
   corpseGravity: number;
   marchMul: number;
   enemyEnterDepth: number;
@@ -307,6 +317,10 @@ export function tuningOf(data: GameData): Tuning {
     knockbackHop: get('ai.knockbackHop'),
     speedJitter: Math.max(0, Math.min(0.3, get('ai.speedJitter'))),
     marchRange: Math.max(0, get('ai.marchRange')),
+    ashRegenDelay: Math.max(0, get('ash.regenDelay')),
+    ashRegenPerSec: Math.max(0, get('ash.regenPerSec')),
+    healAshBias: Math.max(0, get('ai.healAshBias')),
+    healAshReach: Math.max(1, get('ai.healAshReach')),
     corpseGravity: Math.max(100, get('combat.corpseGravity')),
     marchMul: Math.max(1, get('ai.marchMul')),
     enemyEnterDepth: Math.max(0, get('ai.enemyEnterDepth')),
