@@ -15,7 +15,10 @@ export function computeRenderScale(): number {
   const screenH = Math.min(window.screen?.width || shownH, window.screen?.height || shownH);
   const px = Math.max(shownH, screenH) * dpr;
   const coarse = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
-  const cap = coarse ? 2.25 : 3;
+  // phones (short side < 600 css px) cap at 1.5: the extra pixels are invisible on a 6" screen
+  // and the canvas + generated textures cost memory (iOS kills tabs that grow past ~1 GB)
+  const shortCss = Math.min(window.screen?.width || 9999, window.screen?.height || 9999);
+  const cap = coarse ? (shortCss < 600 ? 1.5 : 2) : 3;
   const s = Math.min(cap, Math.max(1, px / VIEW_H));
   return Math.round(s * 20) / 20;
 }

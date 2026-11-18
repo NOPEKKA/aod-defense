@@ -7,6 +7,11 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#14101c" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AoD Defense" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/style.css">
     <title>AoD Defense</title>
 </head>
@@ -19,6 +24,23 @@
         <div>⟳</div>
         <p>หมุนจอเป็นแนวนอน<br><small>Turn your device sideways</small></p>
     </div>
+    <script>
+        // iOS Safari: no pinch / double-tap zoom, no rubber-band, no long-press menu
+        (function () {
+            var o = { passive: false };
+            var stop = function (e) { e.preventDefault(); };
+            ['gesturestart', 'gesturechange', 'gestureend', 'contextmenu', 'selectstart', 'dragstart'].forEach(function (n) {
+                document.addEventListener(n, stop, o);
+            });
+            document.addEventListener('touchmove', function (e) { if (e.touches.length > 1 || e.cancelable) e.preventDefault(); }, o);
+            var last = 0;
+            document.addEventListener('touchend', function (e) {
+                var n = Date.now();
+                if (n - last < 350 && e.cancelable) e.preventDefault();
+                last = n;
+            }, o);
+        })();
+    </script>
     <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

@@ -36,11 +36,12 @@ export const audio: AudioModule = {
       A.unlock();
       apply();
     };
-    for (const ev of ['pointerdown', 'keydown', 'touchstart', 'mousedown'] as const) {
+    for (const ev of ['pointerdown', 'pointerup', 'keydown', 'touchstart', 'touchend', 'mousedown', 'click'] as const) {
       window.addEventListener(ev, gesture, { capture: true, passive: true });
     }
     document.addEventListener('visibilitychange', () => A.onVisibility());
     window.addEventListener('pagehide', () => A.onVisibility());
+    window.addEventListener('pageshow', () => A.onVisibility());
 
     let wiring;
     try {
