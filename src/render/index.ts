@@ -15,6 +15,7 @@ import { preloadBattle } from './assets/preload';
 import { FxRenderer } from './battle/FxRenderer';
 import { HudRenderer } from './battle/HudRenderer';
 import { WorldRenderer } from './battle/WorldRenderer';
+import { LobbyScene } from './scenes/LobbyScene';
 import { MapScene } from './scenes/MapScene';
 import { PreWaveScene } from './scenes/PreWaveScene';
 import { ResultScene } from './scenes/ResultScene';
@@ -59,5 +60,5 @@ export const render: RenderModule = {
     const fx = new FxRenderer();
     return [new WorldRenderer(fx), fx, new HudRenderer()];
   },
-  menuScenes: [TitleScene, MapScene, ShopScene, PreWaveScene, ResultScene, SettingsScene],
+  menuScenes: [TitleScene, MapScene, ShopScene, PreWaveScene, ResultScene, SettingsScene, LobbyScene],
 };

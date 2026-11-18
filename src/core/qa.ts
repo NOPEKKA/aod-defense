@@ -1,4 +1,5 @@
 import { SceneKey, type BattleSceneData, type ProfileState, type QaHooks } from '../contracts';
+import { netDebug } from '../net';
 import { getRuntime, makeWaveParams, tryRuntime } from './app';
 
 /** Installs window.render_game_to_text / advanceTime / __aodd for Playwright and bots. */
@@ -18,7 +19,7 @@ export function installQaHooks(): void {
       const b = rt.battle;
       if (!b) {
         const p = rt.app.profile;
-        return JSON.stringify({ scene, gold: p.gold, highestWave: p.highestWave, lang: p.settings.lang });
+        return JSON.stringify({ scene, gold: p.gold, highestWave: p.highestWave, lang: p.settings.lang, net: netDebug() ?? undefined });
       }
       const w = b.runner.world;
       const ash = w.entities.find((e) => e.id === w.ashId && e.alive);
@@ -51,6 +52,7 @@ export function installQaHooks(): void {
         summonSlots: w.summonSlots.map((s) => ({ unit: s.unitId, cd: +s.cooldownLeft.toFixed(1), ok: s.available })),
         spellSlots: w.spellSlots.map((s) => ({ spell: s.spellId, cd: +s.cooldownLeft.toFixed(1) })),
         outcome: w.outcome,
+        net: netDebug() ?? undefined,
       });
     },
     advanceTime(ms: number) {

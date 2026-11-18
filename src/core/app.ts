@@ -4,6 +4,7 @@ import type {
   ControlsModule,
   GameData,
   GameplayModule,
+  NetService,
   ProfileState,
   RenderModule,
   Settings,
@@ -13,6 +14,7 @@ import type {
 import { applyFpsCap } from './display';
 import { createEventBus } from './EventBus';
 import { createTranslator } from './i18n';
+import type { RemoteRunner } from '../net/remote';
 import type { SimRunner } from './SimRunner';
 
 export interface Modules {
@@ -21,13 +23,16 @@ export interface Modules {
   controls: ControlsModule;
   render: RenderModule;
   audio?: AudioModule;
+  /** online co-op link (src/net); absent = single player only */
+  net?: NetService;
 }
 
 interface Runtime {
   app: AppContext;
   modules: Modules;
   game: Phaser.Game;
-  battle: { runner: SimRunner; scene: Phaser.Scene } | null;
+  /** runner is a RemoteRunner when this is the online guest mirroring the host's battle */
+  battle: { runner: SimRunner | RemoteRunner; scene: Phaser.Scene } | null;
   frameTimes: number[];
 }
 

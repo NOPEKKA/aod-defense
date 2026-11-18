@@ -8,7 +8,7 @@ import { MenuScene } from './MenuScene';
 let recoveryShown = false;
 
 /** Title: Continue / New game / Settings. */
-export class TitleScene extends MenuScene {
+export class TitleScene extends MenuScene<{ netMessage?: string }> {
   constructor() {
     super(SceneKey.Title);
   }
@@ -90,6 +90,12 @@ export class TitleScene extends MenuScene {
     }, { w: progress ? bw - 30 : bw, h: nh, variant: progress ? 'secondary' : 'primary', size: progress ? 25 : 32, icon: progress ? undefined : 'ui_play', head: true });
     y += progress ? 84 : 98;
     sign(60);
+    // online co-op: a friend joins with a room code and commands the army
+    new Button(this, cx, y, this.t('title.online'), () => this.go(SceneKey.Lobby), {
+      w: bw - 60, h: 60, variant: 'gold', size: 23, icon: 'ui_play', iconSize: 26, head: true,
+    });
+    y += 76;
+    sign(60);
     new Button(this, cx, y, this.t('ui.settings'), () => this.go(SceneKey.Settings, { returnTo: SceneKey.Title } satisfies SettingsSceneData), {
       w: bw - 60, h: 60, variant: 'ghost', size: 23, icon: 'ui_gear', iconSize: 28, head: true,
     });
@@ -98,6 +104,10 @@ export class TitleScene extends MenuScene {
 
     // save recovery notice (systems exposes app.save.lastRecovery once the lead wires it)
     const rec = (this.app.save as unknown as { lastRecovery?: { from: 'backup' | 'defaults'; error: string } | null }).lastRecovery;
+    if (this.args.netMessage) {
+      toast(this, this.vw, this.t(this.args.netMessage), '#ffb08a');
+      this.args.netMessage = undefined;
+    }
     if (rec && !recoveryShown) {
       recoveryShown = true;
       toast(this, this.vw, this.t(rec.from === 'backup' ? 'save.recovered.backup' : 'save.recovered.defaults'), '#ffb08a');
