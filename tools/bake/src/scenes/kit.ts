@@ -157,6 +157,8 @@ export interface GroundTexOpts {
   laneZ0: number;
   laneZ1: number;
   seed?: number;
+  /** 0..1: how much of the ground at (x, z) is rough hillside (dead grass, stones) instead of dirt */
+  wild?: (x: number, z: number) => number;
 }
 
 export interface GroundTex {
@@ -179,6 +181,8 @@ export function groundTexture(o: GroundTexOpts): GroundTex {
   const dirtA = [118, 98, 80]; // packed, greyish brown
   const dirtB = [96, 78, 62]; // darker loam
   const dirtC = [134, 116, 94]; // dry light patches
+  const grassA = [112, 104, 66]; // dead grass, straw-olive
+  const grassB = [70, 66, 46]; // dark earth between the clumps
   for (let py = 0; py < H; py++) {
     const z = o.z0 + (py + 0.5) / o.ppuZ;
     const lane = smooth(o.laneZ0 - 0.6, o.laneZ0 + 0.4, z) * (1 - smooth(o.laneZ1 - 0.4, o.laneZ1 + 0.6, z));
@@ -205,7 +209,19 @@ export function groundTexture(o: GroundTexOpts): GroundTex {
         Math.exp(-(((z - (o.laneZ1 - 0.75 + 0.1 * Math.sin(x * 0.27 + 2))) / 0.09) ** 2)),
       );
       const rutAmt = rut * 0.1 * lane * smooth(0.25, 0.6, fbm(x * 0.4, 3.3, 2, seed + 11));
-      const k = 1 + lane * 0.05 - rutAmt - nearWall * 0.16 + (n2 - 0.5) * 0.12 + (n3 - 0.5) * 0.07 * (1 - lane * 0.5) + g * 0.05;
+      const wl = o.wild ? o.wild(x, z) : 0;
+      if (wl > 0) {
+        // dead grass in clumps over dark earth, a little moss on the stones
+        const clump = smooth(0.35, 0.7, fbm(x * 0.9, z * 1.6, 3, seed + 21));
+        const blade = vnoise(x * 18, z * 5, seed + 23);
+        const gr = mix(grassB[0], grassA[0], clump * (0.6 + 0.4 * blade));
+        const gg2 = mix(grassB[1], grassA[1], clump * (0.6 + 0.4 * blade));
+        const gb = mix(grassB[2], grassA[2], clump * (0.6 + 0.4 * blade));
+        r = mix(r, gr, wl);
+        gg = mix(gg, gg2, wl);
+        b = mix(b, gb, wl);
+      }
+      const k = 1 + lane * 0.05 - rutAmt - nearWall * 0.16 * (1 - wl) + (n2 - 0.5) * 0.12 + (n3 - 0.5) * 0.07 * (1 - lane * 0.5) + g * 0.05;
       r *= k;
       gg *= k;
       b *= k;
@@ -214,7 +230,7 @@ export function groundTexture(o: GroundTexOpts): GroundTex {
       cd.data[i + 1] = gg;
       cd.data[i + 2] = b;
       cd.data[i + 3] = 255;
-      const h = 0.5 + (n2 - 0.5) * 0.35 + (n3 - 0.5) * 0.25 * (1 - lane * 0.6) - rutAmt * 2 + g * 0.06;
+      const h = 0.5 + (n2 - 0.5) * 0.35 + (n3 - 0.5) * 0.25 * (1 - lane * 0.6) * (1 + wl) - rutAmt * 2 + g * 0.06 * (1 + wl * 2);
       hd.data[i] = hd.data[i + 1] = hd.data[i + 2] = Math.max(0, Math.min(255, h * 255));
       hd.data[i + 3] = 255;
     }
@@ -259,12 +275,35 @@ export function groundTexture(o: GroundTexOpts): GroundTex {
     hg.ellipse(px, py, rx, ry, 0, 0, Math.PI * 2);
     hg.fill();
   }
+  // grass tufts on the wild ground
+  cg.lineCap = 'round';
+  if (o.wild) {
+    const tufts = Math.round(area * 30);
+    for (let i = 0; i < tufts; i++) {
+      const x = o.x0 + R() * (o.x1 - o.x0);
+      const z = o.z0 + R() * (o.z1 - o.z0);
+      const wl = o.wild(x, z);
+      if (R() > wl) continue;
+      const [px, py] = toPx(x, z);
+      const v = 0.75 + R() * 0.5;
+      cg.strokeStyle = `rgba(${Math.round(132 * v)},${Math.round(120 * v)},${Math.round(74 * v)},0.8)`;
+      cg.lineWidth = 1 + R();
+      for (let k = 0; k < 5; k++) {
+        const a = -Math.PI / 2 + (R() - 0.5) * 1.6;
+        const len = (0.05 + R() * 0.09) * o.ppuX;
+        cg.beginPath();
+        cg.moveTo(px + (R() - 0.5) * 4, py);
+        cg.lineTo(px + Math.cos(a) * len, py + Math.sin(a) * len * 0.6);
+        cg.stroke();
+      }
+    }
+  }
   // straw and splinters near the walls and in corners
   const straws = Math.round((o.x1 - o.x0) * 22);
-  cg.lineCap = 'round';
   for (let i = 0; i < straws; i++) {
     const x = o.x0 + R() * (o.x1 - o.x0);
     const z = o.wallZ + 0.1 + Math.pow(R(), 1.8) * 2.4;
+    if (o.wild && o.wild(x, z) > 0.4) continue;
     const [px, py] = toPx(x, z);
     const len = (0.08 + R() * 0.16) * o.ppuX;
     const a = R() * Math.PI;
@@ -624,6 +663,62 @@ export function doorLeaf(w: number, h: number, charred = false): THREE.Group {
   }
   for (const y of [0.25, 0.5, 0.78]) g.add(at(box(w * 1.02, 0.1, 0.18, im), 0, h * y, 0));
   return g;
+}
+
+export interface HeightFieldOpts {
+  x0: number;
+  x1: number;
+  z0: number;
+  z1: number;
+  /** grid step along x and z (world units) */
+  dx: number;
+  dz: number;
+  /** surface height at (x, z) */
+  h: (x: number, z: number) => number;
+  /** world rectangle the texture covers (default: the field itself) */
+  uv?: { x0: number; x1: number; z0: number; z1: number };
+}
+
+/** A smooth ground surface over a grid: y = h(x, z). Texture u runs along x, v along z (flipY off). */
+export function heightField(o: HeightFieldOpts, material: THREE.Material): THREE.Mesh {
+  const nx = Math.max(1, Math.round((o.x1 - o.x0) / o.dx));
+  const nz = Math.max(1, Math.round((o.z1 - o.z0) / o.dz));
+  const uv = o.uv ?? { x0: o.x0, x1: o.x1, z0: o.z0, z1: o.z1 };
+  const pos = new Float32Array((nx + 1) * (nz + 1) * 3);
+  const uvs = new Float32Array((nx + 1) * (nz + 1) * 2);
+  let k = 0;
+  let q = 0;
+  for (let j = 0; j <= nz; j++) {
+    const z = o.z0 + ((o.z1 - o.z0) * j) / nz;
+    for (let i = 0; i <= nx; i++) {
+      const x = o.x0 + ((o.x1 - o.x0) * i) / nx;
+      pos[k++] = x;
+      pos[k++] = o.h(x, z);
+      pos[k++] = z;
+      uvs[q++] = (x - uv.x0) / (uv.x1 - uv.x0);
+      uvs[q++] = (z - uv.z0) / (uv.z1 - uv.z0);
+    }
+  }
+  const idx: number[] = [];
+  for (let j = 0; j < nz; j++) {
+    for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i;
+      const b = a + 1;
+      const c = a + nx + 1;
+      const d = c + 1;
+      // counter-clockwise seen from above (+y)
+      idx.push(a, c, b, b, c, d);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, material);
+  m.receiveShadow = true;
+  m.castShadow = true;
+  return m;
 }
 
 export { at, box, cone, cyl, mat, mesh, PAL };
