@@ -613,7 +613,7 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
         const tw = Math.min(spec.tileW, spec.w - i * spec.tileW);
         const c = makeCanvas(Math.round(tw * scale), Math.round(spec.h * scale));
         c.getContext('2d')!.drawImage(img[s], -Math.round(i * spec.tileW * scale), 0);
-        const f = webpFile(`public/assets/bg/${s}/${def.id}-${id}-${i}.webp`, c, alpha ? (opts.qAlpha ?? 0.92) : (opts.qOpaque ?? 0.9));
+        const f = webpFile(`public/assets/bg/${s}/${def.id}-${id}-${i}.webp`, c, alpha ? (opts.qAlpha ?? 0.86) : (opts.qOpaque ?? 0.88));
         files.push(f);
         sizes[`${s}/${id}-${i}`] = b64len(f.base64);
         if (s === 'hd') (tileUrls[id] ??= []).push(`data:image/webp;base64,${f.base64}`);
@@ -637,6 +637,12 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
   if (layerIds.every((id) => !layersMeta.find((l) => l.id === id) || tileUrls[id])) {
     const prev = await composePreview(meta, tileUrls, built, opts);
     files.push(pngFile(`output/bake/preview/bg_${def.id}.png`, prev));
+    // each view on its own at full size (easier to inspect)
+    for (let i = 0; i < prev.height / VIEW_H; i++) {
+      const c = makeCanvas(prev.width, VIEW_H);
+      c.getContext('2d')!.drawImage(prev, 0, -i * VIEW_H);
+      files.push(pngFile(`output/bake/preview/bg_${def.id}_v${i}.png`, c));
+    }
   }
   log(`${def.id}: done in ${((performance.now() - t0) / 1000).toFixed(1)}s`);
   return { files, meta, sizes };

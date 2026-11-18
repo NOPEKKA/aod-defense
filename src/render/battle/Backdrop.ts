@@ -119,6 +119,10 @@ export class Backdrop {
   private flames: Array<{ prop: Prop; phase: number }> = [];
   private glows: Array<{ img: Phaser.GameObjects.Image; base: number; phase: number; speed: number; scale: number }> = [];
   private drops: Drop[] = [];
+  private lair: { x: number; y: number; w: number; h: number } | null = null;
+  private lairGlow: Phaser.GameObjects.Image | null = null;
+  private lairBase = 1;
+  private motes: Drop[] = [];
   private flash!: Phaser.GameObjects.Image;
   private flashA = 0;
   private boltT = 6;
@@ -154,6 +158,7 @@ export class Backdrop {
       /* decor only */
     }
     this.buildProps();
+    this.buildLair();
     this.buildWeather();
     this.flash = scene.add.image(0, 0, spriteFrame('px').tex, spriteFrame('px').frame).setOrigin(0, 0).setScrollFactor(0).setDepth(DEPTH.weather + 5).setAlpha(0);
     this.objs.push(this.flash);
@@ -179,22 +184,78 @@ export class Backdrop {
     });
   }
 
-  /** sky/far/main/front images with parallax scroll factors */
+  /**
+   * sky/far/main/front images with parallax scroll factors. The battle camera also scrolls down
+   * as the road descends (cameraY): main and front follow it 1:1 so they stay glued to the units
+   * and the anchors, far and sky follow it partly (their baked parallaxY) so the valley reads
+   * as distant. Layers without parallaxY (the generated stand-in) stay put vertically.
+   */
   private buildLayers(baked: boolean): void {
     const s = this.scene;
     const id = this.meta.id;
     for (const layer of this.meta.layers) {
       const depth = layer.over ? DEPTH.front : layer.id === 'sky' ? DEPTH.sky : layer.id === 'far' ? DEPTH.far : DEPTH.main;
+      const { y, parallaxY } = layerScroll(layer);
       for (let i = 0; i < layer.tiles; i++) {
         const key = baked ? bgTextureKey(id, layer.id, i) : fallbackKey(this.meta.chapter, layer.id, i);
         if (!s.textures.exists(key)) continue;
         const src = s.textures.get(key).getSourceImage() as { width: number; height: number };
         const tileW = Math.min(layer.tileW, layer.w - i * layer.tileW);
-        const img = s.add.image(i * layer.tileW, 0, key).setOrigin(0, 0).setDepth(depth);
+        const img = s.add.image(i * layer.tileW, y, key).setOrigin(0, 0).setDepth(depth);
         img.setScale(tileW / src.width, layer.h / src.height);
-        img.setScrollFactor(layer.parallax, 0);
+        img.setScrollFactor(layer.parallax, parallaxY);
         this.objs.push(img);
       }
+    }
+  }
+
+  /** the demon lair's opening: a slow pulsing glow and motes drifting out of it */
+  private buildLair(): void {
+    const a = this.meta.anchors['lair'] as { x: number; y: number; w?: number; h?: number; color?: string } | undefined;
+    if (!a) return;
+    const color = parseInt((a.color ?? '#7dff5a').replace('#', ''), 16);
+    const w = a.w ?? 230;
+    const h = a.h ?? 250;
+    const f = spriteFrame('glow');
+    const scale = (Math.max(w, h) * 1.6) / f.w / atlasScale();
+    this.lairGlow = this.scene.add.image(a.x, a.y, f.tex, f.frame).setDepth(DEPTH.wallGlow).setBlendMode(Phaser.BlendModes.ADD).setTint(color).setAlpha(0.35).setScale(scale);
+    this.objs.push(this.lairGlow);
+    this.lairBase = scale;
+    this.lair = { x: a.x, y: a.y, w, h };
+    const n = this.view.settings.fxQuality === 'low' ? 6 : 14;
+    const dot = spriteFrame('p_dot');
+    for (let i = 0; i < n; i++) {
+      const img = this.scene.add.image(0, 0, dot.tex, dot.frame).setDepth(DEPTH.wallGlow + 1).setBlendMode(Phaser.BlendModes.ADD).setTint(color);
+      const m: Drop = { img, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, s: 1 };
+      this.respawnMote(m, true);
+      this.motes.push(m);
+      this.objs.push(img);
+    }
+  }
+
+  private respawnMote(m: Drop, initial: boolean): void {
+    const L = this.lair!;
+    m.x = L.x + (Math.random() - 0.5) * L.w * 0.7;
+    m.y = L.y + (Math.random() - 0.1) * L.h * 0.45;
+    m.vx = -12 - Math.random() * 28;
+    m.vy = -8 - Math.random() * 16;
+    m.s = 0.18 + Math.random() * 0.22;
+    m.max = 2.5 + Math.random() * 3;
+    m.life = initial ? Math.random() * m.max : m.max;
+  }
+
+  private stepLair(dt: number): void {
+    if (!this.lairGlow) return;
+    const t = this.clock;
+    const k = 0.75 + 0.15 * Math.sin(t * 1.3) + 0.1 * Math.sin(t * 3.1 + 1.7);
+    this.lairGlow.setAlpha(0.34 * k).setScale(this.lairBase * (0.95 + 0.05 * k));
+    for (const m of this.motes) {
+      m.life -= dt;
+      if (m.life <= 0) this.respawnMote(m, false);
+      m.x += (m.vx + Math.sin(t * 1.7 + m.s * 50) * 10) * dt;
+      m.y += m.vy * dt;
+      const u = m.life / m.max;
+      m.img.setPosition(m.x, m.y).setScale(m.s / atlasScale()).setAlpha(clamp01(u * 3) * clamp01((1 - u) * 4) * 0.8);
     }
   }
 
@@ -489,6 +550,7 @@ export class Backdrop {
       this.drawPitFallback(this.pitRect, open);
     }
 
+    this.stepLair(step);
     this.stepWeather(view, step);
   }
 
@@ -545,6 +607,9 @@ export class Backdrop {
     this.props = [];
     this.objs = [];
     this.drops = [];
+    this.motes = [];
+    this.lairGlow = null;
+    this.lair = null;
     this.glows = [];
     this.flames = [];
     this.archers = [];
@@ -552,6 +617,12 @@ export class Backdrop {
 }
 
 // ---------------------------------------------------------------------------
+
+/** a layer's top y and vertical scroll factor (baked metas carry them; older ones scroll only in x) */
+function layerScroll(layer: BgMeta['layers'][number]): { y: number; parallaxY: number } {
+  const l = layer as typeof layer & { y?: number; parallaxY?: number };
+  return { y: l.y ?? 0, parallaxY: l.parallaxY ?? 0 };
+}
 
 function fallbackKey(chapter: number, layer: string, tile: number): string {
   return `bgfb:${chapter}:${layer}:${tile}`;
@@ -588,9 +659,9 @@ export function ensureFallbackTextures(scene: Phaser.Scene, chapter: number, vie
 
 /**
  * Static courtyard for menus: the chapter background (baked when loaded, generated otherwise)
- * laid out as the battle camera would see it at `scrollX`. Returns the created images.
+ * laid out as the battle camera would see it at `scrollX` / `scrollY`. Returns the created images.
  */
-export function addStaticCourtyard(scene: Phaser.Scene, chapter: number, scrollX: number, vw: number, depth: number, view: Pick<RenderView, 'data'>): Phaser.GameObjects.Image[] {
+export function addStaticCourtyard(scene: Phaser.Scene, chapter: number, scrollX: number, vw: number, depth: number, view: Pick<RenderView, 'data'>, scrollY = 0): Phaser.GameObjects.Image[] {
   const baked = bgForChapter(chapter);
   const bakedOk = !!baked && baked.layers.every((l) => {
     for (let i = 0; i < l.tiles; i++) if (!scene.textures.exists(bgTextureKey(baked.id, l.id, i))) return false;
@@ -600,6 +671,7 @@ export function addStaticCourtyard(scene: Phaser.Scene, chapter: number, scrollX
   if (!bakedOk) ensureFallbackTextures(scene, chapter, view);
   const out: Phaser.GameObjects.Image[] = [];
   meta.layers.forEach((layer, li) => {
+    const { y, parallaxY } = layerScroll(layer);
     for (let i = 0; i < layer.tiles; i++) {
       const key = bakedOk ? bgTextureKey(meta.id, layer.id, i) : fallbackKey(chapter, layer.id, i);
       if (!scene.textures.exists(key)) continue;
@@ -607,7 +679,7 @@ export function addStaticCourtyard(scene: Phaser.Scene, chapter: number, scrollX
       const tileW = Math.min(layer.tileW, layer.w - i * layer.tileW);
       const x = i * layer.tileW - scrollX * layer.parallax;
       if (x > vw || x + tileW < 0) continue;
-      const img = scene.add.image(x, 0, key).setOrigin(0, 0).setDepth(depth + li);
+      const img = scene.add.image(x, y - scrollY * parallaxY, key).setOrigin(0, 0).setDepth(depth + li);
       img.setScale(tileW / src.width, layer.h / src.height);
       out.push(img);
     }
