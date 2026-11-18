@@ -62,7 +62,7 @@
   {
     "id": "skeleton_catapult", "nameKey": "enemy.skeleton_catapult", "sprite": "enemy_skeleton_catapult", "origin": "original",
     "threat": 35, "firstWave": 30, "size": "large",
-    "stats": { "hp": 220, "armor": 4, "speed": 25, "attack": { "kind": "ranged", "damage": 30, "interval": 5.0, "range": 900, "projectile": "rock", "splashRadius": 80, "windup": 0.8 } },
+    "stats": { "hp": 220, "armor": 2, "speed": 25, "attack": { "kind": "ranged", "damage": 20, "interval": 6.0, "range": 900, "projectile": "rock", "splashRadius": 80, "windup": 0.8 } },
     "behaviors": [{ "id": "artillery", "params": { "minRange": 300 } }]
   }
 ]
