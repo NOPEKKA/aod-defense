@@ -34,7 +34,7 @@
   },
   {
     "id": "mother_mire", "nameKey": "boss.mother_mire", "sprite": "boss_mother_mire", "origin": "new",
-    "hp": 2000, "armor": 1, "size": "huge", "speed": 24, "phaseTransition": 1.5,
+    "hp": 1700, "armor": 1, "size": "huge", "speed": 24, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
@@ -47,7 +47,7 @@
       {
         "untilHpFrac": 0.33,
         "loop": [
-          { "attack": "mud_wave", "params": { "damage": 24, "width": 70, "speed": 380, "gapWidth": 150, "knockback": 40 }, "telegraph": 1.2, "recover": 1.5 },
+          { "attack": "mud_wave", "params": { "damage": 18, "width": 70, "speed": 380, "gapWidth": 150, "knockback": 40 }, "telegraph": 1.2, "recover": 1.5 },
           { "attack": "toss_poison", "params": { "count": 3, "damage": 13, "radius": 55, "spread": 280, "poolDps": 5, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.2 }
         ],
         "minions": [{ "enemy": "skeleton_shield", "count": 3, "interval": 2.5, "startAt": 1 }]
@@ -98,13 +98,13 @@
   },
   {
     "id": "malachar", "nameKey": "boss.malachar", "sprite": "boss_malachar", "origin": "new",
-    "hp": 3400, "armor": 3, "size": "huge", "speed": 35, "phaseTransition": 1.5,
+    "hp": 2800, "armor": 3, "size": "huge", "speed": 35, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
         "loop": [
           { "attack": "summon", "params": { "enemy": "skeleton", "count": 4 }, "telegraph": 0, "recover": 1.5 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 6, "radius": 160, "breakDamage": 150 }, "telegraph": 1.2, "recover": 2.0 }
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 150 }, "telegraph": 1.2, "recover": 2.0 }
         ],
         "minions": [{ "enemy": "skeleton_wizard", "count": 2, "interval": 4, "startAt": 5 }]
       },
@@ -113,7 +113,7 @@
         "loop": [
           { "attack": "black_bell", "params": { "rings": 3, "damage": 24, "speed": 420, "width": 50, "gap": 2.0, "radius": 600, "knockback": 40 }, "telegraph": 1.0, "recover": 1.5 },
           { "attack": "summon", "params": { "enemy": "skeleton_helm", "count": 4 }, "telegraph": 0, "recover": 1.0 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 6, "radius": 160, "breakDamage": 180 }, "telegraph": 1.2, "recover": 1.5 }
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 180 }, "telegraph": 1.2, "recover": 1.5 }
         ],
         "minions": []
       },
@@ -121,9 +121,9 @@
         "untilHpFrac": 0,
         "loop": [
           { "attack": "float_fireballs", "params": { "count": 5, "damage": 21, "radius": 60, "gap": 0.6 }, "telegraph": 0.8, "recover": 1.0 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 8, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 },
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 },
           { "attack": "black_bell", "params": { "rings": 3, "damage": 24, "speed": 460, "width": 50, "gap": 2.0, "radius": 600, "knockback": 40 }, "telegraph": 1.0, "recover": 1.0 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 8, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 }
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 }
         ],
         "minions": [{ "enemy": "skeleton_knight", "count": 1, "interval": 0, "startAt": 1 }]
       }
