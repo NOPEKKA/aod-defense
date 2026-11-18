@@ -28,8 +28,8 @@ const BAR_COLOR: Partial<Record<EntityKind, number>> = { ally: 0x6ad65a, hero: 0
 const CORPSE_HOLD = 1.6;
 /** baked shadow frames are full-strength alpha maps (ART_BIBLE 3: about 45%) */
 const SHADOW_A = 0.5;
-/** display scale per kind: the player's side stands out from the enemy crowd */
-const KIND_SCALE: Partial<Record<EntityState['kind'], number>> = { ash: 1.32, hero: 1.2, ally: 1.12, enemy: 0.96 };
+/** display scale per kind: sizes stay true to the art; Ash only a touch larger (he stands out by his glow) */
+const KIND_SCALE: Partial<Record<EntityState['kind'], number>> = { ash: 1.05 };
 const FLASH_T = 0.12;
 const FLASH_WHITE = 0.035;
 const CORPSE_FADE = 0.6;
@@ -220,6 +220,13 @@ export class EntityLayer {
   private bind(v: Vis, e: EntityState, want: string): void {
     v.shown = want;
     v.sprite = e.sprite;
+    // stand out by light, not size: a warm glow around Ash, a faint cool one around heroes
+    const pfx = (v.img as Phaser.GameObjects.Image & { preFX?: Phaser.GameObjects.Components.FX }).preFX;
+    if (pfx) {
+      pfx.clear();
+      if (e.kind === 'ash') pfx.addGlow(0xffcf6a, 2.5, 0, false, 0.1, 10);
+      else if (e.kind === 'hero') pfx.addGlow(0xcfe6ff, 1.6, 0, false, 0.1, 8);
+    }
     // thrown things without baked art borrow a baked look-alike (coffin -> rock, poison -> green orb)
     let key = want;
     v.tintKey = 0xffffff;
