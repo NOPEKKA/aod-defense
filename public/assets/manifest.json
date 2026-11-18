@@ -1255,11 +1255,11 @@
   },
   "enemy_winged_deadite": {
    "id": "enemy_winged_deadite",
-   "frameW": 424,
-   "frameH": 247,
-   "anchorX": 157,
-   "anchorY": 213,
-   "height": 182,
+   "frameW": 420,
+   "frameH": 259,
+   "anchorX": 164,
+   "anchorY": 217,
+   "height": 165,
    "facing": -1,
    "shadow": true,
    "pages": {
@@ -1276,7 +1276,7 @@
      "frames": 12,
      "duration": 0.8,
      "loop": true,
-     "stride": 0
+     "stride": 6
     },
     "attack": {
      "frames": 10,

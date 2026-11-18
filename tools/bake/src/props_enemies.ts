@@ -263,10 +263,11 @@ export function wingPair(span = 1): { left: THREE.Group; right: THREE.Group } {
     w.scale.set(side * span, span, span);
     sweep.add(w);
     // swept back and slightly up so the near wing shows broad in the 3/4 side view
-    sweep.rotation.set(0, side * -28 * RAD, 0);
+    sweep.rotation.set(0, side * -40 * RAD, 0);
     pivot.add(sweep);
-    // hinge on the upper back, between the shoulder blades (model space after alignWings)
-    pivot.position.set(side * 0.12, 0.12, -0.2);
+    // hinge low on the back, behind the shoulder blades (model space after alignWings),
+    // so the up-stroke stays behind the skull instead of cutting through it
+    pivot.position.set(side * 0.1, -0.02, -0.3);
     return pivot;
   };
   return { left: mk(1), right: mk(-1) };
@@ -300,8 +301,8 @@ export function flap(b: Built, deg: number, fold = 0): void {
   l.rotation.z = deg * RAD;
   r.rotation.z = -deg * RAD;
   // fold: sweep further back and close
-  (l.children[0] as THREE.Object3D).rotation.y = (-28 - fold * 50) * RAD;
-  (r.children[0] as THREE.Object3D).rotation.y = (28 + fold * 50) * RAD;
+  (l.children[0] as THREE.Object3D).rotation.y = (-40 - fold * 45) * RAD;
+  (r.children[0] as THREE.Object3D).rotation.y = (40 + fold * 45) * RAD;
 }
 
 // ---------------------------------------------------------------------------

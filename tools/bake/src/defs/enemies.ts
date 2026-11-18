@@ -241,20 +241,24 @@ async function buildWinged() {
   return b;
 }
 // wings beat between just below level and straight up; the body bobs against the beat
-const wingAnim = (cycles: number, amp = 32, fold = 0) => (b: Built, u: number) => {
+// in flight: body leans forward, legs tucked (jump pose), wings beat from below level to
+// about 60 deg up (never over the head); the body rises on the down-stroke
+const wingAnim = (cycles: number, amp = 32, fold = 0, lean = 22) => (b: Built, u: number) => {
   const ph = u * TAU * cycles;
-  flap(b, amp * Math.sin(ph) + 45, fold);
-  b.root.position.y = 0.07 * Math.sin(ph - Math.PI / 2);
+  flap(b, amp * Math.sin(ph) + 22, fold);
+  b.root.position.y = 0.3 + 0.07 * Math.sin(ph - Math.PI / 2);
+  b.root.rotation.x = lean * RAD_E;
 };
+const RAD_E = Math.PI / 180;
 defineSprite({
   id: 'enemy_winged_deadite',
   facing: -1,
   build: buildWinged,
   anims: {
-    idle: { clip: 'Idle', frames: 8, loop: true, apply: wingAnim(2) },
-    walk: { clip: 'Idle', frames: 12, loop: true, duration: 0.8, apply: wingAnim(2, 50) },
-    attack: { clip: '1H_Melee_Attack_Slice_Diagonal', frames: 10, duration: 0.6, hitAt: 0.45, apply: wingAnim(1.5, 45) },
-    hurt: { clip: 'Hit_A', frames: 4, duration: 0.3, apply: wingAnim(1, 30) },
+    idle: { clip: 'Jump_Idle', frames: 8, loop: true, apply: wingAnim(2, 36, 0, 12) },
+    walk: { clip: 'Jump_Idle', frames: 12, loop: true, duration: 0.8, apply: wingAnim(2, 40, 0, 26) },
+    attack: { clip: '1H_Melee_Attack_Slice_Diagonal', frames: 10, duration: 0.6, hitAt: 0.45, apply: wingAnim(1.5, 38, 0, 18) },
+    hurt: { clip: 'Hit_A', frames: 4, duration: 0.3, apply: wingAnim(1, 26, 0, 8) },
     die: { clip: 'Death_C_Skeletons', frames: 12, duration: 1.0, apply: (b, u) => flap(b, 52 + 30 * (1 - u) * Math.sin(u * TAU * 2) - 40 * u, u) },
   },
 });
