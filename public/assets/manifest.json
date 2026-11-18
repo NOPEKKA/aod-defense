@@ -166,6 +166,32 @@
     }
    }
   },
+  "bear_trap": {
+   "id": "bear_trap",
+   "frameW": 91,
+   "frameH": 59,
+   "anchorX": 55,
+   "anchorY": 40,
+   "height": 18,
+   "facing": 1,
+   "shadow": true,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 1,
+     "duration": 1,
+     "loop": true
+    },
+    "attack": {
+     "frames": 5,
+     "duration": 0.25,
+     "loop": false
+    }
+   }
+  },
   "bolt": {
    "id": "bolt",
    "frameW": 112,
@@ -693,6 +719,27 @@
     }
    },
    "scale": 1.1364
+  },
+  "coffin": {
+   "id": "coffin",
+   "frameW": 188,
+   "frameH": 184,
+   "anchorX": 94,
+   "anchorY": 92,
+   "height": 56,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.7,
+     "loop": true
+    }
+   }
   },
   "coin": {
    "id": "coin",
@@ -2193,6 +2240,48 @@
     }
    }
   },
+  "holy_light": {
+   "id": "holy_light",
+   "frameW": 166,
+   "frameH": 122,
+   "anchorX": 93,
+   "anchorY": 61,
+   "height": 20,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 4,
+     "duration": 0.3,
+     "loop": true
+    }
+   }
+  },
+  "lance": {
+   "id": "lance",
+   "frameW": 277,
+   "frameH": 86,
+   "anchorX": 128,
+   "anchorY": 43,
+   "height": 13,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 4,
+     "duration": 0.24,
+     "loop": true
+    }
+   }
+  },
   "mana_orb": {
    "id": "mana_orb",
    "frameW": 66,
@@ -2269,6 +2358,48 @@
      "frames": 6,
      "duration": 0.45,
      "loop": false
+    }
+   }
+  },
+  "poison_flask": {
+   "id": "poison_flask",
+   "frameW": 136,
+   "frameH": 136,
+   "anchorX": 68,
+   "anchorY": 68,
+   "height": 40,
+   "facing": 1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.6,
+     "loop": true
+    }
+   }
+  },
+  "pumpkin_head": {
+   "id": "pumpkin_head",
+   "frameW": 140,
+   "frameH": 142,
+   "anchorX": 70,
+   "anchorY": 71,
+   "height": 32,
+   "facing": -1,
+   "shadow": false,
+   "pages": {
+    "hd": 1,
+    "sd": 1
+   },
+   "anims": {
+    "idle": {
+     "frames": 8,
+     "duration": 0.6,
+     "loop": true
     }
    }
   },
@@ -2899,8 +3030,8 @@
     ]
    },
    "grade": {
-    "spriteTint": "#e8b8e8",
-    "fog": 0.3,
+    "spriteTint": "#ecdce4",
+    "fog": 0.15,
     "weather": "fog"
    }
   },
@@ -3338,91 +3469,91 @@
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 150,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 390,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 518,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 765,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 990,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 1200,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 1425,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 1650,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 1890,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 2100,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 2310,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 2475,
       "y": 234,
       "r": 230,
       "color": "#ff7a1e",
-      "a": 0.4
+      "a": 0.3
      },
      {
       "x": 1680,
@@ -3483,8 +3614,8 @@
     ]
    },
    "grade": {
-    "spriteTint": "#ffc8a0",
-    "fog": 0.15,
+    "spriteTint": "#ffe2cc",
+    "fog": 0.08,
     "weather": "embers"
    }
   },

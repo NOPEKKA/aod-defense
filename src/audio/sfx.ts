@@ -438,6 +438,16 @@ export const SFX: Record<string, SfxDef> = {
     0.45,
     { gap: 0.035, max: 6, prio: 1, vol: 0.38, wet: 0.14 },
   ),
+  coin_silver: def(
+    (c) => {
+      const { e, t, out } = c;
+      const f = mtof(88 + (c.n % 3)) * c.p;
+      e.metal(t, f, 0.14, 0.12, out, [1, 2.76, 5.4]);
+      e.noise(t, 0.01, 0.05, { filter: 'highpass', f: 5000, dest: out });
+    },
+    0.2,
+    { gap: 0.09, max: 3, prio: 0, vol: 0.22, wet: 0.08 },
+  ),
   mana_chime: def(
     (c) => {
       const { e, t, out } = c;
@@ -940,6 +950,33 @@ export const SFX: Record<string, SfxDef> = {
     },
     1.7,
     { gap: 0.5, max: 1, prio: 2, vol: 0.7, wet: 0.35 },
+  ),
+  // sparse flavour sounds (samples first, these are only the fallback)
+  deadite_groan: def(
+    (c) => {
+      const { e, t, out } = c;
+      const f = 95 * c.p;
+      e.tone(t, f, 0.9, 0.25, { type: 'sawtooth', f1: f * 0.7, a: 0.15, r: 0.5, lp: 420, q: 2, vib: [6, 40], dest: out });
+      e.noise(t, 0.8, 0.12, { color: 'brown', filter: 'bandpass', f: 300, q: 1.2, a: 0.2, dest: out });
+    },
+    1.0,
+    { gap: 1.6, max: 1, prio: 0, vol: 0.32, wet: 0.2 },
+  ),
+  crowd_cheer: def(
+    (c) => {
+      const { e, t, out } = c;
+      e.noise(t, 2.6, 0.35, { color: 'pink', filter: 'bandpass', f: 1200, q: 0.6, a: 0.5, r: 1.4, dest: out });
+    },
+    3,
+    { gap: 4, max: 1, prio: 1, vol: 0.5, wet: 0.25 },
+  ),
+  heal: def(
+    (c) => {
+      const { e, t, out } = c;
+      [76, 79, 83].forEach((m, k) => e.tone(t + k * 0.07, mtof(m) * c.p, 0.6, 0.12, { type: 'triangle', dest: out }));
+    },
+    0.8,
+    { gap: 0.5, max: 1, prio: 0, vol: 0.4, wet: 0.3 },
   ),
   spell_impact: def(
     (c) => {

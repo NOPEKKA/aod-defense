@@ -140,6 +140,10 @@ export const TUNING_DEFAULTS = {
   /** silver coins: seconds on the ground before they fly to the smith panel, max coins per kill */
   'combat.silver.collectDelay': 0.7,
   'combat.silver.maxCount': 3,
+  /** enemies always walk at least this far inside fieldRight before they stop to shoot */
+  'ai.enemyEnterDepth': 160,
+  /** a boss 'summon' step only tops the field up to this many live hostiles */
+  'boss.summonCap': 8,
   /** per-body walk speed spread (+-fraction) */
   'ai.speedJitter': 0.07,
   /** ranged/healer units stand this far behind the melee line (when no keepBack param) */
@@ -187,6 +191,7 @@ export interface Tuning {
   flyerAltSpeed: number;
   knockbackHop: number;
   speedJitter: number;
+  enemyEnterDepth: number;
   backKeepBack: number;
   backSoloLine: number;
   projectileSpeed(sprite: string): number;
@@ -207,6 +212,7 @@ export interface Tuning {
   bossStunMul: number;
   bossSlowMul: number;
   bossMinionSpread: number;
+  bossSummonCap: number;
   bossStandoff: number;
   bossPhasePush: number;
   bossReadyTimeout: number;
@@ -292,6 +298,7 @@ export function tuningOf(data: GameData): Tuning {
     flyerAltSpeed: get('ai.flyerAltSpeed'),
     knockbackHop: get('ai.knockbackHop'),
     speedJitter: Math.max(0, Math.min(0.3, get('ai.speedJitter'))),
+    enemyEnterDepth: Math.max(0, get('ai.enemyEnterDepth')),
     backKeepBack: get('ai.backKeepBack'),
     backSoloLine: get('ai.backSoloLine'),
     projectileSpeed: (sprite) => speeds.get(sprite) ?? speedDefault,
@@ -312,6 +319,7 @@ export function tuningOf(data: GameData): Tuning {
     bossStunMul: get('boss.stunMul'),
     bossSlowMul: get('boss.slowMul'),
     bossMinionSpread: get('boss.minionSpread'),
+    bossSummonCap: Math.max(0, get('boss.summonCap')),
     bossStandoff: get('boss.standoff'),
     bossPhasePush: get('boss.phasePush'),
     bossReadyTimeout: get('boss.readyTimeout'),

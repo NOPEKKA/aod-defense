@@ -237,8 +237,8 @@
   ]
  },
  "grade": {
-  "spriteTint": "#e8b8e8",
-  "fog": 0.3,
+  "spriteTint": "#ecdce4",
+  "fog": 0.15,
   "weather": "fog"
  }
 }

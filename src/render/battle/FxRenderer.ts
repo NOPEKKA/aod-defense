@@ -14,6 +14,7 @@ import { findEntity } from '../../core/world';
 import { applyFrame, atlasScale, frameOf, spriteFrame, type FrameInfo } from '../art/atlas';
 import { FONT_L } from '../art/build';
 import { warnOnce } from '../assets/library';
+import { lazyFx } from '../assets/preload';
 import { getSpriteInfo, type ClipInfo, type SpriteInfo } from '../assets/sprites';
 import { FONT, clamp01, easeOutBack, easeOutCubic, numStr, plusStr } from '../style';
 import { DEPTH } from './depth';
@@ -138,6 +139,12 @@ export class FxRenderer implements BattleRenderer {
     this.layout = view.layout;
     this.gy = view.data.balance.world.groundY;
     resetHitStop();
+    // stream the rarer effect sheets in once the wave is running; drop cached misses when done
+    scene.time.delayedCall(1200, () =>
+      lazyFx(scene, () => {
+        for (const [k, v] of this.infos) if (v === null) this.infos.delete(k);
+      }),
+    );
     for (const k of ['p_dot', 'p_spark', 'p_smoke', 'p_ring', 'p_star', 'p_shard', 'p_bone', 'glow', 'arrow', 'rock', 'px', 'vignette', 'coin', 'coin_silver', 'mana_orb', 'food']) {
       this.fr[k] = frameOf(k) ?? spriteFrame(k);
     }

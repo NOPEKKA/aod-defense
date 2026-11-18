@@ -1,0 +1,21 @@
+{
+ "id": "pumpkin_head",
+ "frameW": 140,
+ "frameH": 142,
+ "anchorX": 70,
+ "anchorY": 71,
+ "height": 32,
+ "facing": -1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 0.6,
+   "loop": true
+  }
+ }
+}

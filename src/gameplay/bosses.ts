@@ -594,7 +594,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
       h.hop = -Math.abs(num(s, 'hop', 220));
       h.bounceWarn = Math.max(0.6, num(s, 'bounceWarn', 0.7));
       h.dkind = 'fire';
-      fallingFx(st, h, 'fireball');
+      fallingFx(st, h, 'pumpkin_head');
       break;
     }
     case 'toss_poison': {
@@ -606,7 +606,7 @@ function startStep(st: GState, ctx: SimContext, slot: number, s: BossStep): void
         const h = strike(st, slot, s.attack, 'shadow', clampField(st, cx + off), num(s, 'radius', 55), tel, num(s, 'damage', 0));
         h.poolLife = num(s, 'poolLife', 6);
         h.poolDps = num(s, 'poolDps', 8);
-        fallingFx(st, h, 'mana_orb');
+        fallingFx(st, h, 'poison_flask');
       }
       break;
     }
@@ -692,7 +692,7 @@ function armSequential(st: GState, ctx: SimContext, slot: number, s: BossStep, t
     case 'coffin_toss': {
       const h = strike(st, slot, s.attack, 'shadow', clampField(st, ashX(st)), r, warn, dmg);
       h.kb = num(s, 'knockback', 40);
-      fallingFx(st, h, 'rock');
+      fallingFx(st, h, 'coffin');
       break;
     }
     case 'grave_hands': {
@@ -758,7 +758,13 @@ function actStart(st: GState, ctx: SimContext, slot: number, s: BossStep): void 
   switch (s.attack) {
     case 'summon': {
       const def = ctx.data.enemies.get(String(s.params.enemy));
-      const count = Math.round(num(s, 'count', 1));
+      // never flood the field: summons top the boss's company up to `cap` live hostiles
+      let live = 0;
+      for (let i = 0; i < st.hostiles.length; i++) {
+        const h = st.world.entities[st.hostiles[i]];
+        if (h.hp > 0 && h.kind === 'enemy') live++;
+      }
+      const count = Math.min(Math.round(num(s, 'count', 1)), Math.max(0, Math.round(num(s, 'cap', st.T.bossSummonCap)) - live));
       const spread = st.T.bossMinionSpread;
       const w = ctx.data.balance.world;
       if (def) for (let i = 0; i < count; i++) spawnEnemyAt(st, def, Math.min(w.enemySpawnX, e.x + ctx.rng.range(-spread, spread)), false);

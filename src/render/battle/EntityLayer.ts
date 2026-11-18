@@ -774,6 +774,11 @@ export class EntityLayer {
   private drawEffect(v: Vis, e: EntityState, x: number, y: number, alt: number, alpha: number): void {
     const img = v.img;
     if (v.info) {
+      // effects can change anim (a bear trap snapping shut): re-resolve the clip when it does
+      if (v.anim !== e.anim) {
+        v.anim = e.anim;
+        v.clip = null;
+      }
       const clip = v.clip ?? (v.clip = resolveClip(v.info, e.anim, e.action));
       const tA = e.animTime + alpha * SIM_DT;
       let f: number;

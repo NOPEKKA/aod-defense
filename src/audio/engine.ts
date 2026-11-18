@@ -284,6 +284,21 @@ export class Engine {
     this.track(osc, tail);
   }
 
+  /** One recorded sample through its own gain into `dest`. Returns false when over the voice cap. */
+  sample(buf: AudioBuffer, t: number, dest: AudioNode, gain = 1, rate = 1): boolean {
+    if (this.voices >= this.hardCap) return false;
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    src.playbackRate.value = rate;
+    const g = this.ctx.createGain();
+    g.gain.value = gain;
+    src.connect(g);
+    g.connect(dest);
+    src.start(t);
+    this.track(src, [g]);
+    return true;
+  }
+
   /** Filtered noise burst. */
   noise(t: number, dur: number, vol: number, o: NoiseOpts = {}): void {
     if (this.voices >= this.hardCap) return;

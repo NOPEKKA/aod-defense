@@ -185,8 +185,10 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
     let retreat = false;
     if (player) {
       hard = blockAhead(st, s, 1);
-      soft = w.allyHoldX;
       const ahead = nearestHostile(st, e.x, INF, hitsFlying, 1, !hitsFlying);
+      // the hold line is where the army waits; an enemy standing beyond it (a catapult near the
+      // gate) is still chased, otherwise melee-only armies could never finish the wave
+      soft = ahead >= 0 && ents[ahead].x > w.allyHoldX ? w.fieldRight : w.allyHoldX;
       if (ahead < 0) {
         // nothing ahead: go back and defend against anything that slipped behind
         const behind = nearestHostile(st, e.x, INF, hitsFlying, -1, !hitsFlying);
@@ -244,6 +246,8 @@ function layerPass(st: GState, team: 'player' | 'enemy', role: Role, spacing: nu
         if (ref < INF) soft = Math.max(soft, ref + spacing);
       }
       if (inReach) soft = Math.max(soft, e.x);
+      // everyone walks into the field before settling: nothing may camp at the spawn gate
+      soft = Math.min(soft, w.fieldRight - T.enemyEnterDepth);
       hard = Math.max(hard, chain);
       // leap_once: first time we are stopped by a body, jump over it
       if (rt.leapDistance > 0 && !rt.leapUsed && body > -INF && e.x <= body + 1) {

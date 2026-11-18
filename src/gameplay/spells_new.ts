@@ -16,7 +16,7 @@ import { interruptBoss } from './bosses';
 import { explode } from './combat';
 import { applyStatus, dealDamage, heal, knockback } from './damage';
 import { blankShot, middleRowY, release, spawnEffect, spawnProjectile, spawnUnitAt } from './pool';
-import { byId, refreshLists, type ActiveEffect, type GState } from './state';
+import { byId, refreshLists, setAnim, type ActiveEffect, type GState } from './state';
 import { allyCount } from './summon';
 
 type Params = SpellEffect['params'];
@@ -228,7 +228,11 @@ function traps(st: GState, ctx: SimContext, fx: ActiveEffect): void {
       }
     }
     st.bus.emit('spell:impact', { spellId: fx.spellId, effect: 'traps.snap', x: trap.x, y: trap.y, radius: pull });
-    release(st, st.idSlot.get(trap.id)!);
+    // the sprung trap stays a moment to show its jaws snapping shut, then expires on its own
+    setAnim(trap, 'attack');
+    trap.ttl = 0.7;
+    fx.entityIds.splice(k, 1);
+    k--;
   }
   if (armed === 0 || fx.t >= st.T.trapLifetime) endZone(st, fx);
 }

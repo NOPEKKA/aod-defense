@@ -1,31 +1,31 @@
 [
   {
     "id": "gravewright", "nameKey": "boss.gravewright", "sprite": "boss_gravewright", "origin": "new",
-    "hp": 1800, "armor": 2, "size": "huge", "speed": 40, "phaseTransition": 1.5,
+    "hp": 1300, "armor": 2, "size": "huge", "speed": 40, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
         "loop": [
-          { "attack": "shovel_slam", "params": { "damage": 28, "length": 260, "knockback": 60 }, "telegraph": 1.0, "recover": 1.0 },
-          { "attack": "grave_hands", "params": { "count": 3, "damage": 18, "radius": 50, "gap": 0.45, "root": 1.0 }, "telegraph": 0.9, "recover": 1.2 }
+          { "attack": "shovel_slam", "params": { "damage": 22, "length": 260, "knockback": 60 }, "telegraph": 1.0, "recover": 1.0 },
+          { "attack": "grave_hands", "params": { "count": 3, "damage": 14, "radius": 50, "gap": 0.45, "root": 1.0 }, "telegraph": 0.9, "recover": 1.2 }
         ],
         "minions": [{ "enemy": "skeleton", "count": 4, "interval": 3, "startAt": 4 }]
       },
       {
         "untilHpFrac": 0.33,
         "loop": [
-          { "attack": "burrow", "params": { "damage": 35, "radius": 70, "track": 2.0, "speed": 260, "knockback": 80 }, "telegraph": 0.8, "recover": 1.2 },
-          { "attack": "shovel_slam", "params": { "damage": 28, "length": 260, "knockback": 60 }, "telegraph": 0.9, "recover": 1.0 },
-          { "attack": "grave_hands", "params": { "count": 3, "damage": 18, "radius": 50, "gap": 0.4, "root": 1.0 }, "telegraph": 0.9, "recover": 1.0 }
+          { "attack": "burrow", "params": { "damage": 28, "radius": 70, "track": 2.0, "speed": 260, "knockback": 80 }, "telegraph": 0.8, "recover": 1.2 },
+          { "attack": "shovel_slam", "params": { "damage": 22, "length": 260, "knockback": 60 }, "telegraph": 0.9, "recover": 1.0 },
+          { "attack": "grave_hands", "params": { "count": 3, "damage": 14, "radius": 50, "gap": 0.4, "root": 1.0 }, "telegraph": 0.9, "recover": 1.0 }
         ],
         "minions": [{ "enemy": "skeleton_helm", "count": 3, "interval": 3, "startAt": 1 }]
       },
       {
         "untilHpFrac": 0,
         "loop": [
-          { "attack": "coffin_toss", "params": { "count": 3, "damage": 30, "radius": 60, "gap": 0.5, "knockback": 40 }, "telegraph": 0.9, "recover": 1.0 },
-          { "attack": "shovel_slam", "params": { "damage": 30, "length": 260, "knockback": 60 }, "telegraph": 0.6, "recover": 0.6 },
-          { "attack": "burrow", "params": { "damage": 35, "radius": 70, "track": 1.6, "speed": 300, "knockback": 80 }, "telegraph": 0.8, "recover": 1.0 }
+          { "attack": "coffin_toss", "params": { "count": 3, "damage": 24, "radius": 60, "gap": 0.5, "knockback": 40 }, "telegraph": 0.9, "recover": 1.0 },
+          { "attack": "shovel_slam", "params": { "damage": 24, "length": 260, "knockback": 60 }, "telegraph": 0.6, "recover": 0.6 },
+          { "attack": "burrow", "params": { "damage": 28, "radius": 70, "track": 1.6, "speed": 300, "knockback": 80 }, "telegraph": 0.8, "recover": 1.0 }
         ],
         "minions": [{ "enemy": "skeleton_spear", "count": 3, "interval": 3, "startAt": 1 }]
       }
@@ -34,12 +34,12 @@
   },
   {
     "id": "mother_mire", "nameKey": "boss.mother_mire", "sprite": "boss_mother_mire", "origin": "new",
-    "hp": 2600, "armor": 1, "size": "huge", "speed": 24, "phaseTransition": 1.5,
+    "hp": 1700, "armor": 1, "size": "huge", "speed": 24, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
         "loop": [
-          { "attack": "toss_poison", "params": { "count": 4, "damage": 16, "radius": 55, "spread": 280, "poolDps": 8, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.5 },
+          { "attack": "toss_poison", "params": { "count": 3, "damage": 13, "radius": 55, "spread": 280, "poolDps": 5, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.5 },
           { "attack": "summon", "params": { "enemy": "skeleton", "count": 3 }, "telegraph": 0, "recover": 1.5 }
         ],
         "minions": []
@@ -47,17 +47,17 @@
       {
         "untilHpFrac": 0.33,
         "loop": [
-          { "attack": "mud_wave", "params": { "damage": 30, "width": 70, "speed": 380, "gapWidth": 150, "knockback": 40 }, "telegraph": 1.2, "recover": 1.5 },
-          { "attack": "toss_poison", "params": { "count": 4, "damage": 16, "radius": 55, "spread": 280, "poolDps": 8, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.2 }
+          { "attack": "mud_wave", "params": { "damage": 18, "width": 70, "speed": 380, "gapWidth": 150, "knockback": 40 }, "telegraph": 1.2, "recover": 1.5 },
+          { "attack": "toss_poison", "params": { "count": 3, "damage": 13, "radius": 55, "spread": 280, "poolDps": 5, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.2 }
         ],
         "minions": [{ "enemy": "skeleton_shield", "count": 3, "interval": 2.5, "startAt": 1 }]
       },
       {
         "untilHpFrac": 0,
         "loop": [
-          { "attack": "steam_beam", "params": { "damage": 26, "width": 50, "speed": 520, "passes": 3, "reach": 900 }, "telegraph": 1.0, "recover": 1.5 },
+          { "attack": "steam_beam", "params": { "damage": 21, "width": 50, "speed": 520, "passes": 3, "reach": 900 }, "telegraph": 1.0, "recover": 1.5 },
           { "attack": "summon", "params": { "enemy": "skeleton_helm", "count": 4 }, "telegraph": 0, "recover": 1.0 },
-          { "attack": "toss_poison", "params": { "count": 5, "damage": 18, "radius": 55, "spread": 320, "poolDps": 9, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.2 }
+          { "attack": "toss_poison", "params": { "count": 4, "damage": 14, "radius": 55, "spread": 320, "poolDps": 6, "poolLife": 6 }, "telegraph": 1.0, "recover": 1.2 }
         ],
         "minions": []
       }
@@ -66,30 +66,30 @@
   },
   {
     "id": "sir_hollow", "nameKey": "boss.sir_hollow", "sprite": "boss_sir_hollow", "origin": "new",
-    "hp": 3400, "armor": 4, "size": "huge", "speed": 55, "phaseTransition": 1.5,
+    "hp": 2700, "armor": 4, "size": "huge", "speed": 55, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
         "loop": [
-          { "attack": "charge", "params": { "damage": 40, "knockback": 120, "speed": 900 }, "telegraph": 1.2, "recover": 2.0 },
-          { "attack": "melee_combo", "params": { "hits": 2, "damage": 24, "reach": 110 }, "telegraph": 0.7, "recover": 1.0 }
+          { "attack": "charge", "params": { "damage": 32, "knockback": 120, "speed": 900 }, "telegraph": 1.2, "recover": 2.0 },
+          { "attack": "melee_combo", "params": { "hits": 2, "damage": 19, "reach": 110 }, "telegraph": 0.7, "recover": 1.0 }
         ],
         "minions": [{ "enemy": "skeleton_helm", "count": 3, "interval": 3, "startAt": 3 }]
       },
       {
         "untilHpFrac": 0.33,
         "loop": [
-          { "attack": "throw_head", "params": { "damage": 30, "radius": 60, "bounces": 2, "hop": 220, "bounceWarn": 0.7 }, "telegraph": 0.9, "recover": 1.2 },
-          { "attack": "charge", "params": { "damage": 40, "knockback": 120, "speed": 950 }, "telegraph": 1.2, "recover": 1.8 },
-          { "attack": "melee_combo", "params": { "hits": 2, "damage": 24, "reach": 110 }, "telegraph": 0.7, "recover": 1.0 }
+          { "attack": "throw_head", "params": { "damage": 24, "radius": 60, "bounces": 2, "hop": 220, "bounceWarn": 0.7 }, "telegraph": 0.9, "recover": 1.2 },
+          { "attack": "charge", "params": { "damage": 32, "knockback": 120, "speed": 950 }, "telegraph": 1.2, "recover": 1.8 },
+          { "attack": "melee_combo", "params": { "hits": 2, "damage": 19, "reach": 110 }, "telegraph": 0.7, "recover": 1.0 }
         ],
         "minions": []
       },
       {
         "untilHpFrac": 0,
         "loop": [
-          { "attack": "double_charge", "params": { "damage": 40, "knockback": 120, "speed": 1000, "secondWarn": 0.8 }, "telegraph": 1.2, "recover": 2.0 },
-          { "attack": "throw_head", "params": { "damage": 30, "radius": 60, "bounces": 2, "hop": 220, "bounceWarn": 0.7 }, "telegraph": 0.9, "recover": 1.0 }
+          { "attack": "double_charge", "params": { "damage": 32, "knockback": 120, "speed": 1000, "secondWarn": 0.8 }, "telegraph": 1.2, "recover": 2.0 },
+          { "attack": "throw_head", "params": { "damage": 24, "radius": 60, "bounces": 2, "hop": 220, "bounceWarn": 0.7 }, "telegraph": 0.9, "recover": 1.0 }
         ],
         "minions": [{ "enemy": "skeleton_knight", "count": 2, "interval": 2, "startAt": 1 }]
       }
@@ -98,32 +98,32 @@
   },
   {
     "id": "malachar", "nameKey": "boss.malachar", "sprite": "boss_malachar", "origin": "new",
-    "hp": 4200, "armor": 3, "size": "huge", "speed": 35, "phaseTransition": 1.5,
+    "hp": 2800, "armor": 3, "size": "huge", "speed": 35, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
         "loop": [
           { "attack": "summon", "params": { "enemy": "skeleton", "count": 4 }, "telegraph": 0, "recover": 1.5 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 6, "radius": 160, "breakDamage": 150 }, "telegraph": 1.2, "recover": 2.0 }
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 150 }, "telegraph": 1.2, "recover": 2.0 }
         ],
         "minions": [{ "enemy": "skeleton_wizard", "count": 2, "interval": 4, "startAt": 5 }]
       },
       {
         "untilHpFrac": 0.33,
         "loop": [
-          { "attack": "black_bell", "params": { "rings": 3, "damage": 30, "speed": 420, "width": 50, "gap": 2.0, "radius": 600, "knockback": 40 }, "telegraph": 1.0, "recover": 1.5 },
+          { "attack": "black_bell", "params": { "rings": 3, "damage": 24, "speed": 420, "width": 50, "gap": 2.0, "radius": 600, "knockback": 40 }, "telegraph": 1.0, "recover": 1.5 },
           { "attack": "summon", "params": { "enemy": "skeleton_helm", "count": 4 }, "telegraph": 0, "recover": 1.0 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 6, "radius": 160, "breakDamage": 180 }, "telegraph": 1.2, "recover": 1.5 }
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 180 }, "telegraph": 1.2, "recover": 1.5 }
         ],
         "minions": []
       },
       {
         "untilHpFrac": 0,
         "loop": [
-          { "attack": "float_fireballs", "params": { "count": 5, "damage": 26, "radius": 60, "gap": 0.6 }, "telegraph": 0.8, "recover": 1.0 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 8, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 },
-          { "attack": "black_bell", "params": { "rings": 3, "damage": 30, "speed": 460, "width": 50, "gap": 2.0, "radius": 600, "knockback": 40 }, "telegraph": 1.0, "recover": 1.0 },
-          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 8, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 }
+          { "attack": "float_fireballs", "params": { "count": 5, "damage": 21, "radius": 60, "gap": 0.6 }, "telegraph": 0.8, "recover": 1.0 },
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 },
+          { "attack": "black_bell", "params": { "rings": 3, "damage": 24, "speed": 460, "width": 50, "gap": 2.0, "radius": 600, "knockback": 40 }, "telegraph": 1.0, "recover": 1.0 },
+          { "attack": "raise_dead", "params": { "window": 5, "hpFrac": 0.5, "max": 4, "radius": 160, "breakDamage": 220 }, "telegraph": 1.0, "recover": 0.8 }
         ],
         "minions": [{ "enemy": "skeleton_knight", "count": 1, "interval": 0, "startAt": 1 }]
       }
@@ -132,12 +132,12 @@
   },
   {
     "id": "sheila_demon", "nameKey": "boss.sheila_demon", "sprite": "boss_sheila_demon", "origin": "original",
-    "hp": 2200, "armor": 2, "size": "huge", "flying": true, "speed": 70,
+    "hp": 2000, "armor": 2, "size": "huge", "flying": true, "speed": 70,
     "phases": [
       {
         "untilHpFrac": 0,
         "loop": [
-          { "attack": "swoop", "params": { "damage": 30, "width": 260 }, "telegraph": 0.8, "recover": 1.0 },
+          { "attack": "swoop", "params": { "damage": 24, "width": 260 }, "telegraph": 0.8, "recover": 1.0 },
           { "attack": "summon", "params": { "enemy": "winged_deadite", "count": 3 }, "telegraph": 0, "recover": 1.5 },
           { "attack": "scream", "params": { "radius": 300, "stun": 1.5 }, "telegraph": 0.8, "recover": 2.0 }
         ]
@@ -147,13 +147,13 @@
   },
   {
     "id": "evil_ash", "nameKey": "boss.evil_ash", "sprite": "boss_evil_ash", "origin": "original",
-    "hp": 5000, "armor": 4, "size": "huge", "speed": 60, "phaseTransition": 1.5,
+    "hp": 4200, "armor": 4, "size": "huge", "speed": 60, "phaseTransition": 1.5,
     "phases": [
       {
         "untilHpFrac": 0.66,
         "loop": [
-          { "attack": "shotgun_line", "params": { "damage": 32, "length": 520, "knockback": 40 }, "telegraph": 0.8, "recover": 1.0 },
-          { "attack": "melee_combo", "params": { "hits": 3, "damage": 24, "reach": 110 }, "telegraph": 0.6, "recover": 1.0 }
+          { "attack": "shotgun_line", "params": { "damage": 26, "length": 520, "knockback": 40 }, "telegraph": 0.8, "recover": 1.0 },
+          { "attack": "melee_combo", "params": { "hits": 3, "damage": 19, "reach": 110 }, "telegraph": 0.6, "recover": 1.0 }
         ],
         "minions": [{ "enemy": "skeleton", "count": 4, "interval": 2, "startAt": 5 }]
       },
@@ -161,9 +161,9 @@
         "untilHpFrac": 0.33,
         "loop": [
           { "attack": "summon", "params": { "enemy": "skeleton_helm", "count": 5 }, "telegraph": 0, "recover": 1.0 },
-          { "attack": "ground_wave", "params": { "damage": 30, "width": 60, "speed": 420, "knockback": 40 }, "telegraph": 0.9, "recover": 1.5 },
-          { "attack": "melee_combo", "params": { "hits": 3, "damage": 24, "reach": 110 }, "telegraph": 0.6, "recover": 1.0 },
-          { "attack": "ground_wave", "params": { "damage": 30, "width": 60, "speed": 460, "knockback": 40 }, "telegraph": 0.9, "recover": 1.5 }
+          { "attack": "ground_wave", "params": { "damage": 24, "width": 60, "speed": 420, "knockback": 40 }, "telegraph": 0.9, "recover": 1.5 },
+          { "attack": "melee_combo", "params": { "hits": 3, "damage": 19, "reach": 110 }, "telegraph": 0.6, "recover": 1.0 },
+          { "attack": "ground_wave", "params": { "damage": 24, "width": 60, "speed": 460, "knockback": 40 }, "telegraph": 0.9, "recover": 1.5 }
         ],
         "minions": [{ "enemy": "skeleton_knight", "count": 2, "interval": 3, "startAt": 1 }]
       },
@@ -171,8 +171,8 @@
         "untilHpFrac": 0,
         "loop": [
           { "attack": "drain_book", "params": { "dps": 12, "duration": 20, "breakDamage": 400 }, "telegraph": 1.0, "recover": 1.5 },
-          { "attack": "fire_storm", "params": { "count": 6, "damage": 28, "radius": 60, "gap": 0.45, "spread": 300 }, "telegraph": 0.9, "recover": 1.2 },
-          { "attack": "shotgun_line", "params": { "damage": 32, "length": 520, "knockback": 40 }, "telegraph": 0.8, "recover": 1.0 }
+          { "attack": "fire_storm", "params": { "count": 6, "damage": 22, "radius": 60, "gap": 0.45, "spread": 300 }, "telegraph": 0.9, "recover": 1.2 },
+          { "attack": "shotgun_line", "params": { "damage": 26, "length": 520, "knockback": 40 }, "telegraph": 0.8, "recover": 1.0 }
         ],
         "minions": []
       }
