@@ -1,6 +1,6 @@
 {
   "world": {
-    "width": 2560,
+    "width": 4000,
     "groundY": 520,
     "bookX": 110,
     "castleRight": 330,
@@ -9,11 +9,11 @@
       "left": 410,
       "right": 480
     },
-    "fieldRight": 2440,
-    "enemySpawnX": 2520,
+    "fieldRight": 3880,
+    "enemySpawnX": 3960,
     "ashMinX": 230,
-    "ashMaxX": 2440,
-    "allyHoldX": 2250,
+    "ashMaxX": 3880,
+    "allyHoldX": 3450,
     "laneRows": [
       -36,
       0,
@@ -23,7 +23,34 @@
       "min": 150,
       "max": 230
     },
-    "holdAheadOfStairs": 260
+    "holdAheadOfStairs": 260,
+    "terrain": [
+      [
+        0,
+        0
+      ],
+      [
+        760,
+        0
+      ],
+      [
+        1700,
+        110
+      ],
+      [
+        2050,
+        120
+      ],
+      [
+        3200,
+        250
+      ],
+      [
+        4000,
+        250
+      ]
+    ],
+    "lairX": 3900
   },
   "ash": {
     "stats": {

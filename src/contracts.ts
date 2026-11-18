@@ -339,6 +339,14 @@ export const BalanceSchema = z.object({
     flyingAlt: z.object({ min: z.number(), max: z.number() }),
     /** where allies wait when the rally banner says 'hold': this many px ahead of the stairs */
     holdAheadOfStairs: z.number().min(0).default(260),
+    /**
+     * Ground profile: [x, dy] points (dy = px BELOW groundY, so a growing dy walks downhill).
+     * Between points the ground eases (smoothstep). core/terrain.ts terrainAt() reads it; every
+     * ground body stands at its depth row + terrainAt(x). Empty = flat.
+     */
+    terrain: z.array(z.tuple([z.number(), z.number()])).default([]),
+    /** where the enemies come out (the cave / demon gate); drawn by the backdrop */
+    lairX: z.number().optional(),
   }),
   ash: z.object({
     stats: StatsSchema,
