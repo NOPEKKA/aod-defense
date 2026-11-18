@@ -23,7 +23,7 @@ import { spawnBoss, bossesTick } from './bosses';
 import { castleInit, castleTick } from './castle';
 import { combatTick } from './combat';
 import { cleanupTick, dropsTick } from './drops';
-import { spawnEnemyAt } from './pool';
+import { spawnEnemyAt, terrainTick } from './pool';
 import { registeredIds, validateData } from './registry';
 import { castCommand, effectsTick, spellsCooldownTick, spellsInit } from './spells';
 import { spellUpkeep } from './spells_new';
@@ -208,6 +208,7 @@ function createSimSystems(): SimSystem[] {
     init() {},
     tick() {
       cleanupTick(st!);
+      terrainTick(st!);
     },
     dispose() {},
   };

@@ -10,6 +10,7 @@
  * balance.limits and settings.fxQuality.
  */
 import type { BattleRenderer, EntityState, EventBus, GameEvents, HudLayout, RenderView, Unsubscribe } from '../../contracts';
+import { groundAt } from '../../core/terrain';
 import { findEntity } from '../../core/world';
 import { applyFrame, atlasScale, frameOf, spriteFrame, type FrameInfo } from '../art/atlas';
 import { FONT_DMG } from '../art/build';
@@ -246,7 +247,8 @@ export class FxRenderer implements BattleRenderer {
       const n = 5;
       for (let i = 0; i < n; i++) {
         const x = p.fromX + ((p.toX - p.fromX) * i) / (n - 1);
-        if (!this.sheet('fx_dust_puff', x, this.gy, 0.8, 0)) this.emit('p_smoke', x, this.gy - 10, 0, -20, 0.5, 0.7, 1.6, 0xd8d0c0, 0, false, false, 0, 0, 0.7);
+        const gy = groundAt(this.view.data, x);
+        if (!this.sheet('fx_dust_puff', x, gy, 0.8, 0)) this.emit('p_smoke', x, gy - 10, 0, -20, 0.5, 0.7, 1.6, 0xd8d0c0, 0, false, false, 0, 0, 0.7);
       }
     });
     on('smith:upgraded', () => this.flashA = Math.max(this.flashA, 0.12));
@@ -454,12 +456,12 @@ export class FxRenderer implements BattleRenderer {
       key = 'food';
     }
     const n = p.pickup === 'gold' ? Math.min(4, 1 + Math.floor(p.value / 6)) : 1;
-    for (let i = 0; i < n; i++) this.fly(key, p.x - this.view.cameraX + (i - (n - 1) / 2) * 10, p.y - 30, tx, ty, 0.5 + i * 0.07);
+    for (let i = 0; i < n; i++) this.fly(key, p.x - this.view.cameraX + (i - (n - 1) / 2) * 10, p.y - 30 - this.view.cameraY, tx, ty, 0.5 + i * 0.07);
   }
 
   private onImpact(p: GameEvents['spell:impact']): void {
     const r = Math.max(30, p.radius);
-    const gy = this.gy;
+    const gy = p.y; // gameplay sends the ground y at the impact (the field slopes downhill)
     switch (p.effect) {
       case 'line_blast': {
         const ash = this.ent(this.view.world.ashId);

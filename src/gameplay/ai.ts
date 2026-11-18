@@ -95,6 +95,14 @@ export function aiTick(st: GState): void {
 export function speedOf(st: GState, e: EntityState, rt: Rt): number {
   let v = rt.speed * Math.max(0, 1 - statusMag(e, 'slow'));
   if (e.team === 'player' && st.army.left > 0) v *= 1 + st.army.speed;
+  // forced march: far from any foe (and from the book) bodies cover the long road faster
+  if (rt.role !== 'boss' && e.kind !== 'ash') {
+    const T = st.T;
+    const far = e.team === 'player'
+      ? nearestHostile(st, e.x, T.marchRange, true, 0) < 0
+      : nearestPlayer(st, e.x, T.marchRange, 0) < 0 && e.x - st.data.balance.world.bookX > T.marchRange;
+    if (far) v *= T.marchMul;
+  }
   return v;
 }
 

@@ -2,6 +2,7 @@
  * Summon slots (order 100): built from ctx.wave.units, cooldowns tick down,
  * {type:'summon'} validates and spawns the unit (+escorts) at the stairs.
  */
+import { groundAt } from '../core/terrain';
 import { SIM_DT, type SimContext, type UnitDef } from '../contracts';
 import { spawnUnitAt } from './pool';
 import type { GState } from './state';
@@ -86,5 +87,5 @@ export function summonCommand(st: GState, ctx: SimContext, index: number): void 
   }
   slot.cooldownLeft = slot.cooldownTotal;
   st.bus.emit('unit:summoned', { slot: index, unitId: def.id, entityIds: ids });
-  st.bus.emit('spectacle:action', { action: 'summon', x, y: ctx.data.balance.world.groundY });
+  st.bus.emit('spectacle:action', { action: 'summon', x, y: groundAt(ctx.data, x) });
 }

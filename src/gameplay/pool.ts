@@ -8,6 +8,7 @@
  * in a line alternate rows. Rows are visual only.
  */
 import type { AttackDef, BehaviorRef, BossDef, DamageKind, EnemyDef, EntityKind, EntityState, Team, UnitDef } from '../contracts';
+import { terrainAt } from '../core/terrain';
 import { BOOK, newRt, NONE, resetRt, ROLES, type GState, type Role, type Rt } from './state';
 
 export function alloc(st: GState, kind: EntityKind, team: Team, defId: string, sprite: string, x: number, y: number): number {
@@ -472,6 +473,8 @@ export function spawnPickup(st: GState, type: PickupType, x: number, y: number, 
   const cx = Math.max(w.ashMinX, Math.min(w.ashMaxX, x));
   const slot = alloc(st, 'pickup', 'neutral', type, PICKUP_SPRITE[type], cx, y);
   const e = st.world.entities[slot];
+  // dropped from a body that already stands on the terrain: y includes the slope at its x
+  st.rts[slot].tdy = terrainAt(st.data, x);
   e.value = value;
   e.ttl = ttl;
   e.hp = e.maxHp = 1;
@@ -498,4 +501,25 @@ export function spawnEffect(st: GState, defId: string, sprite: string, x: number
 export function releaseById(st: GState, id: number): void {
   const s = st.idSlot.get(id);
   if (s !== undefined) release(st, s);
+}
+
+/**
+ * Keeps every ground thing on the battlefield's slope (core/terrain.ts): e.y = depth row +
+ * terrainAt(x). Movement only changes x, so this runs once per tick after everything moved.
+ * Projectiles fly their own y (aimed at bodies that are already on the slope).
+ */
+export function terrainTick(st: GState): void {
+  const ents = st.world.entities;
+  const data = st.data;
+  for (let s = 0; s < ents.length; s++) {
+    const e = ents[s];
+    if (!e.alive || e.kind === 'projectile') continue;
+    const rt = st.rts[s];
+    const dy = terrainAt(data, e.x);
+    if (rt.tdy !== rt.tdy) {
+      e.y += dy;
+      e.prevY = e.y; // fresh spawn: no interpolation from the flat row
+    } else if (dy !== rt.tdy) e.y += dy - rt.tdy;
+    rt.tdy = dy;
+  }
 }
