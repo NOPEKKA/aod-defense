@@ -72,6 +72,7 @@ export class AudioSystem {
       const eng = new Engine(ctx);
       this.eng = eng;
       this.music = new Conductor(eng);
+      void this.music.tracks.load('menu');
       this.music.sampleStinger = (kind, t, dest) => this.bank.stinger(eng, kind, t, dest);
       this.bank.load(ctx);
       this.applyVolumes(true);
