@@ -91,6 +91,8 @@ const iconIndex = new Map<string, { key: string; frame: string; w: number; h: nu
 
 /** 'auto': sd on low-memory devices, hd otherwise. */
 export function chooseQuality(settings: Pick<Settings, 'texQuality'>): Quality {
+  // builds that ship only the hd set (the claude.ai Artifact copy has a file-count cap)
+  if (import.meta.env.VITE_HD_ONLY) return 'hd';
   if (settings.texQuality === 'hd' || settings.texQuality === 'sd') return settings.texQuality;
   const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
   if (mem !== undefined && mem <= 4) return 'sd';

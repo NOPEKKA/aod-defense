@@ -8,3 +8,4 @@ playwright-report/
 # game-creator skills are reinstalled from skills-lock.json
 .claude/skills/
 .claude/worktrees/
+dist-art/
