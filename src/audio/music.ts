@@ -456,6 +456,8 @@ export class Conductor {
   intensity = 0;
   /** tempo multiplier (speed x2) */
   tempoMul = 1;
+  /** optional recorded stinger: plays it into dest and returns its length (0 = not available) */
+  sampleStinger: ((kind: string, t: number, dest: AudioNode) => number) | null = null;
   /** 0 mutes scheduling entirely */
   enabled = true;
   readonly log: string[] = [];
@@ -509,7 +511,8 @@ export class Conductor {
       startedAt: now,
     };
     if (quick) {
-      const len = stinger(this.ctxM(inst), name as 'victory' | 'defeat', now + 0.08);
+      const recorded = this.sampleStinger ? this.sampleStinger(name, now + 0.08, inst.gain) : 0;
+      const len = recorded > 0 ? recorded : stinger(this.ctxM(inst), name as 'victory' | 'defeat', now + 0.08);
       inst.stingerEnd = now + len;
       inst.endAt = now + len + 3;
     }

@@ -6,6 +6,7 @@
 import { Engine, clamp, rnd, vary } from './engine';
 import { Conductor, type ThemeName } from './music';
 import { SFX } from './sfx';
+import { SampleBank } from './samples';
 
 export interface PlayOpts {
   vol?: number;
@@ -33,6 +34,11 @@ const PLAYED_LOG = 40;
 export class AudioSystem {
   eng: Engine | null = null;
   music: Conductor | null = null;
+  /** recorded samples; synth patches play until a sample is decoded */
+  readonly bank = new SampleBank();
+  /** how many plays used a sample vs the synth patch */
+  samplePlays = 0;
+  synthPlays = 0;
   sfxVolume = 0.8;
   musicVolume = 0.6;
   paused = false;
@@ -66,6 +72,8 @@ export class AudioSystem {
       const eng = new Engine(ctx);
       this.eng = eng;
       this.music = new Conductor(eng);
+      this.music.sampleStinger = (kind, t, dest) => this.bank.stinger(eng, kind, t, dest);
+      this.bank.load(ctx);
       this.applyVolumes(true);
       this.applyPause(true);
       ctx.addEventListener('statechange', () => {
@@ -230,7 +238,12 @@ export class AudioSystem {
     const t = now + 0.006 + (o.delay ?? 0) + rnd(0, 0.01);
     try {
       const out = eng.voiceOut(def.vol * (o.vol ?? 1) * boost * dist, pan, def.wet, t, def.life + (o.delay ?? 0));
-      def.fn({ e: eng, t, out, p: (o.pitch ?? 1) * vary(0.05), i: o.i ?? 0, n: o.n ?? 0 });
+      const p = (o.pitch ?? 1) * vary(0.05);
+      if (this.bank.play(eng, name, t, out, p, o.i ?? 0, o.n ?? 0)) this.samplePlays++;
+      else {
+        def.fn({ e: eng, t, out, p, i: o.i ?? 0, n: o.n ?? 0 });
+        this.synthPlays++;
+      }
     } catch (err) {
       this.errors++;
       if (this.errors < 4) console.warn('[audio] sfx error', name, err);

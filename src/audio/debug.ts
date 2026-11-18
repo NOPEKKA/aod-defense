@@ -148,6 +148,7 @@ export function installDebug(A: AudioSystem, wiring: Wiring): void {
         battle: w,
         music: A.music ? A.music.info() : null,
         errors: A.errors,
+        samples: { loaded: A.bank.loaded, total: A.bank.total, missing: A.bank.missing.slice(), samplePlays: A.samplePlays, synthPlays: A.synthPlays },
       };
     },
     stats() {
@@ -159,6 +160,7 @@ export function installDebug(A: AudioSystem, wiring: Wiring): void {
         last: A.played.slice(-20).map((p) => p.name),
         voicePeak: A.eng ? A.eng.voicePeak : 0,
         errors: A.errors,
+        samples: { loaded: A.bank.loaded, total: A.bank.total, missing: A.bank.missing.slice(), samplePlays: A.samplePlays, synthPlays: A.synthPlays },
       };
     },
     play(name, opts) {

@@ -142,6 +142,8 @@ export function wireEvents(app: AppContext, game: Phaser.Game, A: AudioSystem): 
     battleOver = true;
     bossActive = false;
     A.setTheme(o.result === 'won' ? 'victory' : 'defeat', 0.5);
+    // the crowd cheers after a boss wave is won
+    if (o.result === 'won' && o.wave % 10 === 0) A.play('crowd_cheer', { delay: 0.6 });
   });
 
   // ----- entities -----------------------------------------------------------
@@ -285,6 +287,8 @@ export function wireEvents(app: AppContext, game: Phaser.Game, A: AudioSystem): 
           return;
         default:
           A.play('bone_collapse', { x: d.x });
+          // an occasional low groan from the dead; the sound itself has a long gap
+          if (Math.random() < 0.08) A.play('deadite_groan', { x: d.x, delay: 0.12 });
           return;
       }
     }
@@ -326,8 +330,13 @@ export function wireEvents(app: AppContext, game: Phaser.Game, A: AudioSystem): 
       coinStep = t - lastCoin < 0.7 ? Math.min(coinStep + 1, 14) : 0;
       lastCoin = t;
       A.play('coin', { n: coinStep, x: p.x });
+    } else if ((p.pickup as string) === 'silver') {
+      A.play('coin_silver', { n: Math.floor(t * 7) % 3, x: p.x });
     } else if (p.pickup === 'mana') A.play('mana_chime', { x: p.x });
     else A.play('food', { x: p.x });
+  });
+  bus.on('entity:healed', (h) => {
+    if (h.amount > 0) A.play('heal', { x: h.x });
   });
   bus.on('smith:upgraded', () => {
     A.play('smith_hammer');
