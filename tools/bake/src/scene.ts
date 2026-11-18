@@ -16,6 +16,8 @@ import * as THREE from 'three';
 import { DEFAULT_GRADE, downsample, toCanvas, toImageData, type GradeOpts, type ImageF } from './engine';
 import { MASTER, PITCH, PPU, SCALES } from './sprite';
 import { engine, jsonFile, pngFile, webpFile, type OutFile } from './studio';
+import balance from '../../../data/balance.json';
+import { terrainAt } from '../../../src/core/terrain';
 
 // ---------------------------------------------------------------------------
 // types
@@ -23,16 +25,54 @@ import { engine, jsonFile, pngFile, webpFile, type OutFile } from './studio';
 
 export type LayerId = 'sky' | 'far' | 'main' | 'front';
 
-/** fixed layer geometry (ART_BIBLE 6.2) */
-export const BG_LAYERS: Record<LayerId, { parallax: number; w: number; h: number; tileW: number; over?: boolean }> = {
-  sky: { parallax: 0, w: 1600, h: 720, tileW: 1600 },
-  far: { parallax: 0.35, w: 1940, h: 720, tileW: 1940 },
-  main: { parallax: 1, w: 2560, h: 720, tileW: 1280 },
-  front: { parallax: 1.2, w: 2820, h: 720, tileW: 1410, over: true },
-};
-export const WORLD_W = 2560;
+/** the battlefield (data/balance.json world): art and gameplay read the same numbers */
+export const WORLD_W: number = balance.world.width;
 export const VIEW_H = 720;
-export const GROUND_Y = 520;
+export const GROUND_Y: number = balance.world.groundY;
+const TERRAIN_DATA = { balance } as unknown as Parameters<typeof terrainAt>[0];
+/** px the ground at world x lies below GROUND_Y (core/terrain.ts, the gameplay curve) */
+export function terrainPx(x: number): number {
+  return terrainAt(TERRAIN_DATA, x);
+}
+const TERRAIN_MAX = Math.max(0, ...((balance.world as { terrain?: Array<[number, number]> }).terrain ?? []).map((p) => p[1]));
+/** deepest the battle camera may scroll down (px): the lowest ground plus a margin */
+export const SCROLL_Y_MAX = TERRAIN_MAX + 30;
+const VIEW_W_MIN = 1280;
+const VIEW_W_MAX = 1600;
+
+export interface LayerSpec {
+  parallax: number;
+  /** vertical scroll factor (the battle camera follows the ground down) */
+  parallaxY: number;
+  /** layer top in logical px (the image is placed at this y) */
+  y: number;
+  w: number;
+  h: number;
+  tileW: number;
+  over?: boolean;
+}
+
+/**
+ * Layer geometry (ART_BIBLE 6.2), sized so no empty edge shows at any view width (1280..1600)
+ * and any camera scroll: x up to WORLD_W - viewW, y from 0 down to SCROLL_Y_MAX.
+ */
+function layerSpecs(): Record<LayerId, LayerSpec> {
+  const need = (par: number): number => Math.max(...[VIEW_W_MIN, VIEW_W_MAX].map((vw) => par * (WORLD_W - vw) + vw));
+  const r10 = (v: number): number => Math.ceil(v / 10) * 10;
+  const tiles = (w: number, maxTile: number): number => r10(w / Math.ceil(w / maxTile));
+  const skyY = 0.08;
+  const farY = 0.4;
+  const farW = r10(need(0.35));
+  const frontW = r10(need(1.2));
+  return {
+    sky: { parallax: 0, parallaxY: skyY, y: -40, w: 1600, h: r10(VIEW_H + 40 + skyY * SCROLL_Y_MAX), tileW: 1600 },
+    far: { parallax: 0.35, parallaxY: farY, y: 0, w: farW, h: r10(VIEW_H + farY * SCROLL_Y_MAX), tileW: farW },
+    main: { parallax: 1, parallaxY: 1, y: 0, w: WORLD_W, h: r10(VIEW_H + SCROLL_Y_MAX), tileW: tiles(WORLD_W, 2400) },
+    // only a low edge along the bottom of the screen: the image starts well below the play band
+    front: { parallax: 1.2, parallaxY: 1, y: 560, w: frontW, h: r10(VIEW_H + SCROLL_Y_MAX - 560), tileW: tiles(frontW, 2400), over: true },
+  };
+}
+export const BG_LAYERS: Record<LayerId, LayerSpec> = layerSpecs();
 
 export interface PointLightSpec {
   pos: [number, number, number];
@@ -134,7 +174,7 @@ export interface PreviewActor {
 }
 
 export interface BuiltScene {
-  /** paint the sky into g (already scaled: 1 unit = 1 logical px), 1600 x 720 */
+  /** paint the sky into g (scaled: 1 unit = 1 logical px; y 0 = the view top at scroll 0; the layer starts at BG_LAYERS.sky.y) */
   sky: (g: CanvasRenderingContext2D, w: number, h: number) => void;
   far?: Layer3D;
   main: Layer3D;
@@ -472,12 +512,14 @@ export function renderLayer(L: Layer3D, w: number, h: number, chunkW: number, lo
 }
 
 function paintSky(fn: BuiltScene['sky']): LayerImages {
-  const { w, h } = BG_LAYERS.sky;
+  const { w, h, y } = BG_LAYERS.sky;
   const hd = makeCanvas(w * SCALES.hd.scale, h * SCALES.hd.scale);
   const g = hd.getContext('2d')!;
   g.save();
   g.scale(SCALES.hd.scale, SCALES.hd.scale);
-  fn(g, w, h);
+  // the painter works in screen coordinates: 0 = the top of the view at scroll 0
+  g.translate(0, -y);
+  fn(g, w, h + y);
   g.restore();
   const sd = makeCanvas(w * SCALES.sd.scale, h * SCALES.sd.scale);
   const gs = sd.getContext('2d')!;
@@ -540,7 +582,8 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
     const spec = BG_LAYERS[id];
     const t = performance.now();
     const LL = opts.passes ? { ...L, passes: opts.passes } : L;
-    const chunk = id === 'far' ? spec.w / 2 : spec.tileW;
+    // render in chunks of at most ~1250 px: a 3x master of a whole 2000 px tile is a very large target
+    const chunk = Math.ceil(spec.w / Math.ceil(spec.w / 1250));
     images[id] = renderLayer(LL, spec.w, spec.h, chunk, log);
     log(`${def.id}/${id}: ${((performance.now() - t) / 1000).toFixed(1)}s`);
   };
@@ -559,7 +602,7 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
     if (!present) continue;
     const alpha = id !== 'sky';
     const tiles = Math.ceil(spec.w / spec.tileW);
-    const lm: Record<string, unknown> = { id, parallax: spec.parallax, w: spec.w, h: spec.h, tileW: spec.tileW, tiles, alpha };
+    const lm: Record<string, unknown> = { id, parallax: spec.parallax, parallaxY: spec.parallaxY, y: spec.y, w: spec.w, h: spec.h, tileW: spec.tileW, tiles, alpha };
     if (spec.over) lm.over = true;
     layersMeta.push(lm);
     const img = images[id];
@@ -570,7 +613,7 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
         const tw = Math.min(spec.tileW, spec.w - i * spec.tileW);
         const c = makeCanvas(Math.round(tw * scale), Math.round(spec.h * scale));
         c.getContext('2d')!.drawImage(img[s], -Math.round(i * spec.tileW * scale), 0);
-        const f = webpFile(`public/assets/bg/${s}/${def.id}-${id}-${i}.webp`, c, alpha ? (opts.qAlpha ?? 0.92) : (opts.qOpaque ?? 0.9));
+        const f = webpFile(`public/assets/bg/${s}/${def.id}-${id}-${i}.webp`, c, alpha ? (opts.qAlpha ?? 0.86) : (opts.qOpaque ?? 0.88));
         files.push(f);
         sizes[`${s}/${id}-${i}`] = b64len(f.base64);
         if (s === 'hd') (tileUrls[id] ??= []).push(`data:image/webp;base64,${f.base64}`);
@@ -582,6 +625,8 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
     chapter: def.chapter,
     worldW: WORLD_W,
     viewH: VIEW_H,
+    /** how far the battle camera scrolls down at most; the layers are sized for it */
+    scrollYMax: SCROLL_Y_MAX,
     layers: layersMeta,
     anchors: built.anchors,
     grade: built.grade,
@@ -592,6 +637,12 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
   if (layerIds.every((id) => !layersMeta.find((l) => l.id === id) || tileUrls[id])) {
     const prev = await composePreview(meta, tileUrls, built, opts);
     files.push(pngFile(`output/bake/preview/bg_${def.id}.png`, prev));
+    // each view on its own at full size (easier to inspect)
+    for (let i = 0; i < prev.height / VIEW_H; i++) {
+      const c = makeCanvas(prev.width, VIEW_H);
+      c.getContext('2d')!.drawImage(prev, 0, -i * VIEW_H);
+      files.push(pngFile(`output/bake/preview/bg_${def.id}_v${i}.png`, c));
+    }
   }
   log(`${def.id}: done in ${((performance.now() - t0) / 1000).toFixed(1)}s`);
   return { files, meta, sizes };
@@ -601,9 +652,15 @@ export async function bakeScene(def: SceneDef, opts: BakeOpts, log: (s: string) 
 // preview
 // ---------------------------------------------------------------------------
 
+/** the battle camera's vertical scroll for a horizontal scroll (an estimate of the game's follow) */
+export function previewScrollY(camX: number, viewW = 1280): number {
+  return Math.max(0, Math.min(SCROLL_Y_MAX, terrainPx(camX + viewW / 2)));
+}
+
 async function composePreview(meta: { layers: Array<Record<string, unknown>>; anchors: BuiltScene['anchors'] }, tileUrls: Record<string, string[]>, built: BuiltScene, opts: BakeOpts): Promise<HTMLCanvasElement> {
   const VW = 1280;
-  const views = [0, (WORLD_W - VW) / 2, WORLD_W - VW];
+  const xs = [0, 640, 1300, 2000, 2700, WORLD_W - VW];
+  const views = xs.map((x) => ({ x, y: previewScrollY(x, VW) }));
   const out = makeCanvas(VW, VIEW_H * views.length);
   const g = out.getContext('2d')!;
   g.imageSmoothingQuality = 'high';
@@ -615,17 +672,19 @@ async function composePreview(meta: { layers: Array<Record<string, unknown>>; an
     for (const [name, url] of Object.entries(atlas.pages)) pages[name] = await loadImage(url);
     sprites[id] = { atlas, pages };
   }
-  const drawLayer = (id: string, camX: number, oy: number): void => {
+  const drawLayer = (id: string, camX: number, camY: number, oy: number): void => {
     const lm = meta.layers.find((l) => l.id === id);
     if (!lm || !tiles[id]) return;
     const par = lm.parallax as number;
+    const parY = (lm.parallaxY as number | undefined) ?? 0;
+    const ly = (lm.y as number | undefined) ?? 0;
     const tileW = lm.tileW as number;
     tiles[id].forEach((im, i) => {
       const x = i * tileW - camX * par;
-      g.drawImage(im, x, oy, im.width / SCALES.hd.scale, im.height / SCALES.hd.scale);
+      g.drawImage(im, x, oy + ly - camY * parY, im.width / SCALES.hd.scale, im.height / SCALES.hd.scale);
     });
   };
-  const drawSprite = (a: PreviewActor, camX: number, oy: number, shadow: boolean): void => {
+  const drawSprite = (a: PreviewActor, camX: number, camY: number, oy: number, shadow: boolean): void => {
     const s = sprites[a.sprite];
     if (!s) return;
     const name = shadow ? 'shadow' : (a.frame ?? 'idle/0');
@@ -635,7 +694,7 @@ async function composePreview(meta: { layers: Array<Record<string, unknown>>; an
       const im = s.pages[tex.image];
       const k = 1 / SCALES.hd.scale;
       const sx = a.x - camX;
-      const gy = GROUND_Y + a.row + oy;
+      const gy = GROUND_Y + a.row + terrainPx(a.x) + oy - camY;
       g.save();
       if (shadow) g.globalAlpha = 0.45;
       g.translate(sx, gy);
@@ -646,20 +705,28 @@ async function composePreview(meta: { layers: Array<Record<string, unknown>>; an
     }
   };
   const A = meta.anchors;
-  views.forEach((camX, vi) => {
+  views.forEach(({ x: camX, y: camY }, vi) => {
     const oy = vi * VIEW_H;
+    // world -> preview canvas
+    const wx = (x: number): number => x - camX;
+    const wy = (y: number): number => y - camY + oy;
     g.save();
     g.beginPath();
     g.rect(0, oy, VW, VIEW_H);
     g.clip();
-    drawLayer('sky', camX, oy);
-    drawLayer('far', camX, oy);
-    drawLayer('main', camX, oy);
+    // magenta shows any gap between the layers
+    g.fillStyle = '#ff00ff';
+    g.fillRect(0, oy, VW, VIEW_H);
+    drawLayer('sky', camX, camY, oy);
+    drawLayer('far', camX, camY, oy);
+    drawLayer('main', camX, camY, oy);
     // stand-in flames and glows (the game animates these)
     g.globalCompositeOperation = 'lighter';
-    for (const gl of A.glows) {
-      const x = gl.x - camX;
-      const y = gl.y + oy;
+    const lair = A['lair'] as { x: number; y: number; r?: number; color?: string } | undefined;
+    const glows = [...A.glows, ...(lair ? [{ x: lair.x, y: lair.y, r: lair.r ?? 200, color: lair.color ?? '#7dff5a', a: 0.35 }] : [])];
+    for (const gl of glows) {
+      const x = wx(gl.x);
+      const y = wy(gl.y);
       const gr = g.createRadialGradient(x, y, 0, x, y, gl.r);
       const c = new THREE.Color(gl.color).convertLinearToSRGB();
       const rgb = `${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)}`;
@@ -669,8 +736,8 @@ async function composePreview(meta: { layers: Array<Record<string, unknown>>; an
       g.fillRect(x - gl.r, y - gl.r, gl.r * 2, gl.r * 2);
     }
     const flame = (fx: number, fy: number, s: number): void => {
-      const x = fx - camX;
-      const y = fy + oy;
+      const x = wx(fx);
+      const y = wy(fy);
       const gr = g.createRadialGradient(x, y - 6 * s, 0, x, y - 6 * s, 16 * s);
       gr.addColorStop(0, 'rgba(255,240,170,0.95)');
       gr.addColorStop(0.4, 'rgba(255,150,40,0.7)');
@@ -685,19 +752,21 @@ async function composePreview(meta: { layers: Array<Record<string, unknown>>; an
     g.globalCompositeOperation = 'source-over';
     // actors: lane rows back to front, shadows first
     const actors = [...(built.actors ?? [])].sort((a, b) => a.row - b.row);
-    for (const a of actors) drawSprite(a, camX, oy, true);
-    for (const a of actors) drawSprite(a, camX, oy, false);
-    drawLayer('front', camX, oy);
+    for (const a of actors) drawSprite(a, camX, camY, oy, true);
+    for (const a of actors) drawSprite(a, camX, camY, oy, false);
+    drawLayer('front', camX, camY, oy);
+    g.font = '12px monospace';
+    g.fillStyle = 'rgba(255,255,255,0.8)';
+    g.fillText(`x ${camX} y ${Math.round(camY)}`, 8, oy + 16);
     if (opts.debug) {
       g.lineWidth = 2;
-      g.font = '12px monospace';
       const mark = (x: number, y: number, label: string, col: string): void => {
         g.strokeStyle = col;
         g.fillStyle = col;
         g.beginPath();
-        g.arc(x - camX, y + oy, 6, 0, Math.PI * 2);
+        g.arc(wx(x), wy(y), 6, 0, Math.PI * 2);
         g.stroke();
-        g.fillText(label, x - camX + 8, y + oy - 6);
+        g.fillText(label, wx(x) + 8, wy(y) - 6);
       };
       mark(A.book.x, A.book.y, 'book', '#7dff5a');
       mark(A.smith.x, A.smith.y, 'smith', '#ffd24a');
@@ -705,17 +774,20 @@ async function composePreview(meta: { layers: Array<Record<string, unknown>>; an
       mark(A.catapult.x, A.catapult.y, 'catapult', '#7fb0ff');
       A.archers.forEach((p, i) => mark(p.x, p.y, `archer${i}`, '#7fb0ff'));
       A.torches.forEach((p) => mark(p.x, p.y, '', '#ff5050'));
+      if (lair) mark(lair.x, lair.y, 'lair', '#ff40ff');
       g.strokeStyle = '#ff40ff';
-      g.strokeRect(A.pit.x - camX, A.pit.y + oy, A.pit.w, A.pit.h);
-      g.strokeStyle = 'rgba(255,255,255,0.35)';
+      g.strokeRect(wx(A.pit.x), wy(A.pit.y), A.pit.w, A.pit.h);
+      // the walk band: depth rows -36 / 0 / +36 on the terrain
       for (const r of [-36, 0, 36]) {
+        g.strokeStyle = r === 0 ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)';
         g.beginPath();
-        g.moveTo(0, GROUND_Y + r + oy);
-        g.lineTo(VW, GROUND_Y + r + oy);
+        for (let x = 0; x <= VW; x += 8) {
+          const y = wy(GROUND_Y + r + terrainPx(camX + x));
+          if (x === 0) g.moveTo(x, y);
+          else g.lineTo(x, y);
+        }
         g.stroke();
       }
-      g.fillStyle = '#fff';
-      g.fillText(`camX ${camX}`, 8, oy + 16);
     }
     g.restore();
   });
