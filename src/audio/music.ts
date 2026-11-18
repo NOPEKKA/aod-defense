@@ -7,8 +7,11 @@
  * repeats are recognisable but a long wave never loops identically.
  *
  * Themes: menu, battle (4 intensity layers), boss; stingers: victory, defeat.
+ * Recorded loops (tracks.ts) replace the loop themes once decoded; these procedural
+ * themes play while a track loads or if it fails.
  */
 import { type Engine, mtof, clamp } from './engine';
+import { TrackBank } from './tracks';
 
 export type ThemeName = 'menu' | 'battle' | 'boss' | 'victory' | 'defeat';
 export type LoopTheme = 'menu' | 'battle' | 'boss';
@@ -447,6 +450,9 @@ interface Instance {
   /** stingers: context time the sound finishes */
   stingerEnd: number;
   startedAt: number;
+  /** recorded loop (replaces the procedural impl) */
+  src: AudioBufferSourceNode | null;
+  track: string | null;
 }
 
 export class Conductor {
@@ -461,8 +467,19 @@ export class Conductor {
   /** 0 mutes scheduling entirely */
   enabled = true;
   readonly log: string[] = [];
+  /** recorded loops; the procedural themes cover the gap while one loads or if it fails */
+  readonly tracks: TrackBank;
+  /** set false to force the procedural themes (debug / tests) */
+  useTracks = true;
 
-  constructor(private e: Engine) {}
+  constructor(private e: Engine) {
+    this.tracks = new TrackBank(e.ctx);
+  }
+
+  /** file of the track playing now, or null */
+  get track(): string | null {
+    return this.cur ? this.cur.track : null;
+  }
 
   get theme(): ThemeName | 'none' {
     return this.cur ? this.cur.name : 'none';
@@ -471,7 +488,7 @@ export class Conductor {
   /** seconds left of a running stinger (0 if none) */
   stingerLeft(): number {
     const c = this.cur;
-    if (!c || c.impl) return 0;
+    if (!c || c.impl || c.track || (c.name !== 'victory' && c.name !== 'defeat')) return 0;
     return Math.max(0, c.stingerEnd - this.e.ctx.currentTime);
   }
 
@@ -496,11 +513,14 @@ export class Conductor {
     gain.gain.setValueAtTime(quick ? 1 : 0.0001, now);
     if (!quick) gain.gain.exponentialRampToValueAtTime(1, now + Math.max(0.1, fade));
     const rng = mulberry32((Math.random() * 4294967296) >>> 0);
+    const loopName = name === 'menu' || name === 'battle' || name === 'boss' ? name : null;
+    const file = loopName && this.useTracks ? this.tracks.next(loopName) : null;
+    const ready = file ? this.tracks.get(file) : null;
     const inst: Instance = {
       name,
       gain,
       send,
-      impl: quick ? null : THEMES[name as LoopTheme](rng),
+      impl: quick || ready ? null : THEMES[name as LoopTheme](rng),
       rng,
       nextTime: now + 0.06,
       bar: 0,
@@ -509,7 +529,16 @@ export class Conductor {
       fading: false,
       stingerEnd: 0,
       startedAt: now,
+      src: null,
+      track: null,
     };
+    if (ready && file) this.attachTrack(inst, file, ready);
+    else if (file) {
+      // not decoded yet: the procedural theme plays and the recording takes over when ready
+      void this.tracks.load(file).then((buf) => {
+        if (buf && this.cur === inst && !inst.fading && !inst.src) this.swapToTrack(inst, file, buf);
+      });
+    }
     if (quick) {
       const recorded = this.sampleStinger ? this.sampleStinger(name, now + 0.08, inst.gain) : 0;
       const len = recorded > 0 ? recorded : stinger(this.ctxM(inst), name as 'victory' | 'defeat', now + 0.08);
@@ -517,6 +546,34 @@ export class Conductor {
       inst.endAt = now + len + 3;
     }
     this.cur = inst;
+  }
+
+  private attachTrack(inst: Instance, file: string, buf: AudioBuffer): void {
+    const src = this.e.ctx.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    src.connect(inst.gain);
+    src.start(this.e.ctx.currentTime + 0.02);
+    inst.src = src;
+    inst.track = file;
+  }
+
+  /** replace a running procedural theme with its recording (cross-fade) */
+  private swapToTrack(inst: Instance, file: string, buf: AudioBuffer): void {
+    const ctx = this.e.ctx;
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    const send = ctx.createGain();
+    send.gain.value = inst.send.gain.value;
+    gain.connect(this.e.musicBus);
+    gain.connect(send);
+    send.connect(this.e.musicWet);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(1, now + 2);
+    const next: Instance = { ...inst, gain, send, impl: null, src: null, track: null, nextTime: Infinity, endAt: Infinity, fading: false };
+    this.attachTrack(next, file, buf);
+    this.fadeOut(inst, 2);
+    this.cur = next;
   }
 
   private ctxM(inst: Instance): M {
@@ -543,6 +600,8 @@ export class Conductor {
     for (let i = this.old.length - 1; i >= 0; i--) {
       if (now > this.old[i].endAt) {
         try {
+          this.old[i].src?.stop();
+          this.old[i].src?.disconnect();
           this.old[i].gain.disconnect();
           this.old[i].send.disconnect();
         } catch {

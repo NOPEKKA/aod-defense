@@ -44,3 +44,16 @@ All sound effects in `sfx/` are trimmed, normalised, mono 16-bit WAV excerpts of
 | chunky explosion (not shipped) | https://opengameart.org/content/chunky-explosion | looneybits | CC0 |
 
 Pitch/volume variation and round-robin are applied at runtime in `src/audio/samples.ts`.
+
+## Music (`music/`)
+
+Four seamless loops, Ogg Opus stereo 72 kbps. Each is an excerpt of the original track (loop point chosen automatically, the tail cross-faded into the head at build time, peak-normalised) and re-encoded. All by Kevin MacLeod, https://incompetech.com, licensed under Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/). None come from the original game or the film.
+
+| File | Used for | Track |
+| --- | --- | --- |
+| menu.ogg | title / menu | "Dark Fog" by Kevin MacLeod (incompetech.com), CC BY 4.0 |
+| battle1.ogg | battle (alternates with battle2) | "Crypto" by Kevin MacLeod (incompetech.com), CC BY 4.0 |
+| battle2.ogg | battle | "Volatile Reaction" by Kevin MacLeod (incompetech.com), CC BY 4.0 |
+| boss.ogg | boss waves | "Giant Wyrm" by Kevin MacLeod (incompetech.com), CC BY 4.0 |
+
+Playback is in `src/audio/tracks.ts` and `src/audio/music.ts`; the procedural themes remain as a fallback.

@@ -147,6 +147,7 @@ export function installDebug(A: AudioSystem, wiring: Wiring): void {
         peak: m.peak,
         battle: w,
         music: A.music ? A.music.info() : null,
+        track: A.music ? { playing: A.music.track, loaded: A.music.tracks.loaded, missing: A.music.tracks.missing.slice() } : null,
         errors: A.errors,
         samples: { loaded: A.bank.loaded, total: A.bank.total, missing: A.bank.missing.slice(), samplePlays: A.samplePlays, synthPlays: A.synthPlays },
       };
@@ -198,6 +199,7 @@ export function installDebug(A: AudioSystem, wiring: Wiring): void {
         (e) => {
           const c = new Conductor(e);
           c.intensity = intensity;
+          c.useTracks = false;
           c.setTheme(name, 0.01);
           c.update(seconds);
         },
