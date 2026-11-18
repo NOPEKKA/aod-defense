@@ -1,5 +1,5 @@
 import { SceneKey, type BattleSceneData, type PreWaveSceneData, type ResultSceneData } from '../../contracts';
-import { makeWaveParams } from '../../core/app';
+import { makeWaveParams, tryRuntime } from '../../core/app';
 import { addIcon, divider, inkRule, kitImage, ribbon } from '../ui/skin';
 import { C, addText, gildText, numStr } from '../style';
 import { Button, panel } from '../ui/widgets';
@@ -105,6 +105,12 @@ export class ResultScene extends MenuScene<ResultSceneData> {
       addIcon(this, ux + 26, uy, d.units.has(id) ? `portrait_${sprite}` : sprite, sprite, 44, 44);
       addText(this, ux + 62, uy, this.unlockName(id), 19, { originY: 0.5, color: C.ink });
       uy += 60;
+    }
+
+    // online guest: the host decides what comes next; wait in the lobby
+    if (tryRuntime()?.modules.net?.role === 'guest') {
+      new Button(this, vw / 2, 720 - 50, this.t('lobby.continue'), () => this.go(SceneKey.Lobby), { w: 320, h: 64, variant: 'primary', size: 23, icon: 'ui_play', iconSize: 28, head: true });
+      return;
     }
 
     // buttons
