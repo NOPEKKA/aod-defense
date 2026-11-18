@@ -54,12 +54,12 @@
   },
   "ash": {
     "stats": {
-      "hp": 220,
+      "hp": 200,
       "armor": 0,
       "speed": 190,
       "attack": {
         "kind": "ranged",
-        "damage": 11,
+        "damage": 9,
         "interval": 1.5,
         "range": 280,
         "windup": 0.08,
@@ -70,7 +70,7 @@
     },
     "melee": {
       "kind": "melee",
-      "damage": 10,
+      "damage": 8,
       "interval": 0.8,
       "range": 70,
       "windup": 0.2
@@ -290,7 +290,7 @@
     "ai.marchRange": 520,
     "ai.marchMul": 1.7,
     "ash.regenDelay": 5,
-    "ash.regenPerSec": 0.012,
+    "ash.regenPerSec": 0.01,
     "ai.healAshBias": 0.25,
     "ai.healAshReach": 1.6,
     "combat.corpseGravity": 1800
