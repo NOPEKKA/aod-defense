@@ -388,8 +388,10 @@ test.describe('phase 3 / 2. enemies', () => {
     const x1 = await xAt();
     await advance(page, 4000);
     const x2 = await xAt();
-    expect(x1 - x2).toBeGreaterThan(170); // 45 px/s * 4 s = 180
-    expect(x1 - x2).toBeLessThan(190);
+    // data speed * 4 s, each body gets a +-7% walk-speed spread (ai.speedJitter)
+    const skSpeed = await page.evaluate(() => (window as any).__aodd.app().data.enemies.get('skeleton').stats.speed as number); // eslint-disable-line @typescript-eslint/no-explicit-any
+    expect(x1 - x2).toBeGreaterThan(skSpeed * 4 * 0.9);
+    expect(x1 - x2).toBeLessThan(skSpeed * 4 * 1.1);
     expect((await worldEntities(page)).find((e) => e.id === id)!.facing).toBe(-1);
 
     // v2: 10 iron at the start; the swordsman costs 20
@@ -418,7 +420,7 @@ test.describe('phase 3 / 2. enemies', () => {
       ashHit = (await events(page, 'entity:damaged')).find((e) => e.p.id === ashId && enemyIds.has(e.p.sourceId));
     }
     expect(ashHit, 'a skeleton damaged Ash').toBeTruthy();
-    expect((await snap(page)).ash.hp).toBeLessThan(200);
+    { const a = (await snap(page)).ash; expect(a.hp).toBeLessThan(a.maxHp); }
     await pauseSim(page, false);
     await page.waitForTimeout(300);
     await page.screenshot({ path: 'output/qa3/2-ash-fighting.png' });
@@ -860,7 +862,10 @@ test.describe('phase 3 / extra checks', () => {
     for (let i = 1; i < counts.length; i++) expect(counts[i], `run ${i}: bus listener counts`).toEqual(counts[0]);
     test.info().annotations.push({ type: 'listeners', description: JSON.stringify(counts[0]) });
     test.info().annotations.push({ type: 'restart stats', description: JSON.stringify(stats) });
-    for (let i = 1; i < stats.length; i++) expect(stats[i], `run ${i}: display list / tweens / textures at tick 0`).toEqual(stats[0]);
+    // the rarer fx sheets stream in during run 0 (lazyFx), so textures may grow once; never again
+    const noTex = (s: Record<string, unknown>) => ({ ...s, textures: 0 });
+    for (let i = 1; i < stats.length; i++) expect(noTex(stats[i]), `run ${i}: display list / tweens at tick 0`).toEqual(noTex(stats[0]));
+    for (let i = 2; i < stats.length; i++) expect(stats[i].textures, `run ${i}: no texture growth after the lazy fx`).toBe(stats[1].textures);
     expect(await page.evaluate(() => (window as any).__qaWaveStarts)).toBe(4);
     expect(errors).toEqual([]);
   });
