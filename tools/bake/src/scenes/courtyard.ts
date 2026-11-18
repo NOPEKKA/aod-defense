@@ -216,11 +216,11 @@ const gy = (x: number): number => -terrainPx(x * PPU) / (PPU * COS);
 const slopeDeg = (x: number): number => (Math.atan((gy(x + 0.1) - gy(x - 0.1)) / 0.2) * 180) / Math.PI;
 
 /** the castle wall ends at the outer gate */
-const GATE_X = 11.35;
+const GATE_X = 14.2; // castle gate ~1065 px (castle ground is flat to 1150)
 const CASTLE_END = 13.35;
 /** the bridge over the ravine on the landing */
-const BX0 = px(1765);
-const BX1 = px(1985);
+const BX0 = px(2365);
+const BX1 = px(2585);
 /** demon lair: the opening's centre */
 const LX = ((balance.world as { lairX?: number }).lairX ?? WORLD_W - 100) / PPU;
 const YV = gy(LX);
@@ -537,13 +537,16 @@ async function buildMain(v: Variant) {
     { x: 3.55, kind: 'wall_doorway.glb', sx: 0.5 },
     { x: 5.55, kind: 'wall', sx: 0.5 },
     { x: 7.9, kind: 'wall_cracked', sx: 0.7 },
+    // the castle grew toward the gate (flat ground to 1150 px): close the wall up to it
+    { x: 10.35, kind: 'wall', sx: 0.55, sy: 1.12 },
+    { x: 12.15, kind: 'wall_cracked', sx: 0.5, sy: 1.12 },
     { x: GATE_X, kind: 'wall_arched', sx: 1, sy: 1.12 },
   ];
   for (const s of segs) {
     const url = s.kind.endsWith('.glb') ? `${DUN}${s.kind}` : `${DUN}${s.kind}.gltf.glb`;
     await put(root, url, s.x, WALL_Z, { s: [s.sx ?? 1, s.sy ?? 1, 1] });
   }
-  for (const x of [-0.1, 2.45, 4.6, 6.5, 9.35, CASTLE_END]) await put(root, `${DUN}wall_pillar.gltf.glb`, x, WALL_Z + 0.25, { s: [0.5, x > 9 ? 1.12 : 1, 1] });
+  for (const x of [-0.1, 2.45, 4.6, 6.5, 9.35, 11.3, CASTLE_END]) await put(root, `${DUN}wall_pillar.gltf.glb`, x, WALL_Z + 0.25, { s: [0.5, x > 9 ? 1.12 : 1, 1] });
   merlons(root, -0.6, 9.3, WALL_H, FACE_Z + 0.2, { d: 0.5 });
   merlons(root, 9.3, CASTLE_END + 0.9, WALL_H * 1.12, FACE_Z + 0.2, { d: 0.5 });
 

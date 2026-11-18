@@ -1,6 +1,6 @@
 {
   "world": {
-    "width": 4000,
+    "width": 4900,
     "groundY": 520,
     "bookX": 110,
     "castleRight": 330,
@@ -9,11 +9,11 @@
       "left": 410,
       "right": 480
     },
-    "fieldRight": 3880,
-    "enemySpawnX": 3960,
+    "fieldRight": 4780,
+    "enemySpawnX": 4860,
     "ashMinX": 230,
-    "ashMaxX": 3880,
-    "allyHoldX": 3450,
+    "ashMaxX": 4780,
+    "allyHoldX": 4300,
     "laneRows": [
       -36,
       0,
@@ -30,27 +30,27 @@
         0
       ],
       [
-        760,
+        1150,
         0
       ],
       [
-        1700,
-        110
-      ],
-      [
-        2050,
+        2300,
         120
       ],
       [
-        3200,
-        250
+        2650,
+        130
       ],
       [
-        4000,
-        250
+        3900,
+        260
+      ],
+      [
+        4900,
+        260
       ]
     ],
-    "lairX": 3900
+    "lairX": 4720
   },
   "ash": {
     "stats": {
@@ -284,7 +284,7 @@
     "combat.silver.maxCount": 3,
     "ai.speedJitter": 0.07,
     "ai.backKeepBack": 150,
-    "ai.backSoloLine": 900,
+    "ai.backSoloLine": 1150,
     "ai.enemyEnterDepth": 160,
     "boss.summonCap": 8,
     "ai.marchRange": 520,
