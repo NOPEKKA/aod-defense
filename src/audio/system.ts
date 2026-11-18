@@ -238,9 +238,12 @@ export class AudioSystem {
     }
     const t = now + 0.006 + (o.delay ?? 0) + rnd(0, 0.01);
     try {
-      const out = eng.voiceOut(def.vol * (o.vol ?? 1) * boost * dist, pan, def.wet, t, def.life + (o.delay ?? 0));
       const p = (o.pitch ?? 1) * vary(0.05);
-      if (this.bank.play(eng, name, t, out, p, o.i ?? 0, o.n ?? 0)) this.samplePlays++;
+      // a recorded sample keeps its voice output connected for its whole length
+      const smp = this.bank.prepare(eng, name, p, o.i ?? 0, o.n ?? 0);
+      const life = Math.max(def.life, smp ? smp.dur + 0.05 : 0);
+      const out = eng.voiceOut(def.vol * (o.vol ?? 1) * boost * dist, pan, def.wet, t, life + (o.delay ?? 0));
+      if (smp && smp.start(t, out)) this.samplePlays++;
       else {
         def.fn({ e: eng, t, out, p, i: o.i ?? 0, n: o.n ?? 0 });
         this.synthPlays++;
