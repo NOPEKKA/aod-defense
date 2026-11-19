@@ -220,13 +220,7 @@ export class EntityLayer {
   private bind(v: Vis, e: EntityState, want: string): void {
     v.shown = want;
     v.sprite = e.sprite;
-    // stand out by light, not size: a warm glow around Ash, a faint cool one around heroes
-    const pfx = (v.img as Phaser.GameObjects.Image & { preFX?: Phaser.GameObjects.Components.FX }).preFX;
-    if (pfx) {
-      pfx.clear();
-      if (e.kind === 'ash') pfx.addGlow(0xffcf6a, 2.5, 0, false, 0.1, 10);
-      else if (e.kind === 'hero') pfx.addGlow(0xcfe6ff, 1.6, 0, false, 0.1, 8);
-    }
+    // (no preFX glow: on phone/iPad GPUs it rendered Ash as a solid yellow shape; see ashHalo)
     // thrown things without baked art borrow a baked look-alike (coffin -> rock, poison -> green orb)
     let key = want;
     v.tintKey = 0xffffff;
@@ -533,6 +527,9 @@ export class EntityLayer {
     }
 
     // shadow on the ground under the figure, smaller and fainter with height
+    // Ash stands out by light, not size: a warm pool of light on the ground under him
+    // (a plain additive image: renders the same on every GPU)
+    if (e.kind === 'ash') this.ashHaloAt(x, y, dying ? 0 : a);
     const sh = v.shadow;
     if (a <= 0.02) sh.setVisible(false);
     else {
@@ -810,7 +807,25 @@ export class EntityLayer {
     else v.shadow.setVisible(false);
   }
 
+  private ashHalo: Phaser.GameObjects.Image | null = null;
+  private ashHaloAt(x: number, y: number, a: number): void {
+    if (!this.ashHalo) {
+      const f = spriteFrame('glow');
+      this.ashHalo = this.scene.add.image(0, 0, f.tex, f.frame).setBlendMode(Phaser.BlendModes.ADD).setTint(0xffc45a);
+    }
+    const f = this.ashHalo.frame;
+    const pulse = 0.85 + 0.15 * Math.sin(this.clock * 3);
+    this.ashHalo
+      .setVisible(a > 0.02)
+      .setPosition(x, y - 4)
+      .setScale(150 / f.realWidth, 46 / f.realHeight)
+      .setAlpha(0.55 * a * pulse)
+      .setDepth(DEPTH.char + y - 2);
+  }
+
   destroy(): void {
+    this.ashHalo?.destroy();
+    this.ashHalo = null;
     for (const v of [...this.active, ...this.pool, ...this.corpses]) {
       v.img.destroy();
       v.shadow.destroy();
