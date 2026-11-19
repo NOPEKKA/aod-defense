@@ -256,7 +256,8 @@ defineSprite({
   build: buildWinged,
   anims: {
     idle: { clip: 'Jump_Idle', frames: 8, loop: true, apply: wingAnim(2, 36, 0, 12) },
-    walk: { clip: 'Jump_Idle', frames: 12, loop: true, duration: 0.8, apply: wingAnim(2, 40, 0, 26) },
+    // stride 0: a flyer's wing beat runs on time; the auto stride (from the jump pose's feet) made it flicker
+    walk: { clip: 'Jump_Idle', frames: 12, loop: true, duration: 0.8, stride: 0, apply: wingAnim(2, 40, 0, 26) },
     attack: { clip: '1H_Melee_Attack_Slice_Diagonal', frames: 10, duration: 0.6, hitAt: 0.45, apply: wingAnim(1.5, 38, 0, 18) },
     hurt: { clip: 'Hit_A', frames: 4, duration: 0.3, apply: wingAnim(1, 26, 0, 8) },
     die: { clip: 'Death_C_Skeletons', frames: 12, duration: 1.0, apply: (b, u) => flap(b, 52 + 30 * (1 - u) * Math.sin(u * TAU * 2) - 40 * u, u) },

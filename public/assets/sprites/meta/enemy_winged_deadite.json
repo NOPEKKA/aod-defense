@@ -21,7 +21,7 @@
    "frames": 12,
    "duration": 0.8,
    "loop": true,
-   "stride": 6
+   "stride": 0
   },
   "attack": {
    "frames": 10,
