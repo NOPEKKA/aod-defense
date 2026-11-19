@@ -88,9 +88,9 @@
   },
   "difficulty": {
     "enemyHpBase": 1.3,
-    "enemyHpPerWave": 0.022,
+    "enemyHpPerWave": 0.019,
     "enemyDmgBase": 1.2,
-    "enemyDmgPerWave": 0.011,
+    "enemyDmgPerWave": 0.009,
     "enemySpeedMul": 1.1,
     "bossHpMul": 1.45
   },
