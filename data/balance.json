@@ -101,7 +101,7 @@
     "manaMax": 100,
     "manaRegen": 2,
     "goldPerThreat": 0.5,
-    "silverPerThreat": 0.5,
+    "silverPerThreat": 0.42,
     "goldLifetime": 15,
     "waveBonus": {
       "base": 20,
