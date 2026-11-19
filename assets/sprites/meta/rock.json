@@ -1,0 +1,21 @@
+{
+ "id": "rock",
+ "frameW": 66,
+ "frameH": 71,
+ "anchorX": 33,
+ "anchorY": 34,
+ "height": 20,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 0.5,
+   "loop": true
+  }
+ }
+}

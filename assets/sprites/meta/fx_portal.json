@@ -1,0 +1,23 @@
+{
+ "id": "fx_portal",
+ "frameW": 260,
+ "frameH": 100,
+ "anchorX": 130,
+ "anchorY": 50,
+ "height": 50,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 12,
+   "duration": 1.2,
+   "loop": true
+  }
+ },
+ "blend": "normal",
+ "ground": true
+}

@@ -1,0 +1,78 @@
+{
+ "id": "icons_allies",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "portrait_ash": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_swordsman": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_arthur": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_wiseman": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_henry": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_morwen": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_garrick": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_sheila": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_hero_evil_ash": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_npc_blacksmith": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_peasant": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_archer": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_spearman": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_torch_boy": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_armored_guard": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_crossbowman": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_unit_horseman": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

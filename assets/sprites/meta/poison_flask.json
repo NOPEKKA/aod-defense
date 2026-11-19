@@ -1,0 +1,21 @@
+{
+ "id": "poison_flask",
+ "frameW": 136,
+ "frameH": 136,
+ "anchorX": 68,
+ "anchorY": 68,
+ "height": 40,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 0.6,
+   "loop": true
+  }
+ }
+}

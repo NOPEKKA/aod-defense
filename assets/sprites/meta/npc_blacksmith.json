@@ -1,0 +1,32 @@
+{
+ "id": "npc_blacksmith",
+ "frameW": 220,
+ "frameH": 240,
+ "anchorX": 90,
+ "anchorY": 194,
+ "height": 172,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.8,
+   "loop": true,
+   "hitAt": 0.5
+  },
+  "cheer": {
+   "frames": 10,
+   "duration": 1.15,
+   "loop": true
+  }
+ }
+}

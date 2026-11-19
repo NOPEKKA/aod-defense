@@ -1,0 +1,21 @@
+{
+ "id": "shot",
+ "frameW": 185,
+ "frameH": 116,
+ "anchorX": 92,
+ "anchorY": 58,
+ "height": 13,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 1,
+   "duration": 1,
+   "loop": true
+  }
+ }
+}

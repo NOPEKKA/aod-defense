@@ -1,0 +1,34 @@
+{
+ "id": "icons_bosses",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "portrait_boss_sheila_demon": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_boss_evil_ash": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_boss_gravewright": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_boss_mother_mire": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_boss_sir_hollow": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_boss_malachar": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

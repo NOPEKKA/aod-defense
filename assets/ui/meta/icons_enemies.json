@@ -1,0 +1,54 @@
+{
+ "id": "icons_enemies",
+ "kind": "icons",
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "frames": {
+  "portrait_enemy_skeleton": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_skeleton_helm": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_skeleton_shield": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_skeleton_spear": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_skeleton_wizard": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_deadite_archer": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_skeleton_knight": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_winged_deadite": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_pit_hag": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_battering_ram": {
+   "w": 112,
+   "h": 112
+  },
+  "portrait_enemy_skeleton_catapult": {
+   "w": 112,
+   "h": 112
+  }
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "id": "fx_soul",
+ "frameW": 60,
+ "frameH": 96,
+ "anchorX": 30,
+ "anchorY": 30,
+ "height": 30,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 0.8,
+   "loop": true
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

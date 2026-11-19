@@ -1,0 +1,82 @@
+{
+ "id": "boss_gravewright",
+ "frameW": 786,
+ "frameH": 604,
+ "anchorX": 280,
+ "anchorY": 323,
+ "height": 58,
+ "facing": -1,
+ "shadow": true,
+ "pages": {
+  "hd": 4,
+  "sd": 2
+ },
+ "anims": {
+  "idle": {
+   "frames": 4,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 6,
+   "duration": 1.6,
+   "loop": true,
+   "stride": 82
+  },
+  "hurt": {
+   "frames": 2,
+   "duration": 0.35,
+   "loop": false
+  },
+  "die": {
+   "frames": 6,
+   "duration": 1,
+   "loop": false
+  },
+  "telegraph:shovel_slam": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:shovel_slam": {
+   "frames": 5,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:grave_hands": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:grave_hands": {
+   "frames": 5,
+   "duration": 0.7,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "telegraph:burrow": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:burrow": {
+   "frames": 5,
+   "duration": 0.8,
+   "loop": false,
+   "hitAt": 0.6
+  },
+  "telegraph:coffin_toss": {
+   "frames": 3,
+   "duration": 0.8,
+   "loop": false
+  },
+  "attack:coffin_toss": {
+   "frames": 5,
+   "duration": 0.5,
+   "loop": false,
+   "hitAt": 0.45
+  }
+ },
+ "scale": 1.4286
+}

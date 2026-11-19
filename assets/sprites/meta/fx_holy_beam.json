@@ -1,0 +1,23 @@
+{
+ "id": "fx_holy_beam",
+ "frameW": 150,
+ "frameH": 440,
+ "anchorX": 75,
+ "anchorY": 420,
+ "height": 420,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 0.8,
+   "loop": false
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

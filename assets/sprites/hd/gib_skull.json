@@ -1,0 +1,1 @@
+{"textures":[{"image":"gib_skull-0.webp","format":"RGBA8888","size":{"w":94,"h":91},"scale":1,"frames":[{"filename":"idle/0","rotated":false,"trimmed":true,"sourceSize":{"w":97,"h":99},"spriteSourceSize":{"x":6,"y":6,"w":85,"h":87},"frame":{"x":2,"y":2,"w":85,"h":87}}]}],"meta":{"app":"aod-defense art bake","version":"1"}}
