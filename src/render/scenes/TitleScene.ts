@@ -102,6 +102,21 @@ export class TitleScene extends MenuScene<{ netMessage?: string }> {
 
     addText(this, vw - 14, 704, this.t('title.footer'), 14, { originX: 1, originY: 1, color: C.textDim, bold: false });
 
+    // install to the device (PWA): Chrome / Edge / Android use the saved prompt, iOS gets the steps
+    const installed = typeof matchMedia === 'function' && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches);
+    if (!installed) {
+      new Button(this, vw - 130, 52, this.t('title.install'), () => {
+        const w = window as unknown as { __aoddInstall?: Event & { prompt(): Promise<void> } };
+        if (w.__aoddInstall) {
+          void w.__aoddInstall.prompt();
+          w.__aoddInstall = undefined;
+          return;
+        }
+        const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        toast(this, this.vw, this.t(ios ? 'title.install_ios' : 'title.install_other'), '#ffe2a8');
+      }, { w: 220, h: 52, variant: 'secondary', size: 19, head: true });
+    }
+
     // save recovery notice (systems exposes app.save.lastRecovery once the lead wires it)
     const rec = (this.app.save as unknown as { lastRecovery?: { from: 'backup' | 'defaults'; error: string } | null }).lastRecovery;
     if (this.args.netMessage) {

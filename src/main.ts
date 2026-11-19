@@ -12,6 +12,15 @@ import { Boot, type BootConfig } from './scenes/Boot';
 import { Preloader } from './scenes/Preloader';
 import { systems } from './systems';
 
+// installable app (PWA): keep the browser's install prompt for the Title screen button
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  (window as unknown as { __aoddInstall?: Event }).__aoddInstall = e;
+});
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => void navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+
 async function start(): Promise<void> {
   const modules: Modules = { systems, gameplay, controls, render, audio, net };
   const renderScale = computeRenderScale();

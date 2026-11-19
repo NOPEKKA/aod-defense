@@ -274,5 +274,8 @@
   "lobby.err_no_room": "No room with that code. Check it and try again.",
   "lobby.err_network": "Could not reach the online service. Check the internet connection.",
   "lobby.err_browser": "This browser cannot play online (WebRTC is missing).",
-  "net.host_left": "The host left the game."
+  "net.host_left": "The host left the game.",
+  "title.install": "Install game",
+  "title.install_ios": "iPhone/iPad: tap Share, then \"Add to Home Screen\"",
+  "title.install_other": "Open the browser menu and choose \"Install app\" or \"Add to Home screen\""
 }
