@@ -229,7 +229,7 @@
     "ai.chargeRearm": 2,
     "ai.leapTime": 0.45,
     "ai.leapHeight": 90,
-    "ai.flyerAshAggro": 600,
+    "ai.flyerAshAggro": 300,
     "ai.flyerDiveAlt": 50,
     "ai.flyerAltSpeed": 260,
     "ai.knockbackHop": 0.25,

@@ -38,7 +38,7 @@
   {
     "id": "winged_deadite", "nameKey": "enemy.winged_deadite", "sprite": "enemy_winged_deadite", "origin": "original",
     "threat": 12, "firstWave": 12, "flying": true,
-    "stats": { "hp": 40, "speed": 90, "attack": { "kind": "melee", "damage": 6, "interval": 1.0, "range": 60, "windup": 0.2 } },
+    "stats": { "hp": 40, "speed": 90, "attack": { "kind": "melee", "damage": 5, "interval": 1.0, "range": 60, "windup": 0.2 } },
     "behaviors": [{ "id": "flyer", "params": { "target": "ash_or_book" } }]
   },
   {
