@@ -6,7 +6,7 @@
     "sprite": "unit_peasant",
     "origin": "original",
     "ironCost": 5,
-    "cooldown": 1.5,
+    "cooldown": 0.5,
     "unlockWave": 1,
     "size": "small",
     "stats": {
@@ -33,7 +33,7 @@
     "sprite": "unit_swordsman",
     "origin": "original",
     "ironCost": 10,
-    "cooldown": 3,
+    "cooldown": 1.0,
     "unlockWave": 1,
     "stats": {
       "hp": 85,
@@ -59,7 +59,7 @@
     "sprite": "unit_archer",
     "origin": "original",
     "ironCost": 10,
-    "cooldown": 4,
+    "cooldown": 1.4,
     "unlockWave": 3,
     "stats": {
       "hp": 45,
@@ -87,7 +87,7 @@
     "sprite": "unit_spearman",
     "origin": "original",
     "ironCost": 15,
-    "cooldown": 4,
+    "cooldown": 1.4,
     "unlockWave": 5,
     "stats": {
       "hp": 75,
@@ -117,7 +117,7 @@
     "sprite": "unit_torch_boy",
     "origin": "original",
     "ironCost": 15,
-    "cooldown": 5,
+    "cooldown": 1.8,
     "unlockWave": 8,
     "size": "small",
     "stats": {
@@ -149,7 +149,7 @@
     "sprite": "unit_armored_guard",
     "origin": "original",
     "ironCost": 25,
-    "cooldown": 8,
+    "cooldown": 2.8,
     "unlockWave": 11,
     "size": "large",
     "stats": {
@@ -177,7 +177,7 @@
     "sprite": "unit_crossbowman",
     "origin": "original",
     "ironCost": 20,
-    "cooldown": 6,
+    "cooldown": 2.1,
     "unlockWave": 17,
     "stats": {
       "hp": 55,
@@ -206,7 +206,7 @@
     "sprite": "unit_horseman",
     "origin": "original",
     "ironCost": 35,
-    "cooldown": 10,
+    "cooldown": 3.5,
     "unlockWave": 20,
     "size": "large",
     "stats": {
@@ -241,7 +241,7 @@
     "sprite": "hero_arthur",
     "origin": "original",
     "ironCost": 70,
-    "cooldown": 40,
+    "cooldown": 20,
     "unlockWave": 14,
     "size": "large",
     "stats": {
@@ -283,7 +283,7 @@
     "sprite": "hero_wiseman",
     "origin": "original",
     "ironCost": 55,
-    "cooldown": 45,
+    "cooldown": 22,
     "unlockWave": 8,
     "stats": {
       "hp": 176,
@@ -315,7 +315,7 @@
     "sprite": "hero_henry",
     "origin": "original",
     "ironCost": 70,
-    "cooldown": 40,
+    "cooldown": 20,
     "unlockWave": 28,
     "size": "large",
     "stats": {
@@ -356,7 +356,7 @@
     "sprite": "hero_morwen",
     "origin": "new",
     "ironCost": 70,
-    "cooldown": 45,
+    "cooldown": 22,
     "unlockWave": 11,
     "unlockRule": "boss:gravewright",
     "stats": {
@@ -402,7 +402,7 @@
     "sprite": "hero_garrick",
     "origin": "new",
     "ironCost": 80,
-    "cooldown": 50,
+    "cooldown": 25,
     "unlockWave": 31,
     "unlockRule": "boss:sir_hollow",
     "stats": {
@@ -447,7 +447,7 @@
     "sprite": "hero_sheila",
     "origin": "new",
     "ironCost": 60,
-    "cooldown": 45,
+    "cooldown": 22,
     "unlockWave": 46,
     "unlockRule": "boss:sheila_demon",
     "stats": {
@@ -481,7 +481,7 @@
     "sprite": "hero_evil_ash",
     "origin": "new",
     "ironCost": 90,
-    "cooldown": 60,
+    "cooldown": 30,
     "unlockWave": 0,
     "unlockRule": "boss:evil_ash",
     "size": "large",

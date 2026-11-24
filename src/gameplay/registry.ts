@@ -53,7 +53,7 @@ const ENEMY_ONLY = ['flyer', 'siege', 'leap_once', 'prefer_ash', 'artillery'];
 const DMG_KIND: Param = { type: 'string', oneOf: ['physical', 'fire', 'holy', 'pierce'], optional: true };
 
 export const SPELL_EFFECTS: Readonly<Record<string, Spec>> = {
-  line_blast: { length: num(1), damage: num(0), knockback: opt(0), hitsFlying: bool, damageKind: DMG_KIND },
+  line_blast: { length: num(1), damage: num(0), knockback: opt(0), recoil: opt(0), hitsFlying: bool, damageKind: DMG_KIND },
   area_rain: {
     width: num(1), hits: int(1), duration: num(0.01), damage: num(0), hitsFlying: bool,
     flamingAtLevel: int(1, true), burnDps: opt(0), burnDuration: opt(0),

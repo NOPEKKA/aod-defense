@@ -189,6 +189,10 @@ function lineBlast(st: GState, ctx: SimContext, fx: ActiveEffect): void {
     dealDamage(st, s, dmg, kind, ctx.world.ashId, false, 1, NaN, true);
     if (o.hp > 0) knockback(st, o, st.rts[s], kb, fx.dir);
   }
+  // recoil: the blast throws Ash back
+  const recoil = n(p, 'recoil', 0);
+  const ash = byId(st, ctx.world.ashId);
+  if (recoil > 0 && ash && ash.hp > 0) knockback(st, ash, st.rts[st.idSlot.get(ash.id)!], recoil, -fx.dir);
   impact(st, fx, 'line_blast', fx.x + (fx.dir * length) / 2, length / 2);
   fx.active = false;
 }

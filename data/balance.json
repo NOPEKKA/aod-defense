@@ -101,7 +101,7 @@
     "manaMax": 100,
     "manaRegen": 2,
     "goldPerThreat": 0.5,
-    "silverPerThreat": 0.42,
+    "silverPerThreat": 0.35,
     "goldLifetime": 15,
     "waveBonus": {
       "base": 20,
@@ -187,7 +187,7 @@
   },
   "limits": {
     "maxEnemies": 60,
-    "maxAllies": 40,
+    "maxAllies": 30,
     "maxParticlesHigh": 300,
     "maxParticlesLow": 120,
     "maxDamageNumbers": 40
