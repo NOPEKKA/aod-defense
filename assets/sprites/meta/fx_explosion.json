@@ -1,0 +1,23 @@
+{
+ "id": "fx_explosion",
+ "frameW": 220,
+ "frameH": 220,
+ "anchorX": 110,
+ "anchorY": 110,
+ "height": 110,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 12,
+   "duration": 0.7,
+   "loop": false
+  }
+ },
+ "blend": "normal",
+ "ground": false
+}

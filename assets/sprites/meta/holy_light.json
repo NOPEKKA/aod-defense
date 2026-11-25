@@ -1,0 +1,21 @@
+{
+ "id": "holy_light",
+ "frameW": 166,
+ "frameH": 122,
+ "anchorX": 93,
+ "anchorY": 61,
+ "height": 20,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": true
+  }
+ }
+}

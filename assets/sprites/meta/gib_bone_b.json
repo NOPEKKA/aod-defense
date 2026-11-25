@@ -1,0 +1,21 @@
+{
+ "id": "gib_bone_b",
+ "frameW": 98,
+ "frameH": 83,
+ "anchorX": 45,
+ "anchorY": 52,
+ "height": 45,
+ "facing": -1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 1,
+   "duration": 1,
+   "loop": true
+  }
+ }
+}

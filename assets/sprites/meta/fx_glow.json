@@ -1,0 +1,23 @@
+{
+ "id": "fx_glow",
+ "frameW": 120,
+ "frameH": 120,
+ "anchorX": 60,
+ "anchorY": 60,
+ "height": 60,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 4,
+   "duration": 0.8,
+   "loop": true
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

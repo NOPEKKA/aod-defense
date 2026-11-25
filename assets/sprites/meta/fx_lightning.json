@@ -1,0 +1,23 @@
+{
+ "id": "fx_lightning",
+ "frameW": 110,
+ "frameH": 340,
+ "anchorX": 55,
+ "anchorY": 330,
+ "height": 330,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 4,
+   "duration": 0.2,
+   "loop": false
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

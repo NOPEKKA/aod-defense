@@ -1,0 +1,43 @@
+{
+ "id": "unit_armored_guard",
+ "frameW": 413,
+ "frameH": 292,
+ "anchorX": 248,
+ "anchorY": 261,
+ "height": 234,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 2,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 8,
+   "duration": 1.067,
+   "loop": true
+  },
+  "walk": {
+   "frames": 12,
+   "duration": 1.067,
+   "loop": true,
+   "stride": 58
+  },
+  "attack": {
+   "frames": 10,
+   "duration": 0.7,
+   "loop": false,
+   "hitAt": 0.5
+  },
+  "hurt": {
+   "frames": 4,
+   "duration": 0.3,
+   "loop": false
+  },
+  "die": {
+   "frames": 10,
+   "duration": 0.9,
+   "loop": false
+  }
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "id": "fx_heal",
+ "frameW": 100,
+ "frameH": 140,
+ "anchorX": 50,
+ "anchorY": 128,
+ "height": 128,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 8,
+   "duration": 0.9,
+   "loop": true
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

@@ -1,0 +1,23 @@
+{
+ "id": "fx_dust_puff",
+ "frameW": 90,
+ "frameH": 56,
+ "anchorX": 45,
+ "anchorY": 46,
+ "height": 46,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 6,
+   "duration": 0.45,
+   "loop": false
+  }
+ },
+ "blend": "normal",
+ "ground": true
+}

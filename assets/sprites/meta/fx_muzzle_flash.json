@@ -1,0 +1,23 @@
+{
+ "id": "fx_muzzle_flash",
+ "frameW": 132,
+ "frameH": 80,
+ "anchorX": 18,
+ "anchorY": 40,
+ "height": 40,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "play": {
+   "frames": 4,
+   "duration": 0.12,
+   "loop": false
+  }
+ },
+ "blend": "add",
+ "ground": false
+}

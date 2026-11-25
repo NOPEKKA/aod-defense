@@ -1,0 +1,21 @@
+{
+ "id": "bolt",
+ "frameW": 112,
+ "frameH": 38,
+ "anchorX": 51,
+ "anchorY": 19,
+ "height": 13,
+ "facing": 1,
+ "shadow": false,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 1,
+   "duration": 1,
+   "loop": true
+  }
+ }
+}

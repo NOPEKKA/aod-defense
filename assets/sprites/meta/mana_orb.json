@@ -1,0 +1,21 @@
+{
+ "id": "mana_orb",
+ "frameW": 66,
+ "frameH": 60,
+ "anchorX": 33,
+ "anchorY": 52,
+ "height": 43,
+ "facing": 1,
+ "shadow": true,
+ "pages": {
+  "hd": 1,
+  "sd": 1
+ },
+ "anims": {
+  "idle": {
+   "frames": 6,
+   "duration": 0.9,
+   "loop": true
+  }
+ }
+}
