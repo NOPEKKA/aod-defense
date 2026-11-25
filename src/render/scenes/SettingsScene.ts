@@ -41,7 +41,7 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     const rules = this.add.graphics();
     for (let i = 1; i < 7; i++) {
       inkRule(rules, lx + 6, top + rowH * i - 2, lx + colW - 6, 0.22);
-      if (i !== 3 && i < 6) inkRule(rules, rx + 6, top + rowH * i - 2, rx + colW - 6, 0.22);
+      if (i !== 3) inkRule(rules, rx + 6, top + rowH * i - 2, rx + colW - 6, 0.22);
     }
 
     let y = top + rowH / 2;
@@ -73,6 +73,8 @@ export class SettingsScene extends MenuScene<SettingsSceneData> {
     new Button(this, rx + colW - bw / 2, y, this.t('settings.import'), () => this.importSave(), { w: bw, h: 60, variant: 'secondary', size: 20, icon: 'ui_import', iconSize: 28 });
     y += rowH;
     new Button(this, rx + colW / 2, y, this.t('settings.reset'), () => this.resetSave(), { w: colW, h: 60, variant: 'danger', size: 20, icon: 'ui_trash', iconSize: 28 });
+    y += rowH;
+    this.toggle(rx, y, colW, this.t('settings.screen_shake'), s.screenShake !== false, (v) => this.apply({ screenShake: v }));
 
     if (this.pendingToast) {
       toast(this, this.vw, this.pendingToast.text, this.pendingToast.color);

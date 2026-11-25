@@ -277,6 +277,7 @@ export class EntityLayer {
     const world = view.world;
     const paused = view.paused;
     this.paused = paused;
+    this.shakeOn = view.settings.screenShake !== false;
     if (!paused) this.clock += dt;
     if (world.outcome && !paused) this.postClock += dt;
     this.frameNo++;
@@ -442,10 +443,11 @@ export class EntityLayer {
           break;
         }
         case 'stunned':
-          rot = Math.sin(this.clock * 14 + v.phase) * 0.12;
+          if (this.shakeOn) rot = Math.sin(this.clock * 8 + v.phase) * 0.08;
           break;
         case 'telegraph':
-          ox = Math.sin(this.clock * 50) * 2 * sz;
+          // a slow, small shudder (it was a hard 8 Hz rattle); none when shake is off
+          if (this.shakeOn) ox = Math.sin(this.clock * 22) * 1.2 * sz;
           break;
         case 'dodge': {
           const p = clamp01(tA / 0.35);
@@ -808,6 +810,7 @@ export class EntityLayer {
   }
 
   private ashHalo: Phaser.GameObjects.Image | null = null;
+  private shakeOn = true;
   private ashHaloAt(x: number, y: number, a: number): void {
     if (!this.ashHalo) {
       const f = spriteFrame('glow');

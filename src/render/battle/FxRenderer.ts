@@ -288,7 +288,9 @@ export class FxRenderer implements BattleRenderer {
     this.haptic(20);
   }
   shake(ms: number, intensity: number): void {
-    this.scene.cameras.main.shake(ms, intensity);
+    if (this.view.settings.screenShake === false) return;
+    // gentler than before: the big hits shook hard and often
+    this.scene.cameras.main.shake(ms * 0.7, intensity * 0.6);
   }
 
   // ---- lookups -------------------------------------------------------------------

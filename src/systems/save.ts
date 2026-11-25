@@ -28,6 +28,7 @@ export function defaultSettings(): Settings {
     sfxVolume: 0.8,
     musicVolume: 0.6,
     haptics: true,
+    screenShake: true,
     damageNumbers: true,
   };
 }
@@ -63,6 +64,7 @@ const SettingsSchema = z.object({
   sfxVolume: unit01.default(S.sfxVolume),
   musicVolume: unit01.default(S.musicVolume),
   haptics: z.boolean().default(S.haptics),
+  screenShake: z.boolean().default(S.screenShake),
   damageNumbers: z.boolean().default(S.damageNumbers),
 });
 

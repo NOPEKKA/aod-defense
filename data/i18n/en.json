@@ -277,5 +277,6 @@
   "net.host_left": "The host left the game.",
   "title.install": "Install game",
   "title.install_ios": "iPhone/iPad: tap Share, then \"Add to Home Screen\"",
-  "title.install_other": "Open the browser menu and choose \"Install app\" or \"Add to Home screen\""
+  "title.install_other": "Open the browser menu and choose \"Install app\" or \"Add to Home screen\"",
+  "settings.screen_shake": "Screen shake"
 }

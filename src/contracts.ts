@@ -482,6 +482,8 @@ export interface Settings {
   musicVolume: number; // 0..1
   haptics: boolean;
   damageNumbers: boolean;
+  /** camera shake and on-sprite jitter (telegraph shudder, stun wobble) */
+  screenShake: boolean;
 }
 
 export interface SpellTierState {
